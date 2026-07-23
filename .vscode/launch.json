@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "lekhsmi_computers_flutter",
+            "cwd": "${workspaceFolder}/lekhsmi_computers_flutter",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "lekhsmi_computers_server",
+            "cwd": "${workspaceFolder}/lekhsmi_computers_server",
+            "request": "launch",
+            "type": "dart",
+            "preLaunchTask": "docker_compose_up",
+            "program": "bin/main.dart",
+            "env": {
+                "SERVERPOD_PASSWORD_database": "BozSK5TQssp7GDz8v-IXSlgtl6ekg_lu"
+            },
+            "args": [
+                "--apply-migrations"
+            ]
+        }
+    ],
+    "compounds": [
+        {
+            "name": "lekhsmi_computers (full stack)",
+            "configurations": [
+                "lekhsmi_computers_server",
+                "lekhsmi_computers_flutter"
+            ],
+            "presentation": {
+                "order": 1
+            }
+        }
+    ]
+}

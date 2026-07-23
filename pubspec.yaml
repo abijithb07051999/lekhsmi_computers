@@ -1,0 +1,11 @@
+name: _
+publish_to: none
+
+environment:
+  sdk: '^3.8.0'
+
+workspace:
+  - lekhsmi_computers_client
+  - lekhsmi_computers_server
+  - lekhsmi_computers_flutter
+
