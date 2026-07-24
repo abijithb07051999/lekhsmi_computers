@@ -1,0 +1,5 @@
+class: Brand
+table: brand
+fields:
+    name: String
+    status: bool, default=true

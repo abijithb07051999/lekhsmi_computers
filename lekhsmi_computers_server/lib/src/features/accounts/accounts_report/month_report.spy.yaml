@@ -1,0 +1,4 @@
+class: MonthDetailReport
+fields:
+  incomes: List<Income>
+  expenses: List<Expense>

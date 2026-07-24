@@ -11,12 +11,48 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'greetings/greeting.dart' as _i2;
+import 'features/accounts/accounts_report/accounts_report.dart' as _i2;
+import 'features/accounts/accounts_report/month_report.dart' as _i3;
+import 'features/accounts/expense/expense.dart' as _i4;
+import 'features/accounts/income/income.dart' as _i5;
+import 'features/inventory/brands/brand.dart' as _i6;
+import 'features/inventory/categories/category.dart' as _i7;
+import 'features/inventory/products/product.dart' as _i8;
+import 'features/inventory/suppliers/supplier.dart' as _i9;
+import 'features/orders/order.dart' as _i10;
+import 'features/orders/order_history.dart' as _i11;
+import 'package:lekhsmi_computers_client/src/protocol/features/accounts/accounts_report/accounts_report.dart'
+    as _i12;
+import 'package:lekhsmi_computers_client/src/protocol/features/accounts/expense/expense.dart'
+    as _i13;
+import 'package:lekhsmi_computers_client/src/protocol/features/accounts/income/income.dart'
+    as _i14;
+import 'package:lekhsmi_computers_client/src/protocol/features/inventory/suppliers/supplier.dart'
+    as _i15;
+import 'package:lekhsmi_computers_client/src/protocol/features/inventory/products/product.dart'
+    as _i16;
+import 'package:lekhsmi_computers_client/src/protocol/features/orders/order_history.dart'
+    as _i17;
+import 'package:lekhsmi_computers_client/src/protocol/features/inventory/brands/brand.dart'
+    as _i18;
+import 'package:lekhsmi_computers_client/src/protocol/features/inventory/categories/category.dart'
+    as _i19;
+import 'package:lekhsmi_computers_client/src/protocol/features/orders/order.dart'
+    as _i20;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i3;
+    as _i21;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i4;
-export 'greetings/greeting.dart';
+    as _i22;
+export 'features/accounts/accounts_report/accounts_report.dart';
+export 'features/accounts/accounts_report/month_report.dart';
+export 'features/accounts/expense/expense.dart';
+export 'features/accounts/income/income.dart';
+export 'features/inventory/brands/brand.dart';
+export 'features/inventory/categories/category.dart';
+export 'features/inventory/products/product.dart';
+export 'features/inventory/suppliers/supplier.dart';
+export 'features/orders/order.dart';
+export 'features/orders/order_history.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -53,24 +89,139 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.Greeting) {
-      return _i2.Greeting.fromJson(data) as T;
+    if (t == _i2.AccountsReportEntry) {
+      return _i2.AccountsReportEntry.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.Greeting?>()) {
-      return (data != null ? _i2.Greeting.fromJson(data) : null) as T;
+    if (t == _i3.MonthDetailReport) {
+      return _i3.MonthDetailReport.fromJson(data) as T;
+    }
+    if (t == _i4.Expense) {
+      return _i4.Expense.fromJson(data) as T;
+    }
+    if (t == _i5.Income) {
+      return _i5.Income.fromJson(data) as T;
+    }
+    if (t == _i6.Brand) {
+      return _i6.Brand.fromJson(data) as T;
+    }
+    if (t == _i7.Category) {
+      return _i7.Category.fromJson(data) as T;
+    }
+    if (t == _i8.Product) {
+      return _i8.Product.fromJson(data) as T;
+    }
+    if (t == _i9.Supplier) {
+      return _i9.Supplier.fromJson(data) as T;
+    }
+    if (t == _i10.Orders) {
+      return _i10.Orders.fromJson(data) as T;
+    }
+    if (t == _i11.OrderHistory) {
+      return _i11.OrderHistory.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i2.AccountsReportEntry?>()) {
+      return (data != null ? _i2.AccountsReportEntry.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i3.MonthDetailReport?>()) {
+      return (data != null ? _i3.MonthDetailReport.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i4.Expense?>()) {
+      return (data != null ? _i4.Expense.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i5.Income?>()) {
+      return (data != null ? _i5.Income.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i6.Brand?>()) {
+      return (data != null ? _i6.Brand.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i7.Category?>()) {
+      return (data != null ? _i7.Category.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i8.Product?>()) {
+      return (data != null ? _i8.Product.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i9.Supplier?>()) {
+      return (data != null ? _i9.Supplier.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i10.Orders?>()) {
+      return (data != null ? _i10.Orders.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i11.OrderHistory?>()) {
+      return (data != null ? _i11.OrderHistory.fromJson(data) : null) as T;
+    }
+    if (t == List<_i5.Income>) {
+      return (data as List).map((e) => deserialize<_i5.Income>(e)).toList()
+          as T;
+    }
+    if (t == List<_i4.Expense>) {
+      return (data as List).map((e) => deserialize<_i4.Expense>(e)).toList()
+          as T;
+    }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
+    if (t == List<_i12.AccountsReportEntry>) {
+      return (data as List)
+              .map((e) => deserialize<_i12.AccountsReportEntry>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i13.Expense>) {
+      return (data as List).map((e) => deserialize<_i13.Expense>(e)).toList()
+          as T;
+    }
+    if (t == List<_i14.Income>) {
+      return (data as List).map((e) => deserialize<_i14.Income>(e)).toList()
+          as T;
+    }
+    if (t == List<_i15.Supplier>) {
+      return (data as List).map((e) => deserialize<_i15.Supplier>(e)).toList()
+          as T;
+    }
+    if (t == List<_i16.Product>) {
+      return (data as List).map((e) => deserialize<_i16.Product>(e)).toList()
+          as T;
+    }
+    if (t == List<_i17.OrderHistory>) {
+      return (data as List)
+              .map((e) => deserialize<_i17.OrderHistory>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i18.Brand>) {
+      return (data as List).map((e) => deserialize<_i18.Brand>(e)).toList()
+          as T;
+    }
+    if (t == List<_i19.Category>) {
+      return (data as List).map((e) => deserialize<_i19.Category>(e)).toList()
+          as T;
+    }
+    if (t == List<_i20.Orders>) {
+      return (data as List).map((e) => deserialize<_i20.Orders>(e)).toList()
+          as T;
     }
     try {
-      return _i3.Protocol().deserialize<T>(data, t);
+      return _i21.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i4.Protocol().deserialize<T>(data, t);
+      return _i22.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i2.Greeting => 'Greeting',
+      _i2.AccountsReportEntry => 'AccountsReportEntry',
+      _i3.MonthDetailReport => 'MonthDetailReport',
+      _i4.Expense => 'Expense',
+      _i5.Income => 'Income',
+      _i6.Brand => 'Brand',
+      _i7.Category => 'Category',
+      _i8.Product => 'Product',
+      _i9.Supplier => 'Supplier',
+      _i10.Orders => 'Orders',
+      _i11.OrderHistory => 'OrderHistory',
       _ => null,
     };
   }
@@ -88,14 +239,32 @@ class Protocol extends _i1.SerializationManager {
     }
 
     switch (data) {
-      case _i2.Greeting():
-        return 'Greeting';
+      case _i2.AccountsReportEntry():
+        return 'AccountsReportEntry';
+      case _i3.MonthDetailReport():
+        return 'MonthDetailReport';
+      case _i4.Expense():
+        return 'Expense';
+      case _i5.Income():
+        return 'Income';
+      case _i6.Brand():
+        return 'Brand';
+      case _i7.Category():
+        return 'Category';
+      case _i8.Product():
+        return 'Product';
+      case _i9.Supplier():
+        return 'Supplier';
+      case _i10.Orders():
+        return 'Orders';
+      case _i11.OrderHistory():
+        return 'OrderHistory';
     }
-    className = _i3.Protocol().getClassNameForObject(data);
+    className = _i21.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
-    className = _i4.Protocol().getClassNameForObject(data);
+    className = _i22.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -108,16 +277,43 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
-    if (dataClassName == 'Greeting') {
-      return deserialize<_i2.Greeting>(data['data']);
+    if (dataClassName == 'AccountsReportEntry') {
+      return deserialize<_i2.AccountsReportEntry>(data['data']);
+    }
+    if (dataClassName == 'MonthDetailReport') {
+      return deserialize<_i3.MonthDetailReport>(data['data']);
+    }
+    if (dataClassName == 'Expense') {
+      return deserialize<_i4.Expense>(data['data']);
+    }
+    if (dataClassName == 'Income') {
+      return deserialize<_i5.Income>(data['data']);
+    }
+    if (dataClassName == 'Brand') {
+      return deserialize<_i6.Brand>(data['data']);
+    }
+    if (dataClassName == 'Category') {
+      return deserialize<_i7.Category>(data['data']);
+    }
+    if (dataClassName == 'Product') {
+      return deserialize<_i8.Product>(data['data']);
+    }
+    if (dataClassName == 'Supplier') {
+      return deserialize<_i9.Supplier>(data['data']);
+    }
+    if (dataClassName == 'Orders') {
+      return deserialize<_i10.Orders>(data['data']);
+    }
+    if (dataClassName == 'OrderHistory') {
+      return deserialize<_i11.OrderHistory>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i3.Protocol().deserializeByClassName(data);
+      return _i21.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i4.Protocol().deserializeByClassName(data);
+      return _i22.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -132,10 +328,10 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i3.Protocol().mapRecordToJson(record);
+      return _i21.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i4.Protocol().mapRecordToJson(record);
+      return _i22.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

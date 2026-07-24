@@ -1,0 +1,9 @@
+# accounts_report_entry.spy.yaml
+class: AccountsReportEntry
+fields:
+  date: String
+  income: int
+  expense: int
+  profitLoss: int
+
+  

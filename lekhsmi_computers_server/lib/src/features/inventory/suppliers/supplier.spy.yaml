@@ -1,0 +1,7 @@
+class: Supplier
+table: supplier
+fields:
+  name: String
+  address: String
+  contact1: int
+  contact2: int

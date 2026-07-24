@@ -1,0 +1,11 @@
+class: Orders
+table: orders
+fields:
+    orderId: String
+    customerName: String
+    contact1: int
+    contact2: int?
+    email: String?
+    address: String
+    date: DateTime
+    complaints: List<String>

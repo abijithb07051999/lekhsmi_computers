@@ -9,5 +9,57 @@ emailIdp:
   - hasAccount:
 jwtRefresh:
   - refreshAccessToken:
-greeting:
-  - hello:
+accountsReport:
+  - getMonthlyReport:
+  - getMonthDetail:
+expense:
+  - getAllExpenses:
+  - getExpensesByDate:
+  - addNewExpense:
+  - updateExistingExpense:
+  - deleteExistingExpense:
+income:
+  - getAllIncomes:
+  - getIncomesByDate:
+  - addNewIncome:
+  - updateExistingIncome:
+  - deleteExistingIncome:
+dashboard:
+  - getFirstFiveSupplires:
+  - getTotalOfThisMonthIncome:
+  - totalBrandCountrs:
+  - totalSupplierCount:
+  - totalCategoryCount:
+  - getFirstFiveOutOfStockProduct:
+  - getFirstFiveOrderHistory:
+brand:
+  - getAllBrands:
+  - addNewBrand:
+  - updateExistingBrand:
+  - deteleExistingRow:
+category:
+  - getAllCategories:
+  - addNewCategory:
+  - updateExistingCategory:
+  - deleteExistingCategory:
+product:
+  - getAllProducts:
+  - addNewProduct:
+  - updateExistingProduct:
+  - deleteExistingProduct:
+supplier:
+  - getAllSuppliers:
+  - addNewSupplier:
+  - updateExistingSupplier:
+  - deleteExistingSupplier:
+order:
+  - getAllOrders:
+  - addNewOrder:
+  - updateExistingOrder:
+  - deleteExistingOrder:
+  - getAllOrderStatus:
+  - addNewOrderStatus:
+  - deleteOrderStatus:
+  - updateOrderStatus:
+  - getAllOngoingAndPendingOrders:
+  - getAllCompletedAndConcelledOrders:

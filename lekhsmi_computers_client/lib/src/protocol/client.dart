@@ -16,9 +16,27 @@ import 'package:serverpod_client/serverpod_client.dart' as _i2;
 import 'dart:async' as _i3;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i4;
-import 'package:lekhsmi_computers_client/src/protocol/greetings/greeting.dart'
+import 'package:lekhsmi_computers_client/src/protocol/features/accounts/accounts_report/accounts_report.dart'
     as _i5;
-import 'protocol.dart' as _i6;
+import 'package:lekhsmi_computers_client/src/protocol/features/accounts/accounts_report/month_report.dart'
+    as _i6;
+import 'package:lekhsmi_computers_client/src/protocol/features/accounts/expense/expense.dart'
+    as _i7;
+import 'package:lekhsmi_computers_client/src/protocol/features/accounts/income/income.dart'
+    as _i8;
+import 'package:lekhsmi_computers_client/src/protocol/features/inventory/suppliers/supplier.dart'
+    as _i9;
+import 'package:lekhsmi_computers_client/src/protocol/features/inventory/products/product.dart'
+    as _i10;
+import 'package:lekhsmi_computers_client/src/protocol/features/orders/order_history.dart'
+    as _i11;
+import 'package:lekhsmi_computers_client/src/protocol/features/inventory/brands/brand.dart'
+    as _i12;
+import 'package:lekhsmi_computers_client/src/protocol/features/inventory/categories/category.dart'
+    as _i13;
+import 'package:lekhsmi_computers_client/src/protocol/features/orders/order.dart'
+    as _i14;
+import 'protocol.dart' as _i15;
 
 /// By extending [EmailIdpBaseEndpoint], the email identity provider endpoints
 /// are made available on the server and enable the corresponding sign-in widget
@@ -241,21 +259,401 @@ class EndpointJwtRefresh extends _i4.EndpointRefreshJwtTokens {
   );
 }
 
-/// This is an example endpoint that returns a greeting message through
-/// its [hello] method.
 /// {@category Endpoint}
-class EndpointGreeting extends _i2.EndpointRef {
-  EndpointGreeting(_i2.EndpointCaller caller) : super(caller);
+class EndpointAccountsReport extends _i2.EndpointRef {
+  EndpointAccountsReport(_i2.EndpointCaller caller) : super(caller);
 
   @override
-  String get name => 'greeting';
+  String get name => 'accountsReport';
 
-  /// Returns a personalized greeting message: "Hello {name}".
-  _i3.Future<_i5.Greeting> hello(String name) =>
-      caller.callServerEndpoint<_i5.Greeting>(
-        'greeting',
-        'hello',
-        {'name': name},
+  _i3.Future<List<_i5.AccountsReportEntry>> getMonthlyReport() =>
+      caller.callServerEndpoint<List<_i5.AccountsReportEntry>>(
+        'accountsReport',
+        'getMonthlyReport',
+        {},
+      );
+
+  _i3.Future<_i6.MonthDetailReport> getMonthDetail({
+    required int year,
+    required int month,
+  }) => caller.callServerEndpoint<_i6.MonthDetailReport>(
+    'accountsReport',
+    'getMonthDetail',
+    {
+      'year': year,
+      'month': month,
+    },
+  );
+}
+
+/// {@category Endpoint}
+class EndpointExpense extends _i2.EndpointRef {
+  EndpointExpense(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'expense';
+
+  _i3.Future<List<_i7.Expense>> getAllExpenses() =>
+      caller.callServerEndpoint<List<_i7.Expense>>(
+        'expense',
+        'getAllExpenses',
+        {},
+      );
+
+  _i3.Future<List<_i7.Expense>> getExpensesByDate(DateTime date) =>
+      caller.callServerEndpoint<List<_i7.Expense>>(
+        'expense',
+        'getExpensesByDate',
+        {'date': date},
+      );
+
+  _i3.Future<_i7.Expense> addNewExpense(_i7.Expense expense) =>
+      caller.callServerEndpoint<_i7.Expense>(
+        'expense',
+        'addNewExpense',
+        {'expense': expense},
+      );
+
+  _i3.Future<_i7.Expense> updateExistingExpense(_i7.Expense expense) =>
+      caller.callServerEndpoint<_i7.Expense>(
+        'expense',
+        'updateExistingExpense',
+        {'expense': expense},
+      );
+
+  _i3.Future<_i7.Expense> deleteExistingExpense(_i7.Expense expense) =>
+      caller.callServerEndpoint<_i7.Expense>(
+        'expense',
+        'deleteExistingExpense',
+        {'expense': expense},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointIncome extends _i2.EndpointRef {
+  EndpointIncome(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'income';
+
+  _i3.Future<List<_i8.Income>> getAllIncomes() =>
+      caller.callServerEndpoint<List<_i8.Income>>(
+        'income',
+        'getAllIncomes',
+        {},
+      );
+
+  _i3.Future<List<_i8.Income>> getIncomesByDate(DateTime date) =>
+      caller.callServerEndpoint<List<_i8.Income>>(
+        'income',
+        'getIncomesByDate',
+        {'date': date},
+      );
+
+  _i3.Future<_i8.Income> addNewIncome(_i8.Income income) =>
+      caller.callServerEndpoint<_i8.Income>(
+        'income',
+        'addNewIncome',
+        {'income': income},
+      );
+
+  _i3.Future<_i8.Income> updateExistingIncome(_i8.Income income) =>
+      caller.callServerEndpoint<_i8.Income>(
+        'income',
+        'updateExistingIncome',
+        {'income': income},
+      );
+
+  _i3.Future<_i8.Income> deleteExistingIncome(_i8.Income income) =>
+      caller.callServerEndpoint<_i8.Income>(
+        'income',
+        'deleteExistingIncome',
+        {'income': income},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointDashboard extends _i2.EndpointRef {
+  EndpointDashboard(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'dashboard';
+
+  _i3.Future<List<_i9.Supplier>> getFirstFiveSupplires() =>
+      caller.callServerEndpoint<List<_i9.Supplier>>(
+        'dashboard',
+        'getFirstFiveSupplires',
+        {},
+      );
+
+  _i3.Future<int> getTotalOfThisMonthIncome(DateTime date) =>
+      caller.callServerEndpoint<int>(
+        'dashboard',
+        'getTotalOfThisMonthIncome',
+        {'date': date},
+      );
+
+  _i3.Future<int> totalBrandCountrs() => caller.callServerEndpoint<int>(
+    'dashboard',
+    'totalBrandCountrs',
+    {},
+  );
+
+  _i3.Future<int> totalSupplierCount() => caller.callServerEndpoint<int>(
+    'dashboard',
+    'totalSupplierCount',
+    {},
+  );
+
+  _i3.Future<int> totalCategoryCount() => caller.callServerEndpoint<int>(
+    'dashboard',
+    'totalCategoryCount',
+    {},
+  );
+
+  _i3.Future<List<_i10.Product>> getFirstFiveOutOfStockProduct() =>
+      caller.callServerEndpoint<List<_i10.Product>>(
+        'dashboard',
+        'getFirstFiveOutOfStockProduct',
+        {},
+      );
+
+  _i3.Future<List<_i11.OrderHistory>> getFirstFiveOrderHistory() =>
+      caller.callServerEndpoint<List<_i11.OrderHistory>>(
+        'dashboard',
+        'getFirstFiveOrderHistory',
+        {},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointBrand extends _i2.EndpointRef {
+  EndpointBrand(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'brand';
+
+  _i3.Future<List<_i12.Brand>> getAllBrands() =>
+      caller.callServerEndpoint<List<_i12.Brand>>(
+        'brand',
+        'getAllBrands',
+        {},
+      );
+
+  _i3.Future<_i12.Brand> addNewBrand({required _i12.Brand brand}) =>
+      caller.callServerEndpoint<_i12.Brand>(
+        'brand',
+        'addNewBrand',
+        {'brand': brand},
+      );
+
+  _i3.Future<_i12.Brand> updateExistingBrand({required _i12.Brand brand}) =>
+      caller.callServerEndpoint<_i12.Brand>(
+        'brand',
+        'updateExistingBrand',
+        {'brand': brand},
+      );
+
+  _i3.Future<_i12.Brand> deteleExistingRow({required _i12.Brand brand}) =>
+      caller.callServerEndpoint<_i12.Brand>(
+        'brand',
+        'deteleExistingRow',
+        {'brand': brand},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointCategory extends _i2.EndpointRef {
+  EndpointCategory(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'category';
+
+  _i3.Future<List<_i13.Category>> getAllCategories() =>
+      caller.callServerEndpoint<List<_i13.Category>>(
+        'category',
+        'getAllCategories',
+        {},
+      );
+
+  _i3.Future<_i13.Category> addNewCategory({required _i13.Category category}) =>
+      caller.callServerEndpoint<_i13.Category>(
+        'category',
+        'addNewCategory',
+        {'category': category},
+      );
+
+  _i3.Future<_i13.Category> updateExistingCategory({
+    required _i13.Category category,
+  }) => caller.callServerEndpoint<_i13.Category>(
+    'category',
+    'updateExistingCategory',
+    {'category': category},
+  );
+
+  _i3.Future<_i13.Category> deleteExistingCategory({
+    required _i13.Category category,
+  }) => caller.callServerEndpoint<_i13.Category>(
+    'category',
+    'deleteExistingCategory',
+    {'category': category},
+  );
+}
+
+/// {@category Endpoint}
+class EndpointProduct extends _i2.EndpointRef {
+  EndpointProduct(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'product';
+
+  _i3.Future<List<_i10.Product>> getAllProducts() =>
+      caller.callServerEndpoint<List<_i10.Product>>(
+        'product',
+        'getAllProducts',
+        {},
+      );
+
+  _i3.Future<_i10.Product> addNewProduct({required _i10.Product product}) =>
+      caller.callServerEndpoint<_i10.Product>(
+        'product',
+        'addNewProduct',
+        {'product': product},
+      );
+
+  _i3.Future<_i10.Product> updateExistingProduct({
+    required _i10.Product product,
+  }) => caller.callServerEndpoint<_i10.Product>(
+    'product',
+    'updateExistingProduct',
+    {'product': product},
+  );
+
+  _i3.Future<_i10.Product> deleteExistingProduct({
+    required _i10.Product product,
+  }) => caller.callServerEndpoint<_i10.Product>(
+    'product',
+    'deleteExistingProduct',
+    {'product': product},
+  );
+}
+
+/// {@category Endpoint}
+class EndpointSupplier extends _i2.EndpointRef {
+  EndpointSupplier(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'supplier';
+
+  _i3.Future<List<_i9.Supplier>> getAllSuppliers() =>
+      caller.callServerEndpoint<List<_i9.Supplier>>(
+        'supplier',
+        'getAllSuppliers',
+        {},
+      );
+
+  _i3.Future<_i9.Supplier> addNewSupplier({required _i9.Supplier supplier}) =>
+      caller.callServerEndpoint<_i9.Supplier>(
+        'supplier',
+        'addNewSupplier',
+        {'supplier': supplier},
+      );
+
+  _i3.Future<_i9.Supplier> updateExistingSupplier({
+    required _i9.Supplier supplier,
+  }) => caller.callServerEndpoint<_i9.Supplier>(
+    'supplier',
+    'updateExistingSupplier',
+    {'supplier': supplier},
+  );
+
+  _i3.Future<_i9.Supplier> deleteExistingSupplier({
+    required _i9.Supplier supplier,
+  }) => caller.callServerEndpoint<_i9.Supplier>(
+    'supplier',
+    'deleteExistingSupplier',
+    {'supplier': supplier},
+  );
+}
+
+/// {@category Endpoint}
+class EndpointOrder extends _i2.EndpointRef {
+  EndpointOrder(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'order';
+
+  _i3.Future<List<_i14.Orders>> getAllOrders() =>
+      caller.callServerEndpoint<List<_i14.Orders>>(
+        'order',
+        'getAllOrders',
+        {},
+      );
+
+  _i3.Future<_i14.Orders> addNewOrder({required _i14.Orders order}) =>
+      caller.callServerEndpoint<_i14.Orders>(
+        'order',
+        'addNewOrder',
+        {'order': order},
+      );
+
+  _i3.Future<_i14.Orders> updateExistingOrder({required _i14.Orders order}) =>
+      caller.callServerEndpoint<_i14.Orders>(
+        'order',
+        'updateExistingOrder',
+        {'order': order},
+      );
+
+  _i3.Future<_i14.Orders> deleteExistingOrder({required _i14.Orders order}) =>
+      caller.callServerEndpoint<_i14.Orders>(
+        'order',
+        'deleteExistingOrder',
+        {'order': order},
+      );
+
+  _i3.Future<List<_i11.OrderHistory>> getAllOrderStatus() =>
+      caller.callServerEndpoint<List<_i11.OrderHistory>>(
+        'order',
+        'getAllOrderStatus',
+        {},
+      );
+
+  _i3.Future<_i11.OrderHistory> addNewOrderStatus(
+    _i11.OrderHistory orderHistory,
+  ) => caller.callServerEndpoint<_i11.OrderHistory>(
+    'order',
+    'addNewOrderStatus',
+    {'orderHistory': orderHistory},
+  );
+
+  _i3.Future<_i11.OrderHistory> deleteOrderStatus(
+    _i11.OrderHistory orderHistory,
+  ) => caller.callServerEndpoint<_i11.OrderHistory>(
+    'order',
+    'deleteOrderStatus',
+    {'orderHistory': orderHistory},
+  );
+
+  _i3.Future<_i11.OrderHistory> updateOrderStatus(
+    _i11.OrderHistory orderHistory,
+  ) => caller.callServerEndpoint<_i11.OrderHistory>(
+    'order',
+    'updateOrderStatus',
+    {'orderHistory': orderHistory},
+  );
+
+  _i3.Future<List<_i11.OrderHistory>> getAllOngoingAndPendingOrders() =>
+      caller.callServerEndpoint<List<_i11.OrderHistory>>(
+        'order',
+        'getAllOngoingAndPendingOrders',
+        {},
+      );
+
+  _i3.Future<List<_i11.OrderHistory>> getAllCompletedAndConcelledOrders() =>
+      caller.callServerEndpoint<List<_i11.OrderHistory>>(
+        'order',
+        'getAllCompletedAndConcelledOrders',
+        {},
       );
 }
 
@@ -290,7 +688,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i6.Protocol(),
+         _i15.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -301,7 +699,15 @@ class Client extends _i2.ServerpodClientShared {
        ) {
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
-    greeting = EndpointGreeting(this);
+    accountsReport = EndpointAccountsReport(this);
+    expense = EndpointExpense(this);
+    income = EndpointIncome(this);
+    dashboard = EndpointDashboard(this);
+    brand = EndpointBrand(this);
+    category = EndpointCategory(this);
+    product = EndpointProduct(this);
+    supplier = EndpointSupplier(this);
+    order = EndpointOrder(this);
     modules = Modules(this);
   }
 
@@ -309,7 +715,23 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointJwtRefresh jwtRefresh;
 
-  late final EndpointGreeting greeting;
+  late final EndpointAccountsReport accountsReport;
+
+  late final EndpointExpense expense;
+
+  late final EndpointIncome income;
+
+  late final EndpointDashboard dashboard;
+
+  late final EndpointBrand brand;
+
+  late final EndpointCategory category;
+
+  late final EndpointProduct product;
+
+  late final EndpointSupplier supplier;
+
+  late final EndpointOrder order;
 
   late final Modules modules;
 
@@ -317,7 +739,15 @@ class Client extends _i2.ServerpodClientShared {
   Map<String, _i2.EndpointRef> get endpointRefLookup => {
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
-    'greeting': greeting,
+    'accountsReport': accountsReport,
+    'expense': expense,
+    'income': income,
+    'dashboard': dashboard,
+    'brand': brand,
+    'category': category,
+    'product': product,
+    'supplier': supplier,
+    'order': order,
   };
 
   @override

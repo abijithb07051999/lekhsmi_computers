@@ -1,0 +1,11 @@
+class: Product
+table: product
+fields:
+    name: String
+    category: Category?, relation
+    brand: Brand?, relation
+    quality: String
+    quantity: int
+    buyPrice: int
+    sellPrice: int
+    status: bool, default=true

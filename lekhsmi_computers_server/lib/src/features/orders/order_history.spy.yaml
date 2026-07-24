@@ -1,0 +1,6 @@
+class: OrderHistory
+table: orderhistory
+fields:
+    order: Orders
+    status: String
+    amount: int, default=0

@@ -1,0 +1,5 @@
+class: Category
+table: category
+fields:
+    name: String
+    status: bool, default=true

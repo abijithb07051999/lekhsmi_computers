@@ -1,0 +1,6 @@
+class: Income
+table: income
+fields:
+    date: DateTime
+    reason: String
+    amount: int

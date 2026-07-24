@@ -13,11 +13,36 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../auth/email_idp_endpoint.dart' as _i2;
 import '../auth/jwt_refresh_endpoint.dart' as _i3;
-import '../greetings/greeting_endpoint.dart' as _i4;
+import '../features/accounts/accounts_report/accounts_report_endpoint.dart'
+    as _i4;
+import '../features/accounts/expense/expense_endpoint.dart' as _i5;
+import '../features/accounts/income/income_endpoint.dart' as _i6;
+import '../features/dashboard/dashboard_endpoint.dart' as _i7;
+import '../features/inventory/brands/brand_endpoint.dart' as _i8;
+import '../features/inventory/categories/category_endpoint.dart' as _i9;
+import '../features/inventory/products/product_endpoint.dart' as _i10;
+import '../features/inventory/suppliers/supplier_endpoint.dart' as _i11;
+import '../features/orders/order_endpoint.dart' as _i12;
+import 'package:lekhsmi_computers_server/src/generated/features/accounts/expense/expense.dart'
+    as _i13;
+import 'package:lekhsmi_computers_server/src/generated/features/accounts/income/income.dart'
+    as _i14;
+import 'package:lekhsmi_computers_server/src/generated/features/inventory/brands/brand.dart'
+    as _i15;
+import 'package:lekhsmi_computers_server/src/generated/features/inventory/categories/category.dart'
+    as _i16;
+import 'package:lekhsmi_computers_server/src/generated/features/inventory/products/product.dart'
+    as _i17;
+import 'package:lekhsmi_computers_server/src/generated/features/inventory/suppliers/supplier.dart'
+    as _i18;
+import 'package:lekhsmi_computers_server/src/generated/features/orders/order.dart'
+    as _i19;
+import 'package:lekhsmi_computers_server/src/generated/features/orders/order_history.dart'
+    as _i20;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i5;
+    as _i21;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i6;
+    as _i22;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -35,10 +60,58 @@ class Endpoints extends _i1.EndpointDispatch {
           'jwtRefresh',
           null,
         ),
-      'greeting': _i4.GreetingEndpoint()
+      'accountsReport': _i4.AccountsReportEndpoint()
         ..initialize(
           server,
-          'greeting',
+          'accountsReport',
+          null,
+        ),
+      'expense': _i5.ExpenseEndpoint()
+        ..initialize(
+          server,
+          'expense',
+          null,
+        ),
+      'income': _i6.IncomeEndpoint()
+        ..initialize(
+          server,
+          'income',
+          null,
+        ),
+      'dashboard': _i7.DashboardEndpoint()
+        ..initialize(
+          server,
+          'dashboard',
+          null,
+        ),
+      'brand': _i8.BrandEndpoint()
+        ..initialize(
+          server,
+          'brand',
+          null,
+        ),
+      'category': _i9.CategoryEndpoint()
+        ..initialize(
+          server,
+          'category',
+          null,
+        ),
+      'product': _i10.ProductEndpoint()
+        ..initialize(
+          server,
+          'product',
+          null,
+        ),
+      'supplier': _i11.SupplierEndpoint()
+        ..initialize(
+          server,
+          'supplier',
+          null,
+        ),
+      'order': _i12.OrderEndpoint()
+        ..initialize(
+          server,
+          'order',
           null,
         ),
     };
@@ -246,16 +319,32 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    connectors['greeting'] = _i1.EndpointConnector(
-      name: 'greeting',
-      endpoint: endpoints['greeting']!,
+    connectors['accountsReport'] = _i1.EndpointConnector(
+      name: 'accountsReport',
+      endpoint: endpoints['accountsReport']!,
       methodConnectors: {
-        'hello': _i1.MethodConnector(
-          name: 'hello',
+        'getMonthlyReport': _i1.MethodConnector(
+          name: 'getMonthlyReport',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['accountsReport'] as _i4.AccountsReportEndpoint)
+                      .getMonthlyReport(session),
+        ),
+        'getMonthDetail': _i1.MethodConnector(
+          name: 'getMonthDetail',
           params: {
-            'name': _i1.ParameterDescription(
-              name: 'name',
-              type: _i1.getType<String>(),
+            'year': _i1.ParameterDescription(
+              name: 'year',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'month': _i1.ParameterDescription(
+              name: 'month',
+              type: _i1.getType<int>(),
               nullable: false,
             ),
           },
@@ -263,16 +352,739 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['greeting'] as _i4.GreetingEndpoint).hello(
-                session,
-                params['name'],
-              ),
+              ) async =>
+                  (endpoints['accountsReport'] as _i4.AccountsReportEndpoint)
+                      .getMonthDetail(
+                        session,
+                        year: params['year'],
+                        month: params['month'],
+                      ),
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i5.Endpoints()
+    connectors['expense'] = _i1.EndpointConnector(
+      name: 'expense',
+      endpoint: endpoints['expense']!,
+      methodConnectors: {
+        'getAllExpenses': _i1.MethodConnector(
+          name: 'getAllExpenses',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['expense'] as _i5.ExpenseEndpoint)
+                  .getAllExpenses(session),
+        ),
+        'getExpensesByDate': _i1.MethodConnector(
+          name: 'getExpensesByDate',
+          params: {
+            'date': _i1.ParameterDescription(
+              name: 'date',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['expense'] as _i5.ExpenseEndpoint)
+                  .getExpensesByDate(
+                    session,
+                    params['date'],
+                  ),
+        ),
+        'addNewExpense': _i1.MethodConnector(
+          name: 'addNewExpense',
+          params: {
+            'expense': _i1.ParameterDescription(
+              name: 'expense',
+              type: _i1.getType<_i13.Expense>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['expense'] as _i5.ExpenseEndpoint).addNewExpense(
+                    session,
+                    params['expense'],
+                  ),
+        ),
+        'updateExistingExpense': _i1.MethodConnector(
+          name: 'updateExistingExpense',
+          params: {
+            'expense': _i1.ParameterDescription(
+              name: 'expense',
+              type: _i1.getType<_i13.Expense>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['expense'] as _i5.ExpenseEndpoint)
+                  .updateExistingExpense(
+                    session,
+                    params['expense'],
+                  ),
+        ),
+        'deleteExistingExpense': _i1.MethodConnector(
+          name: 'deleteExistingExpense',
+          params: {
+            'expense': _i1.ParameterDescription(
+              name: 'expense',
+              type: _i1.getType<_i13.Expense>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['expense'] as _i5.ExpenseEndpoint)
+                  .deleteExistingExpense(
+                    session,
+                    params['expense'],
+                  ),
+        ),
+      },
+    );
+    connectors['income'] = _i1.EndpointConnector(
+      name: 'income',
+      endpoint: endpoints['income']!,
+      methodConnectors: {
+        'getAllIncomes': _i1.MethodConnector(
+          name: 'getAllIncomes',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['income'] as _i6.IncomeEndpoint)
+                  .getAllIncomes(session),
+        ),
+        'getIncomesByDate': _i1.MethodConnector(
+          name: 'getIncomesByDate',
+          params: {
+            'date': _i1.ParameterDescription(
+              name: 'date',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['income'] as _i6.IncomeEndpoint).getIncomesByDate(
+                    session,
+                    params['date'],
+                  ),
+        ),
+        'addNewIncome': _i1.MethodConnector(
+          name: 'addNewIncome',
+          params: {
+            'income': _i1.ParameterDescription(
+              name: 'income',
+              type: _i1.getType<_i14.Income>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['income'] as _i6.IncomeEndpoint).addNewIncome(
+                    session,
+                    params['income'],
+                  ),
+        ),
+        'updateExistingIncome': _i1.MethodConnector(
+          name: 'updateExistingIncome',
+          params: {
+            'income': _i1.ParameterDescription(
+              name: 'income',
+              type: _i1.getType<_i14.Income>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['income'] as _i6.IncomeEndpoint)
+                  .updateExistingIncome(
+                    session,
+                    params['income'],
+                  ),
+        ),
+        'deleteExistingIncome': _i1.MethodConnector(
+          name: 'deleteExistingIncome',
+          params: {
+            'income': _i1.ParameterDescription(
+              name: 'income',
+              type: _i1.getType<_i14.Income>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['income'] as _i6.IncomeEndpoint)
+                  .deleteExistingIncome(
+                    session,
+                    params['income'],
+                  ),
+        ),
+      },
+    );
+    connectors['dashboard'] = _i1.EndpointConnector(
+      name: 'dashboard',
+      endpoint: endpoints['dashboard']!,
+      methodConnectors: {
+        'getFirstFiveSupplires': _i1.MethodConnector(
+          name: 'getFirstFiveSupplires',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['dashboard'] as _i7.DashboardEndpoint)
+                  .getFirstFiveSupplires(session),
+        ),
+        'getTotalOfThisMonthIncome': _i1.MethodConnector(
+          name: 'getTotalOfThisMonthIncome',
+          params: {
+            'date': _i1.ParameterDescription(
+              name: 'date',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['dashboard'] as _i7.DashboardEndpoint)
+                  .getTotalOfThisMonthIncome(
+                    session,
+                    params['date'],
+                  ),
+        ),
+        'totalBrandCountrs': _i1.MethodConnector(
+          name: 'totalBrandCountrs',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['dashboard'] as _i7.DashboardEndpoint)
+                  .totalBrandCountrs(session),
+        ),
+        'totalSupplierCount': _i1.MethodConnector(
+          name: 'totalSupplierCount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['dashboard'] as _i7.DashboardEndpoint)
+                  .totalSupplierCount(session),
+        ),
+        'totalCategoryCount': _i1.MethodConnector(
+          name: 'totalCategoryCount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['dashboard'] as _i7.DashboardEndpoint)
+                  .totalCategoryCount(session),
+        ),
+        'getFirstFiveOutOfStockProduct': _i1.MethodConnector(
+          name: 'getFirstFiveOutOfStockProduct',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['dashboard'] as _i7.DashboardEndpoint)
+                  .getFirstFiveOutOfStockProduct(session),
+        ),
+        'getFirstFiveOrderHistory': _i1.MethodConnector(
+          name: 'getFirstFiveOrderHistory',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['dashboard'] as _i7.DashboardEndpoint)
+                  .getFirstFiveOrderHistory(session),
+        ),
+      },
+    );
+    connectors['brand'] = _i1.EndpointConnector(
+      name: 'brand',
+      endpoint: endpoints['brand']!,
+      methodConnectors: {
+        'getAllBrands': _i1.MethodConnector(
+          name: 'getAllBrands',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['brand'] as _i8.BrandEndpoint).getAllBrands(
+                session,
+              ),
+        ),
+        'addNewBrand': _i1.MethodConnector(
+          name: 'addNewBrand',
+          params: {
+            'brand': _i1.ParameterDescription(
+              name: 'brand',
+              type: _i1.getType<_i15.Brand>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['brand'] as _i8.BrandEndpoint).addNewBrand(
+                session,
+                brand: params['brand'],
+              ),
+        ),
+        'updateExistingBrand': _i1.MethodConnector(
+          name: 'updateExistingBrand',
+          params: {
+            'brand': _i1.ParameterDescription(
+              name: 'brand',
+              type: _i1.getType<_i15.Brand>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['brand'] as _i8.BrandEndpoint).updateExistingBrand(
+                    session,
+                    brand: params['brand'],
+                  ),
+        ),
+        'deteleExistingRow': _i1.MethodConnector(
+          name: 'deteleExistingRow',
+          params: {
+            'brand': _i1.ParameterDescription(
+              name: 'brand',
+              type: _i1.getType<_i15.Brand>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['brand'] as _i8.BrandEndpoint).deteleExistingRow(
+                    session,
+                    brand: params['brand'],
+                  ),
+        ),
+      },
+    );
+    connectors['category'] = _i1.EndpointConnector(
+      name: 'category',
+      endpoint: endpoints['category']!,
+      methodConnectors: {
+        'getAllCategories': _i1.MethodConnector(
+          name: 'getAllCategories',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['category'] as _i9.CategoryEndpoint)
+                  .getAllCategories(session),
+        ),
+        'addNewCategory': _i1.MethodConnector(
+          name: 'addNewCategory',
+          params: {
+            'category': _i1.ParameterDescription(
+              name: 'category',
+              type: _i1.getType<_i16.Category>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['category'] as _i9.CategoryEndpoint)
+                  .addNewCategory(
+                    session,
+                    category: params['category'],
+                  ),
+        ),
+        'updateExistingCategory': _i1.MethodConnector(
+          name: 'updateExistingCategory',
+          params: {
+            'category': _i1.ParameterDescription(
+              name: 'category',
+              type: _i1.getType<_i16.Category>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['category'] as _i9.CategoryEndpoint)
+                  .updateExistingCategory(
+                    session,
+                    category: params['category'],
+                  ),
+        ),
+        'deleteExistingCategory': _i1.MethodConnector(
+          name: 'deleteExistingCategory',
+          params: {
+            'category': _i1.ParameterDescription(
+              name: 'category',
+              type: _i1.getType<_i16.Category>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['category'] as _i9.CategoryEndpoint)
+                  .deleteExistingCategory(
+                    session,
+                    category: params['category'],
+                  ),
+        ),
+      },
+    );
+    connectors['product'] = _i1.EndpointConnector(
+      name: 'product',
+      endpoint: endpoints['product']!,
+      methodConnectors: {
+        'getAllProducts': _i1.MethodConnector(
+          name: 'getAllProducts',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['product'] as _i10.ProductEndpoint)
+                  .getAllProducts(session),
+        ),
+        'addNewProduct': _i1.MethodConnector(
+          name: 'addNewProduct',
+          params: {
+            'product': _i1.ParameterDescription(
+              name: 'product',
+              type: _i1.getType<_i17.Product>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['product'] as _i10.ProductEndpoint).addNewProduct(
+                    session,
+                    product: params['product'],
+                  ),
+        ),
+        'updateExistingProduct': _i1.MethodConnector(
+          name: 'updateExistingProduct',
+          params: {
+            'product': _i1.ParameterDescription(
+              name: 'product',
+              type: _i1.getType<_i17.Product>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['product'] as _i10.ProductEndpoint)
+                  .updateExistingProduct(
+                    session,
+                    product: params['product'],
+                  ),
+        ),
+        'deleteExistingProduct': _i1.MethodConnector(
+          name: 'deleteExistingProduct',
+          params: {
+            'product': _i1.ParameterDescription(
+              name: 'product',
+              type: _i1.getType<_i17.Product>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['product'] as _i10.ProductEndpoint)
+                  .deleteExistingProduct(
+                    session,
+                    product: params['product'],
+                  ),
+        ),
+      },
+    );
+    connectors['supplier'] = _i1.EndpointConnector(
+      name: 'supplier',
+      endpoint: endpoints['supplier']!,
+      methodConnectors: {
+        'getAllSuppliers': _i1.MethodConnector(
+          name: 'getAllSuppliers',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['supplier'] as _i11.SupplierEndpoint)
+                  .getAllSuppliers(session),
+        ),
+        'addNewSupplier': _i1.MethodConnector(
+          name: 'addNewSupplier',
+          params: {
+            'supplier': _i1.ParameterDescription(
+              name: 'supplier',
+              type: _i1.getType<_i18.Supplier>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['supplier'] as _i11.SupplierEndpoint)
+                  .addNewSupplier(
+                    session,
+                    supplier: params['supplier'],
+                  ),
+        ),
+        'updateExistingSupplier': _i1.MethodConnector(
+          name: 'updateExistingSupplier',
+          params: {
+            'supplier': _i1.ParameterDescription(
+              name: 'supplier',
+              type: _i1.getType<_i18.Supplier>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['supplier'] as _i11.SupplierEndpoint)
+                  .updateExistingSupplier(
+                    session,
+                    supplier: params['supplier'],
+                  ),
+        ),
+        'deleteExistingSupplier': _i1.MethodConnector(
+          name: 'deleteExistingSupplier',
+          params: {
+            'supplier': _i1.ParameterDescription(
+              name: 'supplier',
+              type: _i1.getType<_i18.Supplier>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['supplier'] as _i11.SupplierEndpoint)
+                  .deleteExistingSupplier(
+                    session,
+                    supplier: params['supplier'],
+                  ),
+        ),
+      },
+    );
+    connectors['order'] = _i1.EndpointConnector(
+      name: 'order',
+      endpoint: endpoints['order']!,
+      methodConnectors: {
+        'getAllOrders': _i1.MethodConnector(
+          name: 'getAllOrders',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['order'] as _i12.OrderEndpoint)
+                  .getAllOrders(session),
+        ),
+        'addNewOrder': _i1.MethodConnector(
+          name: 'addNewOrder',
+          params: {
+            'order': _i1.ParameterDescription(
+              name: 'order',
+              type: _i1.getType<_i19.Orders>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['order'] as _i12.OrderEndpoint).addNewOrder(
+                session,
+                order: params['order'],
+              ),
+        ),
+        'updateExistingOrder': _i1.MethodConnector(
+          name: 'updateExistingOrder',
+          params: {
+            'order': _i1.ParameterDescription(
+              name: 'order',
+              type: _i1.getType<_i19.Orders>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['order'] as _i12.OrderEndpoint)
+                  .updateExistingOrder(
+                    session,
+                    order: params['order'],
+                  ),
+        ),
+        'deleteExistingOrder': _i1.MethodConnector(
+          name: 'deleteExistingOrder',
+          params: {
+            'order': _i1.ParameterDescription(
+              name: 'order',
+              type: _i1.getType<_i19.Orders>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['order'] as _i12.OrderEndpoint)
+                  .deleteExistingOrder(
+                    session,
+                    order: params['order'],
+                  ),
+        ),
+        'getAllOrderStatus': _i1.MethodConnector(
+          name: 'getAllOrderStatus',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['order'] as _i12.OrderEndpoint)
+                  .getAllOrderStatus(session),
+        ),
+        'addNewOrderStatus': _i1.MethodConnector(
+          name: 'addNewOrderStatus',
+          params: {
+            'orderHistory': _i1.ParameterDescription(
+              name: 'orderHistory',
+              type: _i1.getType<_i20.OrderHistory>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['order'] as _i12.OrderEndpoint).addNewOrderStatus(
+                    session,
+                    params['orderHistory'],
+                  ),
+        ),
+        'deleteOrderStatus': _i1.MethodConnector(
+          name: 'deleteOrderStatus',
+          params: {
+            'orderHistory': _i1.ParameterDescription(
+              name: 'orderHistory',
+              type: _i1.getType<_i20.OrderHistory>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['order'] as _i12.OrderEndpoint).deleteOrderStatus(
+                    session,
+                    params['orderHistory'],
+                  ),
+        ),
+        'updateOrderStatus': _i1.MethodConnector(
+          name: 'updateOrderStatus',
+          params: {
+            'orderHistory': _i1.ParameterDescription(
+              name: 'orderHistory',
+              type: _i1.getType<_i20.OrderHistory>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['order'] as _i12.OrderEndpoint).updateOrderStatus(
+                    session,
+                    params['orderHistory'],
+                  ),
+        ),
+        'getAllOngoingAndPendingOrders': _i1.MethodConnector(
+          name: 'getAllOngoingAndPendingOrders',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['order'] as _i12.OrderEndpoint)
+                  .getAllOngoingAndPendingOrders(session),
+        ),
+        'getAllCompletedAndConcelledOrders': _i1.MethodConnector(
+          name: 'getAllCompletedAndConcelledOrders',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['order'] as _i12.OrderEndpoint)
+                  .getAllCompletedAndConcelledOrders(session),
+        ),
+      },
+    );
+    modules['serverpod_auth_idp'] = _i21.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i6.Endpoints()
+    modules['serverpod_auth_core'] = _i22.Endpoints()
       ..initializeEndpoints(server);
   }
 }
