@@ -18,24 +18,10 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       initialBinding: LekhsmiBindings(),
       title: "Lekhsmi Computers",
-      initialRoute: AppPages.HOME,
+      initialRoute: AppPages.DASHBOARD,
       getPages: AppRoutes.routes,
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('')),
-      body: Scaffold(
-        appBar: AppBar(
-          title: Text("Home"),
-        ),
-      ),
-    );
-  }
-}

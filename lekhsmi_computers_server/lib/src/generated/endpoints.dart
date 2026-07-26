@@ -619,15 +619,15 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async => (endpoints['dashboard'] as _i7.DashboardEndpoint)
                   .getFirstFiveOutOfStockProduct(session),
         ),
-        'getFirstFiveOrderHistory': _i1.MethodConnector(
-          name: 'getFirstFiveOrderHistory',
+        'getFirstFiveLiveOrder': _i1.MethodConnector(
+          name: 'getFirstFiveLiveOrder',
           params: {},
           call:
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async => (endpoints['dashboard'] as _i7.DashboardEndpoint)
-                  .getFirstFiveOrderHistory(session),
+                  .getFirstFiveLiveOrder(session),
         ),
       },
     );

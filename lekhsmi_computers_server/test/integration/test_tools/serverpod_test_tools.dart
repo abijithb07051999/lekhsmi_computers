@@ -1142,20 +1142,20 @@ class _DashboardEndpoint {
     });
   }
 
-  _i3.Future<List<_i11.OrderHistory>> getFirstFiveOrderHistory(
+  _i3.Future<List<_i11.OrderHistory>> getFirstFiveLiveOrder(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
             endpoint: 'dashboard',
-            method: 'getFirstFiveOrderHistory',
+            method: 'getFirstFiveLiveOrder',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'dashboard',
-          methodName: 'getFirstFiveOrderHistory',
+          methodName: 'getFirstFiveLiveOrder',
           parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );

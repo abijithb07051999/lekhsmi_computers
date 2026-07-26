@@ -1,0 +1,17 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../controller/settings_controller.dart';
+
+class SettingsView extends GetView<SettingsController> {
+  const SettingsView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Center(
+        child: Text('Settings View - Under Construction', style: TextStyle(fontSize: 24)),
+      ),
+    );
+  }
+}

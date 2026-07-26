@@ -1,3 +1,3 @@
 class AppPages {
-  static final HOME = "/";
+  static final DASHBOARD = "/";
 }

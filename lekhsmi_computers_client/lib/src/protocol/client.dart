@@ -418,10 +418,10 @@ class EndpointDashboard extends _i2.EndpointRef {
         {},
       );
 
-  _i3.Future<List<_i11.OrderHistory>> getFirstFiveOrderHistory() =>
+  _i3.Future<List<_i11.OrderHistory>> getFirstFiveLiveOrder() =>
       caller.callServerEndpoint<List<_i11.OrderHistory>>(
         'dashboard',
-        'getFirstFiveOrderHistory',
+        'getFirstFiveLiveOrder',
         {},
       );
 }

@@ -1,9 +1,10 @@
 import 'package:get/get.dart';
+import 'package:lekhsmi_computers_flutter/app/features/dashboard/view/dashboard_view.dart';
 import 'package:lekhsmi_computers_flutter/app/routes/app_pages.dart';
-import 'package:lekhsmi_computers_flutter/main.dart';
+
 
 class AppRoutes {
   static final routes = [
-    GetPage(name: AppPages.HOME, page: () => const MyHomePage())
+    GetPage(name: AppPages.DASHBOARD, page: () => const DashboardView())
   ];
 }

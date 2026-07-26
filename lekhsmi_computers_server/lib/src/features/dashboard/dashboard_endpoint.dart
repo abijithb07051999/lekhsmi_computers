@@ -12,23 +12,23 @@ class DashboardEndpoint extends Endpoint {
   }
 
   Future<int> getTotalOfThisMonthIncome(
-  Session session,
-  DateTime date,
-) async {
-  final startOfMonth = DateTime(date.year, date.month, 1);
-  final startOfNextMonth = DateTime(date.year, date.month + 1, 1);
+    Session session,
+    DateTime date,
+  ) async {
+    final startOfMonth = DateTime(date.year, date.month, 1);
+    final startOfNextMonth = DateTime(date.year, date.month + 1, 1);
 
-  final incomes = await Income.db.find(
-    session,
-    where: (t) => t.date.between(startOfMonth, startOfNextMonth),
-  );
+    final incomes = await Income.db.find(
+      session,
+      where: (t) => t.date.between(startOfMonth, startOfNextMonth),
+    );
 
-  int total = 0;
-  for (final income in incomes) {
-    total += income.amount;
+    int total = 0;
+    for (final income in incomes) {
+      total += income.amount;
+    }
+    return total;
   }
-  return total;
-}
 
   Future<int> totalBrandCountrs(Session session) async {
     return Brand.db.count(session);
@@ -42,8 +42,7 @@ class DashboardEndpoint extends Endpoint {
     return Category.db.count(session);
   }
 
-
-  Future<List<Product>> getFirstFiveOutOfStockProduct(Session session) async{ 
+  Future<List<Product>> getFirstFiveOutOfStockProduct(Session session) async {
     return await Product.db.find(
       session,
       limit: 5,
@@ -52,12 +51,14 @@ class DashboardEndpoint extends Endpoint {
     );
   }
 
-  Future<List<OrderHistory>> getFirstFiveOrderHistory(Session session) async{
+  // i want to get first five live order [ongoing and pending] from the OrderHistory table, if the there is no data return empty list 
+  
+  Future<List<OrderHistory>> getFirstFiveLiveOrder(Session session) async {
     return await OrderHistory.db.find(
       session,
-      orderBy: (t) => t.order,
-      where: (t) => t.status.equals('Ongoing') | t.status.equals('Pending'),
       limit: 5,
+      orderBy: (t) => t.id,
+      where: (t) => t.status.equals('ongoing') | t.status.equals('pending'),
     );
   }
 }
