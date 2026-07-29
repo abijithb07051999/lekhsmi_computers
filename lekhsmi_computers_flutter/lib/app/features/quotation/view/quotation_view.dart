@@ -329,7 +329,7 @@ class QuotationView extends StatelessWidget {
               ),
               Obx(() {
                 final count = controller.items.length;
-                final isMax = count >= 10;
+                final isMax = count >= 13;
                 return Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
@@ -341,7 +341,7 @@ class QuotationView extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    '$count / 10 Max',
+                    '$count / 13 Max',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
@@ -439,77 +439,75 @@ class QuotationView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: controller.items.length,
-                separatorBuilder: (_, _) => const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                itemBuilder: (context, index) {
-                  final item = controller.items[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 24,
-                          height: 24,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFEFF6FF),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${index + 1}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: Color(AppColors.PRIMARY),
+              child: Column(
+                children: [
+                  for (int index = 0; index < controller.items.length; index++) ...[
+                    if (index > 0) const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEFF6FF),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Center(
+                              child: Text(
+                                '${index + 1}',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(AppColors.PRIMARY),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.productName,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(AppColors.TEXTPRIMARY),
-                                ),
-                              ),
-                              if (item.quantity > 1)
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 Text(
-                                  'Qty: ${item.quantity} × ${_formatCurrency(item.price)}',
+                                  controller.items[index].productName,
                                   style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Color(AppColors.TEXTSECONDARY),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(AppColors.TEXTPRIMARY),
                                   ),
                                 ),
-                            ],
+                                if (controller.items[index].quantity > 1)
+                                  Text(
+                                    'Qty: ${controller.items[index].quantity} × ${_formatCurrency(controller.items[index].price)}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Color(AppColors.TEXTSECONDARY),
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
-                        ),
-                        Text(
-                          _formatCurrency(item.amount, showSign: true),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF10B981),
+                          Text(
+                            _formatCurrency(controller.items[index].amount, showSign: true),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF10B981),
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        IconButton(
-                          onPressed: () => controller.removeItem(index),
-                          icon: const Icon(Icons.delete_outline_rounded, size: 18, color: Color(0xFFEF4444)),
-                          tooltip: 'Remove item',
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          IconButton(
+                            onPressed: () => controller.removeItem(index),
+                            icon: const Icon(Icons.delete_outline_rounded, size: 18, color: Color(0xFFEF4444)),
+                            tooltip: 'Remove item',
+                          ),
+                        ],
+                      ),
                     ),
-                  );
-                },
+                  ],
+                ],
               ),
             );
           }),
@@ -577,6 +575,7 @@ class QuotationView extends StatelessWidget {
                   child: Divider(height: 1, color: Color(0xFFE2E8F0)),
                 ),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     SizedBox(
                       width: 160,
@@ -654,9 +653,10 @@ class QuotationView extends StatelessWidget {
           ),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(
+            hintStyle: const TextStyle(
               fontSize: 13,
-              color: const Color(AppColors.TEXTSECONDARY).withValues(alpha: 0.5),
+              fontWeight: FontWeight.w400,
+              color: Color(AppColors.HINTTEXT),
             ),
             prefixIcon: Icon(icon, size: 18, color: const Color(AppColors.TEXTSECONDARY)),
             prefixIconConstraints: const BoxConstraints(minWidth: 36, minHeight: 36),
@@ -714,7 +714,7 @@ class QuotationView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
-                          '$count / 10 Items',
+                          '$count / 13 Items',
                           style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTSECONDARY)),
                         ),
                       );
@@ -744,8 +744,8 @@ class QuotationView extends StatelessWidget {
               child: Center(
                 child: Container(
                   width: 760, // Standard document aspect width
-                  constraints: const BoxConstraints(minHeight: 1075), // Exact A4 height proportion (210mm x 297mm)
-                  padding: const EdgeInsets.all(40),
+                  height: 1075, // Exact A4 height proportion (210mm x 297mm)
+                  padding: const EdgeInsets.only(left: 40, right: 40, top: 40, bottom: 60),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
@@ -758,30 +758,34 @@ class QuotationView extends StatelessWidget {
                     ],
                   ),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 1. Quotation Header (Logo & Contact Info)
-                      _buildDocumentHeader(),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // 1. Quotation Header (Logo & Contact Info)
+                          _buildDocumentHeader(),
 
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 24),
-                        child: Divider(height: 1, thickness: 1, color: Color(0xFFCBD5E1)),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 24),
+                            child: Divider(height: 1, thickness: 1, color: Color(0xFFCBD5E1)),
+                          ),
+
+                          // 2. Customer Details Section
+                          _buildDocumentCustomerDetails(controller),
+
+                          const SizedBox(height: 28),
+
+                          // 3. Items Table
+                          _buildDocumentItemsTable(controller),
+
+                          const SizedBox(height: 16),
+
+                          // 4. Totals Block
+                          _buildDocumentTotalsBlock(controller),
+                        ],
                       ),
-
-                      // 2. Customer Details Section
-                      _buildDocumentCustomerDetails(controller),
-
-                      const SizedBox(height: 28),
-
-                      // 3. Items Table
-                      _buildDocumentItemsTable(controller),
-
-                      const SizedBox(height: 16),
-
-                      // 4. Totals Block
-                      _buildDocumentTotalsBlock(controller),
-
-                      const SizedBox(height: 64),
 
                       // 5. Terms & Conditions and Authorized Signature
                       _buildDocumentFooter(),
@@ -810,18 +814,17 @@ class QuotationView extends StatelessWidget {
                 settings.storeName.value,
                 style: const TextStyle(
                   fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                  color: Color(AppColors.TEXTPRIMARY),
-                  letterSpacing: 0.5,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 4),
               const Text(
                 'Sales   |   Service   |   Repair   |   Support',
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: 10,
                   fontWeight: FontWeight.w600,
-                  color: Color(AppColors.TEXTSECONDARY),
+                  color: Color(0xFF475569),
                 ),
               ),
               const SizedBox(height: 16),
@@ -829,9 +832,8 @@ class QuotationView extends StatelessWidget {
                 'QUOTATION',
                 style: TextStyle(
                   fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                  color: Color(AppColors.TEXTPRIMARY),
-                  letterSpacing: 1,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
               ),
             ],
@@ -841,28 +843,28 @@ class QuotationView extends StatelessWidget {
             children: [
               Text('Phone: ${settings.storePhone.value}',
                   style: const TextStyle(
-                      fontSize: 12,
-                      color: Color(AppColors.TEXTPRIMARY),
+                      fontSize: 10,
+                      color: Colors.black,
                       fontWeight: FontWeight.w500)),
               const SizedBox(height: 4),
               Text('Email: ${settings.storeEmail.value}',
                   style: const TextStyle(
-                      fontSize: 12,
-                      color: Color(AppColors.TEXTPRIMARY),
+                      fontSize: 10,
+                      color: Colors.black,
                       fontWeight: FontWeight.w500)),
               if (settings.storeWebsite.value.isNotEmpty) ...[
                 const SizedBox(height: 4),
                 Text('Web: ${settings.storeWebsite.value}',
                     style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(AppColors.TEXTPRIMARY),
+                        fontSize: 10,
+                        color: Colors.black,
                         fontWeight: FontWeight.w500)),
               ],
               const SizedBox(height: 4),
               Text('Address: ${settings.storeAddress.value}',
                   style: const TextStyle(
-                      fontSize: 12,
-                      color: Color(AppColors.TEXTPRIMARY),
+                      fontSize: 10,
+                      color: Colors.black,
                       fontWeight: FontWeight.w500)),
             ],
           ),
@@ -877,7 +879,7 @@ class QuotationView extends StatelessWidget {
       children: [
         const Text(
           'Customer Details',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(AppColors.TEXTPRIMARY)),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
         ),
         const SizedBox(height: 12),
         Row(
@@ -896,35 +898,46 @@ class QuotationView extends StatelessWidget {
                   children: [
                     Text(
                       name.isEmpty ? 'Valued Customer' : name,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY)),
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black),
                     ),
                     if (phone.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      Text('Phone: $phone', style: const TextStyle(fontSize: 12, color: Color(AppColors.TEXTSECONDARY))),
+                      Text('Phone: $phone', style: const TextStyle(fontSize: 11, color: Color(0xFF1E293B))),
                     ],
                     if (address.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      Text('Address: $address', style: const TextStyle(fontSize: 12, color: Color(AppColors.TEXTSECONDARY))),
+                      Text('Address: $address', style: const TextStyle(fontSize: 11, color: Color(0xFF1E293B))),
                     ],
                     if (email.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      Text('Email: $email', style: const TextStyle(fontSize: 12, color: Color(AppColors.TEXTSECONDARY))),
+                      Text('Email: $email', style: const TextStyle(fontSize: 11, color: Color(0xFF1E293B))),
                     ],
                   ],
                 );
               }),
             ),
+            const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                Obx(() {
+                  if (controller.quotationNumber.value.isEmpty) return const SizedBox.shrink();
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Text(
+                      'Quotation No :   ${controller.quotationNumber.value}',
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black),
+                    ),
+                  );
+                }),
                 Obx(() => Text(
                       'Date :   ${_formatDate(controller.currentDate.value)}',
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY)),
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black),
                     )),
                 const SizedBox(height: 6),
                 Obx(() => Text(
                       'Valid upto :   ${_formatDate(controller.validUptoDate.value)}',
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY)),
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black),
                     )),
               ],
             ),
@@ -943,22 +956,22 @@ class QuotationView extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
           decoration: const BoxDecoration(
             border: Border(
-              top: BorderSide(color: Color(AppColors.TEXTPRIMARY), width: 1.5),
-              bottom: BorderSide(color: Color(AppColors.TEXTPRIMARY), width: 1.5),
+              top: BorderSide(color: Colors.black, width: 1.5),
+              bottom: BorderSide(color: Colors.black, width: 1.5),
             ),
           ),
           child: const Row(
             children: [
               SizedBox(
                 width: 40,
-                child: Text('NO', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(AppColors.TEXTPRIMARY))),
+                child: Text('NO', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black)),
               ),
               Expanded(
-                child: Text('Reason / Description', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(AppColors.TEXTPRIMARY))),
+                child: Text('Reason / Description', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black)),
               ),
               SizedBox(
-                width: 120,
-                child: Text('Amount', textAlign: TextAlign.right, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(AppColors.TEXTPRIMARY))),
+                width: 100,
+                child: Text('Amount', textAlign: TextAlign.right, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black)),
               ),
             ],
           ),
@@ -973,49 +986,46 @@ class QuotationView extends StatelessWidget {
               child: Center(
                 child: Text(
                   'No quotation items listed',
-                  style: TextStyle(fontSize: 13, color: Color(AppColors.TEXTSECONDARY)),
+                  style: TextStyle(fontSize: 12, color: Color(AppColors.TEXTSECONDARY)),
                 ),
               ),
             );
           }
 
-          return ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: items.length,
-            itemBuilder: (context, idx) {
-              final item = items[idx];
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                decoration: const BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
-                ),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 40,
-                      child: Text('${idx + 1}', style: const TextStyle(fontSize: 12, color: Color(AppColors.TEXTPRIMARY))),
-                    ),
-                    Expanded(
-                      child: Text(
-                        item.quantity > 1
-                            ? '${item.productName} (${item.quantity} x ${_formatCurrency(item.price)})'
-                            : item.productName,
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(AppColors.TEXTPRIMARY)),
+          return Column(
+            children: [
+              for (int idx = 0; idx < items.length; idx++)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  decoration: const BoxDecoration(
+                    border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
+                  ),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 40,
+                        child: Text('${idx + 1}', style: const TextStyle(fontSize: 11, color: Colors.black)),
                       ),
-                    ),
-                    SizedBox(
-                      width: 120,
-                      child: Text(
-                        _formatCurrency(item.amount),
-                        textAlign: TextAlign.right,
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY)),
+                      Expanded(
+                        child: Text(
+                          items[idx].quantity > 1
+                              ? '${items[idx].productName} (${items[idx].quantity} x ${_formatCurrency(items[idx].price)})'
+                              : items[idx].productName,
+                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black),
+                        ),
                       ),
-                    ),
-                  ],
+                      SizedBox(
+                        width: 100,
+                        child: Text(
+                          _formatCurrency(items[idx].amount),
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              );
-            },
+            ],
           );
         }),
       ],
@@ -1033,7 +1043,7 @@ class QuotationView extends StatelessWidget {
       return Align(
         alignment: Alignment.centerRight,
         child: SizedBox(
-          width: 260,
+          width: 250,
           child: Column(
             children: [
               Row(
@@ -1041,47 +1051,48 @@ class QuotationView extends StatelessWidget {
                 children: [
                   Text('Total',
                       style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: isGst ? FontWeight.w500 : FontWeight.w800,
-                        color: const Color(AppColors.TEXTPRIMARY),
+                        fontSize: 12,
+                        fontWeight: isGst ? FontWeight.normal : FontWeight.bold,
+                        color: Colors.black,
                       )),
                   Text(_formatCurrency(sub),
                       style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: isGst ? FontWeight.w500 : FontWeight.w800,
-                        color: const Color(AppColors.TEXTPRIMARY),
+                        fontSize: 12,
+                        fontWeight: isGst ? FontWeight.normal : FontWeight.bold,
+                        color: Colors.black,
                       )),
                 ],
               ),
               if (isGst) ...[
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('GST (${gstPct.toStringAsFixed(gstPct == gstPct.toInt() ? 0 : 1)}%)',
-                        style: const TextStyle(fontSize: 13, color: Color(AppColors.TEXTPRIMARY))),
-                    Text(_formatCurrency(gstAmt), style: const TextStyle(fontSize: 13, color: Color(AppColors.TEXTPRIMARY))),
+                        style: const TextStyle(fontSize: 11, color: Colors.black)),
+                    Text(_formatCurrency(gstAmt),
+                        style: const TextStyle(fontSize: 11, color: Colors.black)),
                   ],
                 ),
-                const SizedBox(height: 8),
-                const Divider(height: 1, thickness: 1, color: Color(AppColors.TEXTPRIMARY)),
                 const SizedBox(height: 6),
+                const Divider(height: 1, thickness: 1, color: Colors.black),
+                const SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Total Amount', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(AppColors.TEXTPRIMARY))),
-                    Text(_formatCurrency(total), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(AppColors.TEXTPRIMARY))),
+                    const Text('Total Amount', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black)),
+                    Text(_formatCurrency(total), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black)),
                   ],
                 ),
               ] else ...[
-                const SizedBox(height: 8),
-                const Divider(height: 1, thickness: 1, color: Color(AppColors.TEXTPRIMARY)),
                 const SizedBox(height: 6),
+                const Divider(height: 1, thickness: 1, color: Colors.black),
+                const SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Total Amount', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(AppColors.TEXTPRIMARY))),
-                    Text(_formatCurrency(total), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(AppColors.TEXTPRIMARY))),
+                    const Text('Total Amount', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black)),
+                    Text(_formatCurrency(total), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black)),
                   ],
                 ),
               ],
@@ -1095,8 +1106,8 @@ class QuotationView extends StatelessWidget {
   Widget _buildDocumentFooter() {
     return const Column(
       children: [
-        Divider(height: 1, thickness: 1, color: Color(0xFFCBD5E1)),
-        SizedBox(height: 16),
+        Divider(height: 1, thickness: 1, color: Color(0xFF64748B)),
+        SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -1106,23 +1117,23 @@ class QuotationView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Terms & Conditions', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(AppColors.TEXTPRIMARY))),
-                  SizedBox(height: 6),
-                  Text('1. Goods once sold cannot be taken back.', style: TextStyle(fontSize: 10, color: Color(AppColors.TEXTSECONDARY))),
+                  Text('Terms & Conditions', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black)),
+                  SizedBox(height: 4),
+                  Text('1. Goods once sold cannot be taken back.', style: TextStyle(fontSize: 8.5, color: Color(0xFF1E293B))),
                   SizedBox(height: 2),
-                  Text('2. No Warranty for Physical/Tampering (Incl. stickers).', style: TextStyle(fontSize: 10, color: Color(AppColors.TEXTSECONDARY))),
+                  Text('2. No Warranty for Physical/Tampering (Incl. stickers).', style: TextStyle(fontSize: 8.5, color: Color(0xFF1E293B))),
                   SizedBox(height: 2),
-                  Text('3. Bill Copy Necessary for Claiming Warranty.', style: TextStyle(fontSize: 10, color: Color(AppColors.TEXTSECONDARY))),
+                  Text('3. Bill Copy Necessary for Claiming Warranty.', style: TextStyle(fontSize: 8.5, color: Color(0xFF1E293B))),
                   SizedBox(height: 2),
-                  Text('4. No Warranty for Software Installation.', style: TextStyle(fontSize: 10, color: Color(AppColors.TEXTSECONDARY))),
+                  Text('4. No Warranty for Software Installation.', style: TextStyle(fontSize: 8.5, color: Color(0xFF1E293B))),
                 ],
               ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                SizedBox(height: 35),
-                Text('Authorized Signature', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(AppColors.TEXTPRIMARY))),
+                SizedBox(height: 30),
+                Text('Authorized Signature', style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: Colors.black)),
               ],
             ),
           ],
@@ -1159,8 +1170,8 @@ class QuotationView extends StatelessWidget {
       formatted = '-$formatted';
     }
     if (showSign && intVal > 0) {
-      return '+₹$formatted';
+      return '+Rs. $formatted';
     }
-    return '₹$formatted';
+    return 'Rs. $formatted';
   }
 }

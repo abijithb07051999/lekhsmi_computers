@@ -285,7 +285,7 @@ class InvoiceBillView extends StatelessWidget {
               ),
               Obx(() {
                 final count = controller.items.length;
-                final isMax = count >= 10;
+                final isMax = count >= 13;
                 return Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
@@ -297,7 +297,7 @@ class InvoiceBillView extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    '$count / 10 Max',
+                    '$count / 13 Max',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
@@ -435,57 +435,55 @@ class InvoiceBillView extends StatelessWidget {
                   ),
 
                   // Items List
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: items.length,
-                    separatorBuilder: (context, idx) => const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                    itemBuilder: (context, idx) {
-                      final item = items[idx];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 40,
-                              child: Text(
-                                '${idx + 1}',
-                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(AppColors.TEXTPRIMARY)),
+                  Column(
+                    children: [
+                      for (int idx = 0; idx < items.length; idx++) ...[
+                        if (idx > 0) const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 40,
+                                child: Text(
+                                  '${idx + 1}',
+                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(AppColors.TEXTPRIMARY)),
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                item.productName,
-                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(AppColors.TEXTPRIMARY)),
+                              Expanded(
+                                child: Text(
+                                  items[idx].productName,
+                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(AppColors.TEXTPRIMARY)),
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              width: 100,
-                              child: Text(
-                                '${item.quantity} x ₹${item.price.toStringAsFixed(0)}',
-                                style: const TextStyle(fontSize: 13, color: Color(AppColors.TEXTSECONDARY)),
+                              SizedBox(
+                                width: 100,
+                                child: Text(
+                                  '${items[idx].quantity} x ₹${items[idx].price.toStringAsFixed(0)}',
+                                  style: const TextStyle(fontSize: 13, color: Color(AppColors.TEXTSECONDARY)),
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              width: 100,
-                              child: Text(
-                                '₹${item.amount.toStringAsFixed(2)}',
-                                textAlign: TextAlign.right,
-                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY)),
+                              SizedBox(
+                                width: 100,
+                                child: Text(
+                                  '₹${items[idx].amount.toStringAsFixed(2)}',
+                                  textAlign: TextAlign.right,
+                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY)),
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              width: 36,
-                              child: IconButton(
-                                onPressed: () => controller.removeItem(item.id),
-                                icon: const Icon(Icons.close_rounded, size: 18, color: Color(0xFFEF4444)),
-                                tooltip: 'Remove item',
+                              SizedBox(
+                                width: 36,
+                                child: IconButton(
+                                  onPressed: () => controller.removeItem(items[idx].id),
+                                  icon: const Icon(Icons.close_rounded, size: 18, color: Color(0xFFEF4444)),
+                                  tooltip: 'Remove item',
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      );
-                    },
+                      ],
+                    ],
                   ),
                 ],
               ),
@@ -640,57 +638,96 @@ class InvoiceBillView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'GST / Taxes',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY)),
-                  ),
-                  SizedBox(height: 2),
-                  Text(
-                    'Toggle to apply GST percentage to the invoice bill total',
-                    style: TextStyle(fontSize: 12, color: Color(AppColors.TEXTSECONDARY)),
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      'Enable GST Calculation',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: Color(AppColors.TEXTPRIMARY),
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'When enabled, adds GST percentage to the bill. When disabled, GST is completely hidden.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(AppColors.TEXTSECONDARY),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              Obx(() => Switch(
-                    value: controller.isGstEnabled.value,
-                    onChanged: (val) => controller.toggleGst(val),
-                    activeThumbColor: const Color(AppColors.PRIMARY),
-                  )),
+              Obx(() {
+                return Switch(
+                  value: controller.isGstEnabled.value,
+                  onChanged: (val) => controller.toggleGst(val),
+                  activeThumbColor: const Color(AppColors.PRIMARY),
+                );
+              }),
             ],
           ),
 
-          // Conditional GST Percentage Input
           Obx(() {
-            if (!controller.isGstEnabled.value) return const SizedBox.shrink();
-            return Padding(
-              padding: const EdgeInsets.only(top: 14),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 160,
-                    child: _buildTextField(
-                      controller: controller.gstInputController,
-                      label: 'GST Percentage (%)',
-                      hint: '18',
-                      icon: Icons.percent_rounded,
-                      isNumber: true,
-                      onChanged: (val) => controller.updateGstPercentage(val),
+            if (!controller.isGstEnabled.value) {
+              return const SizedBox.shrink();
+            }
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Divider(height: 1, color: Color(0xFFE2E8F0)),
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      width: 160,
+                      child: _buildTextField(
+                        controller: controller.gstInputController,
+                        label: 'GST Percentage (%)',
+                        hint: 'e.g. 18',
+                        icon: Icons.percent_rounded,
+                        isNumber: true,
+                        onChanged: (val) => controller.updateGstPercentage(val),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Text(
-                      'This percentage will be calculated on the subtotal and added to the Total Amount.',
-                      style: TextStyle(fontSize: 12, color: Color(AppColors.TEXTSECONDARY)),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEFF6FF),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(AppColors.PRIMARY).withValues(alpha: 0.2)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.info_outline_rounded, size: 18, color: Color(AppColors.PRIMARY)),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'An extra ${controller.gstPercentage.value.toStringAsFixed(0)}% GST (${_formatCurrency(controller.gstAmount)}) will be added to the subtotal.',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(AppColors.PRIMARY),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
             );
           }),
         ],
@@ -739,7 +776,7 @@ class InvoiceBillView extends StatelessWidget {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        '$count / 10 Items',
+                        '$count / 13 Items',
                         style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTSECONDARY)),
                       ),
                     );
@@ -769,8 +806,8 @@ class InvoiceBillView extends StatelessWidget {
             child: Center(
               child: Container(
                 width: 760, // Standard document aspect width
-                constraints: const BoxConstraints(minHeight: 1075), // Exact A4 height proportion (210mm x 297mm)
-                padding: const EdgeInsets.all(40),
+                height: 1075, // Exact A4 height proportion (210mm x 297mm)
+                padding: const EdgeInsets.only(left: 40, right: 40, top: 40, bottom: 60),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
@@ -783,30 +820,34 @@ class InvoiceBillView extends StatelessWidget {
                   ],
                 ),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 1. Invoice Header (Logo & Contact Info)
-                    _buildDocumentHeader(),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // 1. Invoice Header (Logo & Contact Info)
+                        _buildDocumentHeader(),
 
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 24),
-                      child: Divider(height: 1, thickness: 1, color: Color(0xFFCBD5E1)),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 24),
+                          child: Divider(height: 1, thickness: 1, color: Color(0xFFCBD5E1)),
+                        ),
+
+                        // 2. Customer Details Section
+                        _buildDocumentCustomerDetails(controller),
+
+                        const SizedBox(height: 28),
+
+                        // 3. Items Table
+                        _buildDocumentItemsTable(controller),
+
+                        const SizedBox(height: 16),
+
+                        // 4. Totals Block
+                        _buildDocumentTotalsBlock(controller),
+                      ],
                     ),
-
-                    // 2. Customer Details Section
-                    _buildDocumentCustomerDetails(controller),
-
-                    const SizedBox(height: 28),
-
-                    // 3. Items Table
-                    _buildDocumentItemsTable(controller),
-
-                    const SizedBox(height: 16),
-
-                    // 4. Totals Block
-                    _buildDocumentTotalsBlock(controller),
-
-                    const SizedBox(height: 64),
 
                     // 5. Terms & Conditions and Authorized Signature
                     _buildDocumentFooter(),
@@ -834,18 +875,17 @@ class InvoiceBillView extends StatelessWidget {
                 settings.storeName.value,
                 style: const TextStyle(
                   fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                  color: Color(AppColors.TEXTPRIMARY),
-                  letterSpacing: 0.5,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 4),
               const Text(
                 'Sales   |   Service   |   Repair   |   Support',
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: 10,
                   fontWeight: FontWeight.w600,
-                  color: Color(AppColors.TEXTSECONDARY),
+                  color: Color(0xFF475569),
                 ),
               ),
               const SizedBox(height: 16),
@@ -853,9 +893,8 @@ class InvoiceBillView extends StatelessWidget {
                 'INVOICE / BILL',
                 style: TextStyle(
                   fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                  color: Color(AppColors.TEXTPRIMARY),
-                  letterSpacing: 1,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
               ),
             ],
@@ -865,28 +904,28 @@ class InvoiceBillView extends StatelessWidget {
             children: [
               Text('Phone: ${settings.storePhone.value}',
                   style: const TextStyle(
-                      fontSize: 12,
-                      color: Color(AppColors.TEXTPRIMARY),
+                      fontSize: 10,
+                      color: Colors.black,
                       fontWeight: FontWeight.w500)),
               const SizedBox(height: 4),
               Text('Email: ${settings.storeEmail.value}',
                   style: const TextStyle(
-                      fontSize: 12,
-                      color: Color(AppColors.TEXTPRIMARY),
+                      fontSize: 10,
+                      color: Colors.black,
                       fontWeight: FontWeight.w500)),
               if (settings.storeWebsite.value.isNotEmpty) ...[
                 const SizedBox(height: 4),
                 Text('Web: ${settings.storeWebsite.value}',
                     style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(AppColors.TEXTPRIMARY),
+                        fontSize: 10,
+                        color: Colors.black,
                         fontWeight: FontWeight.w500)),
               ],
               const SizedBox(height: 4),
               Text('Address: ${settings.storeAddress.value}',
                   style: const TextStyle(
-                      fontSize: 12,
-                      color: Color(AppColors.TEXTPRIMARY),
+                      fontSize: 10,
+                      color: Colors.black,
                       fontWeight: FontWeight.w500)),
             ],
           ),
@@ -901,7 +940,7 @@ class InvoiceBillView extends StatelessWidget {
       children: [
         const Text(
           'Customer Details',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(AppColors.TEXTPRIMARY)),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
         ),
         const SizedBox(height: 12),
         Row(
@@ -920,35 +959,36 @@ class InvoiceBillView extends StatelessWidget {
                   children: [
                     Text(
                       name.isEmpty ? 'Valued Customer' : name,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY)),
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black),
                     ),
                     if (phone.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      Text('Phone: $phone', style: const TextStyle(fontSize: 12, color: Color(AppColors.TEXTSECONDARY))),
+                      Text('Phone: $phone', style: const TextStyle(fontSize: 11, color: Color(0xFF1E293B))),
                     ],
                     if (address.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      Text('Address: $address', style: const TextStyle(fontSize: 12, color: Color(AppColors.TEXTSECONDARY))),
+                      Text('Address: $address', style: const TextStyle(fontSize: 11, color: Color(0xFF1E293B))),
                     ],
                     if (email.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      Text('Email: $email', style: const TextStyle(fontSize: 12, color: Color(AppColors.TEXTSECONDARY))),
+                      Text('Email: $email', style: const TextStyle(fontSize: 11, color: Color(0xFF1E293B))),
                     ],
                   ],
                 );
               }),
             ),
+            const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Obx(() => Text(
                       'Date :   ${_formatDate(controller.currentDate.value)}',
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY)),
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black),
                     )),
                 const SizedBox(height: 6),
                 Obx(() => Text(
                       'Due Date :   ${_formatDate(controller.validUptoDate.value)}',
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY)),
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black),
                     )),
               ],
             ),
@@ -967,22 +1007,22 @@ class InvoiceBillView extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
           decoration: const BoxDecoration(
             border: Border(
-              top: BorderSide(color: Color(AppColors.TEXTPRIMARY), width: 1.5),
-              bottom: BorderSide(color: Color(AppColors.TEXTPRIMARY), width: 1.5),
+              top: BorderSide(color: Colors.black, width: 1.5),
+              bottom: BorderSide(color: Colors.black, width: 1.5),
             ),
           ),
           child: const Row(
             children: [
               SizedBox(
                 width: 40,
-                child: Text('NO', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(AppColors.TEXTPRIMARY))),
+                child: Text('NO', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black)),
               ),
               Expanded(
-                child: Text('Product / Service Description', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(AppColors.TEXTPRIMARY))),
+                child: Text('Product / Service Description', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black)),
               ),
               SizedBox(
-                width: 120,
-                child: Text('Amount', textAlign: TextAlign.right, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(AppColors.TEXTPRIMARY))),
+                width: 100,
+                child: Text('Amount', textAlign: TextAlign.right, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black)),
               ),
             ],
           ),
@@ -997,49 +1037,46 @@ class InvoiceBillView extends StatelessWidget {
               child: Center(
                 child: Text(
                   'No items added',
-                  style: TextStyle(fontSize: 13, color: Color(AppColors.TEXTSECONDARY)),
+                  style: TextStyle(fontSize: 12, color: Color(AppColors.TEXTSECONDARY)),
                 ),
               ),
             );
           }
 
-          return ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: items.length,
-            itemBuilder: (context, idx) {
-              final item = items[idx];
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                decoration: const BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
-                ),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 40,
-                      child: Text('${idx + 1}', style: const TextStyle(fontSize: 12, color: Color(AppColors.TEXTPRIMARY))),
-                    ),
-                    Expanded(
-                      child: Text(
-                        item.quantity > 1
-                            ? '${item.productName} (${item.quantity} x ₹${item.price.toStringAsFixed(0)})'
-                            : item.productName,
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(AppColors.TEXTPRIMARY)),
+          return Column(
+            children: [
+              for (int idx = 0; idx < items.length; idx++)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  decoration: const BoxDecoration(
+                    border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
+                  ),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 40,
+                        child: Text('${idx + 1}', style: const TextStyle(fontSize: 11, color: Colors.black)),
                       ),
-                    ),
-                    SizedBox(
-                      width: 120,
-                      child: Text(
-                        _formatCurrency(item.amount),
-                        textAlign: TextAlign.right,
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY)),
+                      Expanded(
+                        child: Text(
+                          items[idx].quantity > 1
+                              ? '${items[idx].productName} (${items[idx].quantity} x ${_formatCurrency(items[idx].price)})'
+                              : items[idx].productName,
+                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black),
+                        ),
                       ),
-                    ),
-                  ],
+                      SizedBox(
+                        width: 100,
+                        child: Text(
+                          _formatCurrency(items[idx].amount),
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              );
-            },
+            ],
           );
         }),
       ],
@@ -1057,7 +1094,7 @@ class InvoiceBillView extends StatelessWidget {
       return Align(
         alignment: Alignment.centerRight,
         child: SizedBox(
-          width: 260,
+          width: 250,
           child: Column(
             children: [
               Row(
@@ -1065,47 +1102,48 @@ class InvoiceBillView extends StatelessWidget {
                 children: [
                   Text('Total',
                       style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: isGst ? FontWeight.w500 : FontWeight.w800,
-                        color: const Color(AppColors.TEXTPRIMARY),
+                        fontSize: 12,
+                        fontWeight: isGst ? FontWeight.normal : FontWeight.bold,
+                        color: Colors.black,
                       )),
                   Text(_formatCurrency(sub),
                       style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: isGst ? FontWeight.w500 : FontWeight.w800,
-                        color: const Color(AppColors.TEXTPRIMARY),
+                        fontSize: 12,
+                        fontWeight: isGst ? FontWeight.normal : FontWeight.bold,
+                        color: Colors.black,
                       )),
                 ],
               ),
               if (isGst) ...[
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('GST (${gstPct.toStringAsFixed(gstPct == gstPct.toInt() ? 0 : 1)}%)',
-                        style: const TextStyle(fontSize: 13, color: Color(AppColors.TEXTPRIMARY))),
-                    Text(_formatCurrency(gstAmt), style: const TextStyle(fontSize: 13, color: Color(AppColors.TEXTPRIMARY))),
+                        style: const TextStyle(fontSize: 11, color: Colors.black)),
+                    Text(_formatCurrency(gstAmt),
+                        style: const TextStyle(fontSize: 11, color: Colors.black)),
                   ],
                 ),
-                const SizedBox(height: 8),
-                const Divider(height: 1, thickness: 1, color: Color(AppColors.TEXTPRIMARY)),
                 const SizedBox(height: 6),
+                const Divider(height: 1, thickness: 1, color: Colors.black),
+                const SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Total Amount', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(AppColors.TEXTPRIMARY))),
-                    Text(_formatCurrency(total), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(AppColors.TEXTPRIMARY))),
+                    const Text('Total Amount', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black)),
+                    Text(_formatCurrency(total), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black)),
                   ],
                 ),
               ] else ...[
-                const SizedBox(height: 8),
-                const Divider(height: 1, thickness: 1, color: Color(AppColors.TEXTPRIMARY)),
                 const SizedBox(height: 6),
+                const Divider(height: 1, thickness: 1, color: Colors.black),
+                const SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Total Amount', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(AppColors.TEXTPRIMARY))),
-                    Text(_formatCurrency(total), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(AppColors.TEXTPRIMARY))),
+                    const Text('Total Amount', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black)),
+                    Text(_formatCurrency(total), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black)),
                   ],
                 ),
               ],
@@ -1119,8 +1157,8 @@ class InvoiceBillView extends StatelessWidget {
   Widget _buildDocumentFooter() {
     return const Column(
       children: [
-        Divider(height: 1, thickness: 1, color: Color(0xFFCBD5E1)),
-        SizedBox(height: 16),
+        Divider(height: 1, thickness: 1, color: Color(0xFF64748B)),
+        SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -1130,23 +1168,23 @@ class InvoiceBillView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Terms & Conditions', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(AppColors.TEXTPRIMARY))),
-                  SizedBox(height: 6),
-                  Text('1. Goods once sold cannot be taken back.', style: TextStyle(fontSize: 10, color: Color(AppColors.TEXTSECONDARY))),
+                  Text('Terms & Conditions', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black)),
+                  SizedBox(height: 4),
+                  Text('1. Goods once sold cannot be taken back.', style: TextStyle(fontSize: 8.5, color: Color(0xFF1E293B))),
                   SizedBox(height: 2),
-                  Text('2. No Warranty for Physical/Tampering (Incl. stickers).', style: TextStyle(fontSize: 10, color: Color(AppColors.TEXTSECONDARY))),
+                  Text('2. No Warranty for Physical/Tampering (Incl. stickers).', style: TextStyle(fontSize: 8.5, color: Color(0xFF1E293B))),
                   SizedBox(height: 2),
-                  Text('3. Bill Copy Necessary for Claiming Warranty.', style: TextStyle(fontSize: 10, color: Color(AppColors.TEXTSECONDARY))),
+                  Text('3. Bill Copy Necessary for Claiming Warranty.', style: TextStyle(fontSize: 8.5, color: Color(0xFF1E293B))),
                   SizedBox(height: 2),
-                  Text('4. No Warranty for Software Installation.', style: TextStyle(fontSize: 10, color: Color(AppColors.TEXTSECONDARY))),
+                  Text('4. No Warranty for Software Installation.', style: TextStyle(fontSize: 8.5, color: Color(0xFF1E293B))),
                 ],
               ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                SizedBox(height: 35),
-                Text('Authorized Signature', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(AppColors.TEXTPRIMARY))),
+                SizedBox(height: 30),
+                Text('Authorized Signature', style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: Colors.black)),
               ],
             ),
           ],
@@ -1189,7 +1227,11 @@ class InvoiceBillView extends StatelessWidget {
           ),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: Color(AppColors.TEXTSECONDARY), fontSize: 13),
+            hintStyle: const TextStyle(
+              color: Color(AppColors.HINTTEXT),
+              fontWeight: FontWeight.w400,
+              fontSize: 13,
+            ),
             prefixIcon: Icon(icon, size: 18, color: const Color(AppColors.TEXTSECONDARY)),
             prefixIconConstraints: const BoxConstraints(minWidth: 36, minHeight: 36),
             filled: true,
@@ -1281,7 +1323,7 @@ class InvoiceBillView extends StatelessWidget {
       intPart = '${buffer.toString()},$lastThree';
     }
 
-    final formatted = '₹$intPart.$decPart';
+    final formatted = 'Rs. $intPart.$decPart';
     if (amount < 0) return '-$formatted';
     return formatted;
   }

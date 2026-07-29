@@ -445,7 +445,8 @@ class _ProductViewState extends State<ProductView> {
               decoration: InputDecoration(
                 hintText: hintText,
                 hintStyle: GoogleFonts.inter(
-                  color: const Color(AppColors.TEXTSECONDARY),
+                  color: const Color(AppColors.HINTTEXT),
+                  fontWeight: FontWeight.w400,
                   fontSize: 13.5,
                 ),
                 border: InputBorder.none,
@@ -542,28 +543,21 @@ class _ProductViewState extends State<ProductView> {
   void _showProductDialog(BuildContext context, {Product? product}) {
     final nameCtrl = TextEditingController(text: product?.name ?? '');
     final quantityCtrl = TextEditingController(
-      text: product != null ? '${product.quantity}' : '1',
+      text: product != null ? '${product.quantity}' : '',
     );
     final buyPriceCtrl = TextEditingController(
-      text: product != null ? '${product.buyPrice}' : '0',
+      text: product != null ? '${product.buyPrice}' : '',
     );
     final sellPriceCtrl = TextEditingController(
-      text: product != null ? '${product.sellPrice}' : '0',
+      text: product != null ? '${product.sellPrice}' : '',
     );
 
     int? selectedCategoryId = product?.categoryId;
-    if (selectedCategoryId == null && controller.categories.isNotEmpty) {
-      selectedCategoryId = controller.categories.first.id;
-    }
-
     int? selectedBrandId = product?.brandId;
-    if (selectedBrandId == null && controller.brands.isNotEmpty) {
-      selectedBrandId = controller.brands.first.id;
-    }
+    String? selectedQuality = product?.quality;
 
-    String selectedQuality = product?.quality ?? 'First Quality';
     final qualities = ['First Quality', 'Second Hand', 'Refurbished'];
-    if (!qualities.contains(selectedQuality)) {
+    if (selectedQuality != null && !qualities.contains(selectedQuality)) {
       qualities.add(selectedQuality);
     }
 
@@ -593,6 +587,7 @@ class _ProductViewState extends State<ProductView> {
                     Expanded(
                       child: _buildDialogDropdown<int>(
                         label: 'Category',
+                        hintText: 'Select Category',
                         value: selectedCategoryId,
                         items: controller.categories.map((c) {
                           return DropdownMenuItem<int>(
@@ -607,6 +602,7 @@ class _ProductViewState extends State<ProductView> {
                     Expanded(
                       child: _buildDialogDropdown<int>(
                         label: 'Brand',
+                        hintText: 'Select Brand',
                         value: selectedBrandId,
                         items: controller.brands.map((b) {
                           return DropdownMenuItem<int>(
@@ -626,6 +622,7 @@ class _ProductViewState extends State<ProductView> {
                       flex: 2,
                       child: _buildDialogDropdown<String>(
                         label: 'Quality',
+                        hintText: 'Select Quality',
                         value: selectedQuality,
                         items: qualities.map((q) {
                           return DropdownMenuItem<String>(
@@ -692,8 +689,12 @@ class _ProductViewState extends State<ProductView> {
                 Get.snackbar('Warning', 'Product name cannot be empty');
                 return;
               }
-              if (selectedCategoryId == null || selectedBrandId == null) {
-                Get.snackbar('Warning', 'Please select both category and brand');
+              if (selectedCategoryId == null || selectedBrandId == null || selectedQuality == null) {
+                Get.snackbar('Warning', 'Please select category, brand, and quality');
+                return;
+              }
+              if (quantityCtrl.text.trim().isEmpty || buyPriceCtrl.text.trim().isEmpty || sellPriceCtrl.text.trim().isEmpty) {
+                Get.snackbar('Warning', 'Please enter quantity, buy price, and sell price');
                 return;
               }
 
@@ -703,7 +704,7 @@ class _ProductViewState extends State<ProductView> {
                     name: name,
                     categoryId: selectedCategoryId!,
                     brandId: selectedBrandId!,
-                    quality: selectedQuality,
+                    quality: selectedQuality!,
                     quantity: quantity,
                     buyPrice: buyPrice,
                     sellPrice: sellPrice,
@@ -714,7 +715,7 @@ class _ProductViewState extends State<ProductView> {
                 product.name = name;
                 product.categoryId = selectedCategoryId!;
                 product.brandId = selectedBrandId!;
-                product.quality = selectedQuality;
+                product.quality = selectedQuality!;
                 product.quantity = quantity;
                 product.buyPrice = buyPrice;
                 product.sellPrice = sellPrice;
@@ -734,6 +735,7 @@ class _ProductViewState extends State<ProductView> {
     required T? value,
     required List<DropdownMenuItem<T>> items,
     required ValueChanged<T?> onChanged,
+    String? hintText,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -749,6 +751,16 @@ class _ProductViewState extends State<ProductView> {
         const SizedBox(height: 8),
         SaaSDropdown.build<T>(
           value: value,
+          hint: hintText != null
+              ? Text(
+                  hintText,
+                  style: GoogleFonts.inter(
+                    color: const Color(AppColors.HINTTEXT),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                )
+              : null,
           items: items,
           onChanged: onChanged,
           isExpanded: true,
@@ -797,7 +809,8 @@ class _ProductViewState extends State<ProductView> {
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: const TextStyle(
-                color: Color(AppColors.TEXTSECONDARY),
+                color: Color(AppColors.HINTTEXT),
+                fontWeight: FontWeight.w400,
                 fontSize: 13,
               ),
               border: InputBorder.none,

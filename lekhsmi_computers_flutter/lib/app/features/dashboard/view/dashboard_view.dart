@@ -522,9 +522,9 @@ class _DashboardViewState extends State<DashboardView> {
                   flex: 5,
                   child: Row(
                     children: [
-                      Expanded(child: _buildSuppliersTable()),
+                      Expanded(flex: 7, child: _buildSuppliersTable()),
                       const SizedBox(width: 16),
-                      Expanded(child: _buildOrderHistoryTable()),
+                      Expanded(flex: 3, child: _buildOrderHistoryTable()),
                     ],
                   ),
                 ),
@@ -949,9 +949,31 @@ class _DashboardViewState extends State<DashboardView> {
                   ),
                 ),
                 Expanded(
-                  flex: 3,
+                  flex: 2,
                   child: Text(
-                    'Contact',
+                    'Primary Phone',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: const Color(AppColors.TEXTSECONDARY),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'Secondary Phone',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: const Color(AppColors.TEXTSECONDARY),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'Status',
                     style: GoogleFonts.plusJakartaSans(
                       color: const Color(AppColors.TEXTSECONDARY),
                       fontSize: 12,
@@ -1039,10 +1061,33 @@ class _DashboardViewState extends State<DashboardView> {
                           ),
                         ),
                         Expanded(
-                          flex: 3,
+                          flex: 2,
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: _buildContactChip(s.contact1.toString()),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: s.contact2 == 0
+                                ? Text(
+                                    '--',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: const Color(AppColors.TEXTSECONDARY),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  )
+                                : _buildContactChip(s.contact2.toString()),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: _buildSupplierStatusBadge(s.status),
                           ),
                         ),
                       ],
@@ -1080,6 +1125,41 @@ class _DashboardViewState extends State<DashboardView> {
               color: const Color(AppColors.TEXTSECONDARY),
               fontSize: 12,
               fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSupplierStatusBadge(bool status) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: status ? const Color(0xFFDCFCE7) : const Color(0xFFF1F5F9),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: status ? const Color(0xFF86EFAC) : const Color(0xFFCBD5E1),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: status ? const Color(0xFF16A34A) : const Color(0xFF64748B),
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            status ? 'Active' : 'Inactive',
+            style: GoogleFonts.plusJakartaSans(
+              color: status ? const Color(0xFF16A34A) : const Color(0xFF64748B),
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],

@@ -10,4 +10,5 @@ class AppColors {
   static const TEXTPRIMARY = 0xFF1F2937;
   static const TEXTSECONDARY = 0xFF6B7280;
   static const TEXTLIGHT = 0xFF6B7280;
+  static const HINTTEXT = 0xFF9CA3AF;
 }

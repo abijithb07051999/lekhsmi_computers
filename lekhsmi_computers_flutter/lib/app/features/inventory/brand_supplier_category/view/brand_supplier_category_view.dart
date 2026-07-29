@@ -647,7 +647,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    '${s.contact2}',
+                                    s.contact2 == 0 ? '--' : '${s.contact2}',
                                     style: GoogleFonts.inter(
                                       color: const Color(AppColors.TEXTSECONDARY),
                                       fontSize: 13,
@@ -871,7 +871,8 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: GoogleFonts.inter(
-            color: const Color(AppColors.TEXTSECONDARY),
+            color: const Color(AppColors.HINTTEXT),
+            fontWeight: FontWeight.w400,
             fontSize: 13,
           ),
           prefixIcon: const Icon(
@@ -1093,7 +1094,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
       text: supplier != null ? '${supplier.contact1}' : '',
     );
     final contact2Ctrl = TextEditingController(
-      text: supplier != null ? '${supplier.contact2}' : '',
+      text: (supplier != null && supplier.contact2 != 0) ? '${supplier.contact2}' : '',
     );
     bool status = supplier?.status ?? true;
 
@@ -1403,7 +1404,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: GoogleFonts.inter(
-              color: const Color(AppColors.TEXTSECONDARY),
+              color: const Color(AppColors.HINTTEXT),
               fontSize: 13,
               fontWeight: FontWeight.w400,
             ),

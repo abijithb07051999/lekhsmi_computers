@@ -5,7 +5,7 @@ import 'package:lekhsmi_computers_flutter/app/features/settings/controller/setti
 import 'package:lekhsmi_computers_flutter/core/widgets/saas_date_picker.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
+import 'package:lekhsmi_computers_flutter/core/widgets/saas_print_modal.dart';
 import 'dart:math' as math;
 import '../../inventory/product/controller/product_controller.dart';
 
@@ -48,9 +48,9 @@ class InvoiceBillController extends GetxController {
   // GST Toggle & Percentage
   final isGstEnabled = false.obs;
   final gstPercentage = 18.0.obs;
-  final gstInputController = TextEditingController(text: '18');
+  final gstInputController = TextEditingController();
 
-  // Currently Added Invoice Items (Max 10 for A4 Sheet)
+  // Currently Added Invoice Items (Max 13 for A4 Sheet)
   final items = <InvoiceBillItem>[].obs;
 
   // Inventory Products & Selected Product
@@ -59,7 +59,7 @@ class InvoiceBillController extends GetxController {
   final isLoadingProducts = false.obs;
 
   // Item Form Controllers for Quantity & Price
-  final itemQuantityController = TextEditingController(text: '1');
+  final itemQuantityController = TextEditingController();
   final itemPriceController = TextEditingController();
 
   @override
@@ -70,6 +70,7 @@ class InvoiceBillController extends GetxController {
     emailController.addListener(() => email.value = emailController.text);
     addressController.addListener(() => address.value = addressController.text);
     refreshProducts();
+    gstInputController.text = '18';
   }
 
   Future<void> refreshProducts() async {
@@ -99,11 +100,7 @@ class InvoiceBillController extends GetxController {
     selectedProduct.value = product;
     if (product != null) {
       itemPriceController.text = product.sellPrice.toString();
-      if (product.quantity <= 0) {
-        itemQuantityController.text = '0';
-      } else {
-        itemQuantityController.text = '1';
-      }
+      itemQuantityController.clear();
     } else {
       itemPriceController.clear();
       itemQuantityController.clear();
@@ -178,10 +175,10 @@ class InvoiceBillController extends GetxController {
       return;
     }
 
-    if (items.length >= 10) {
+    if (items.length >= 13) {
       Get.snackbar(
         'Limit Reached',
-        'A4 sheet printing supports a maximum of 10 products / services.',
+        'A4 sheet printing supports a maximum of 13 products / services.',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
@@ -292,7 +289,8 @@ class InvoiceBillController extends GetxController {
     emailController.clear();
     addressController.clear();
     gstInputController.text = '18';
-    itemQuantityController.text = '1';
+    gstPercentage.value = 18.0;
+    itemQuantityController.clear();
     itemPriceController.clear();
     selectedProduct.value = null;
     items.clear();
@@ -379,43 +377,272 @@ class InvoiceBillController extends GetxController {
     final total = totalAmount;
 
     doc.addPage(
-      pw.MultiPage(
+      pw.Page(
         pageFormat: PdfPageFormat.a4,
-        margin: const pw.EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-        footer: (pw.Context context) {
+        margin: const pw.EdgeInsets.only(left: 32, right: 32, top: 28, bottom: 60),
+        build: (pw.Context context) {
           return pw.Column(
-            mainAxisSize: pw.MainAxisSize.min,
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              pw.Divider(thickness: 1, color: PdfColors.grey600),
-              pw.SizedBox(height: 10),
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: pw.CrossAxisAlignment.end,
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Expanded(
-                    flex: 7,
-                    child: pw.Column(
-                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  // 1. Header (Black & White)
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Text(settings.storeName.value,
+                              style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
+                          pw.SizedBox(height: 2),
+                          pw.Text('Sales   |   Service   |   Repair   |   Support',
+                              style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700)),
+                          pw.SizedBox(height: 10),
+                          pw.Text('INVOICE / BILL',
+                              style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
+                        ],
+                      ),
+                      pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Text('Phone: ${settings.storePhone.value}', style: const pw.TextStyle(fontSize: 10, color: PdfColors.black)),
+                          pw.SizedBox(height: 2),
+                          pw.Text('Email: ${settings.storeEmail.value}', style: const pw.TextStyle(fontSize: 10, color: PdfColors.black)),
+                          if (settings.storeWebsite.value.isNotEmpty) ...[
+                            pw.SizedBox(height: 2),
+                            pw.Text('Web: ${settings.storeWebsite.value}', style: const pw.TextStyle(fontSize: 10, color: PdfColors.black)),
+                          ],
+                          pw.SizedBox(height: 2),
+                          pw.Text('Address: ${settings.storeAddress.value}', style: const pw.TextStyle(fontSize: 10, color: PdfColors.black)),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  pw.SizedBox(height: 12),
+                  pw.Divider(thickness: 1, color: PdfColors.black),
+                  pw.SizedBox(height: 12),
+
+                  // 2. Customer Details & Dates
+                  pw.Text('Customer Details',
+                      style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
+                  pw.SizedBox(height: 8),
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Expanded(
+                        child: pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            pw.Text(nameText, style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
+                            if (phoneText.isNotEmpty) ...[
+                              pw.SizedBox(height: 2),
+                              pw.Text('Phone: $phoneText', style: const pw.TextStyle(fontSize: 10.5, color: PdfColors.grey800)),
+                            ],
+                            if (addressText.isNotEmpty) ...[
+                              pw.SizedBox(height: 2),
+                              pw.Text('Address: $addressText', style: const pw.TextStyle(fontSize: 10.5, color: PdfColors.grey800)),
+                            ],
+                            if (emailText.isNotEmpty) ...[
+                              pw.SizedBox(height: 2),
+                              pw.Text('Email: $emailText', style: const pw.TextStyle(fontSize: 10.5, color: PdfColors.grey800)),
+                            ],
+                          ],
+                        ),
+                      ),
+                      pw.SizedBox(width: 16),
+                      pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.end,
+                        children: [
+                          pw.Text('Date :   $dateStr',
+                              style: pw.TextStyle(fontSize: 10.5, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
+                          pw.SizedBox(height: 4),
+                          pw.Text('Due Date :   $validStr',
+                              style: pw.TextStyle(fontSize: 10.5, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  pw.SizedBox(height: 12),
+
+                  // 3. Products / Services Table (Max 13 items)
+                  pw.Container(
+                    decoration: const pw.BoxDecoration(
+                      border: pw.Border(
+                        bottom: pw.BorderSide(color: PdfColors.black, width: 1.5),
+                        top: pw.BorderSide(color: PdfColors.black, width: 1.5),
+                      ),
+                    ),
+                    padding: const pw.EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                    child: pw.Row(
                       children: [
-                        pw.Text('Terms & Conditions',
-                            style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
-                        pw.SizedBox(height: 4),
-                        pw.Text('1. Goods once sold cannot be taken back.', style: const pw.TextStyle(fontSize: 8.5, color: PdfColors.grey800)),
-                        pw.SizedBox(height: 2),
-                        pw.Text('2. No Warranty for Physical/Tampering (Incl. stickers).', style: const pw.TextStyle(fontSize: 8.5, color: PdfColors.grey800)),
-                        pw.SizedBox(height: 2),
-                        pw.Text('3. Bill Copy Necessary for Claiming Warranty.', style: const pw.TextStyle(fontSize: 8.5, color: PdfColors.grey800)),
-                        pw.SizedBox(height: 2),
-                        pw.Text('4. No Warranty for Software Installation.', style: const pw.TextStyle(fontSize: 8.5, color: PdfColors.grey800)),
+                        pw.SizedBox(
+                          width: 40,
+                          child: pw.Text('NO',
+                              style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
+                        ),
+                        pw.Expanded(
+                          child: pw.Text('Product / Service Description',
+                              style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
+                        ),
+                        pw.SizedBox(
+                          width: 100,
+                          child: pw.Text('Amount',
+                              textAlign: pw.TextAlign.right,
+                              style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
+                        ),
                       ],
                     ),
                   ),
-                  pw.Column(
+
+                  if (items.isEmpty)
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.symmetric(vertical: 18),
+                      child: pw.Center(
+                        child: pw.Text('No items added', style: const pw.TextStyle(fontSize: 12, color: PdfColors.grey700)),
+                      ),
+                    )
+                  else
+                    for (int idx = 0; idx < items.length; idx++)
+                      pw.Container(
+                        decoration: const pw.BoxDecoration(
+                          border: pw.Border(
+                            bottom: pw.BorderSide(color: PdfColors.grey400, width: 0.5),
+                          ),
+                        ),
+                        padding: const pw.EdgeInsets.symmetric(vertical: 3.5, horizontal: 4),
+                        child: pw.Row(
+                          children: [
+                            pw.SizedBox(
+                              width: 40,
+                              child: pw.Text('${idx + 1}',
+                                  style: const pw.TextStyle(fontSize: 11, color: PdfColors.black)),
+                            ),
+                            pw.Expanded(
+                              child: pw.Text(
+                                items[idx].quantity > 1
+                                    ? '${items[idx].productName} (${items[idx].quantity} x ${_formatPdfCurrency(items[idx].price)})'
+                                    : items[idx].productName,
+                                maxLines: 1,
+                                overflow: pw.TextOverflow.clip,
+                                style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.black),
+                              ),
+                            ),
+                            pw.SizedBox(
+                              width: 100,
+                              child: pw.Text(
+                                _formatPdfCurrency(items[idx].amount),
+                                textAlign: pw.TextAlign.right,
+                                style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.black),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                  pw.SizedBox(height: 8),
+
+                  // 4. Totals (Right Aligned)
+                  pw.Align(
+                    alignment: pw.Alignment.centerRight,
+                    child: pw.SizedBox(
+                      width: 250,
+                      child: pw.Column(
+                        children: [
+                          pw.Row(
+                            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                            children: [
+                              pw.Text('Total',
+                                  style: pw.TextStyle(fontSize: 12, fontWeight: isGst ? pw.FontWeight.normal : pw.FontWeight.bold, color: PdfColors.black)),
+                              pw.Text(_formatPdfCurrency(sub),
+                                  style: pw.TextStyle(fontSize: 12, fontWeight: isGst ? pw.FontWeight.normal : pw.FontWeight.bold, color: PdfColors.black)),
+                            ],
+                          ),
+                          if (isGst) ...[
+                            pw.SizedBox(height: 4),
+                            pw.Row(
+                              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                              children: [
+                                pw.Text('GST (${gstPct.toStringAsFixed(gstPct == gstPct.toInt() ? 0 : 1)}%)',
+                                    style: const pw.TextStyle(fontSize: 11, color: PdfColors.black)),
+                                pw.Text(_formatPdfCurrency(gstAmt),
+                                    style: const pw.TextStyle(fontSize: 11, color: PdfColors.black)),
+                              ],
+                            ),
+                            pw.SizedBox(height: 4),
+                            pw.Divider(thickness: 1, color: PdfColors.black),
+                            pw.SizedBox(height: 3),
+                            pw.Row(
+                              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                              children: [
+                                pw.Text('Total Amount',
+                                    style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
+                                pw.Text(_formatPdfCurrency(total),
+                                    style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
+                              ],
+                            ),
+                          ] else ...[
+                            pw.SizedBox(height: 4),
+                            pw.Divider(thickness: 1, color: PdfColors.black),
+                            pw.SizedBox(height: 3),
+                            pw.Row(
+                              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                              children: [
+                                pw.Text('Total Amount',
+                                    style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
+                                pw.Text(_formatPdfCurrency(total),
+                                    style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              // 5. Footer (Terms & Conditions + Authorized Signature)
+              pw.Column(
+                mainAxisSize: pw.MainAxisSize.min,
+                children: [
+                  pw.Divider(thickness: 1, color: PdfColors.grey600),
+                  pw.SizedBox(height: 8),
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: pw.CrossAxisAlignment.end,
                     children: [
-                      pw.SizedBox(height: 30),
-                      pw.Text('Authorized Signature',
-                          style: pw.TextStyle(fontSize: 10.5, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
+                      pw.Expanded(
+                        flex: 7,
+                        child: pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            pw.Text('Terms & Conditions',
+                                style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
+                            pw.SizedBox(height: 4),
+                            pw.Text('1. Goods once sold cannot be taken back.', style: const pw.TextStyle(fontSize: 8.5, color: PdfColors.grey800)),
+                            pw.SizedBox(height: 2),
+                            pw.Text('2. No Warranty for Physical/Tampering (Incl. stickers).', style: const pw.TextStyle(fontSize: 8.5, color: PdfColors.grey800)),
+                            pw.SizedBox(height: 2),
+                            pw.Text('3. Bill Copy Necessary for Claiming Warranty.', style: const pw.TextStyle(fontSize: 8.5, color: PdfColors.grey800)),
+                            pw.SizedBox(height: 2),
+                            pw.Text('4. No Warranty for Software Installation.', style: const pw.TextStyle(fontSize: 8.5, color: PdfColors.grey800)),
+                          ],
+                        ),
+                      ),
+                      pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.end,
+                        children: [
+                          pw.SizedBox(height: 24),
+                          pw.Text('Authorized Signature',
+                              style: pw.TextStyle(fontSize: 10.5, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
+                        ],
+                      ),
                     ],
                   ),
                 ],
@@ -423,235 +650,20 @@ class InvoiceBillController extends GetxController {
             ],
           );
         },
-        build: (pw.Context context) {
-          return [
-            // 1. Header (Black & White)
-            pw.Row(
-              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text(settings.storeName.value,
-                        style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
-                    pw.SizedBox(height: 2),
-                    pw.Text('Sales   |   Service   |   Repair   |   Support',
-                        style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700)),
-                    pw.SizedBox(height: 12),
-                    pw.Text('INVOICE / BILL',
-                        style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
-                  ],
-                ),
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text('Phone: ${settings.storePhone.value}', style: const pw.TextStyle(fontSize: 10, color: PdfColors.black)),
-                    pw.SizedBox(height: 4),
-                    pw.Text('Email: ${settings.storeEmail.value}', style: const pw.TextStyle(fontSize: 10, color: PdfColors.black)),
-                    if (settings.storeWebsite.value.isNotEmpty) ...[
-                      pw.SizedBox(height: 4),
-                      pw.Text('Web: ${settings.storeWebsite.value}', style: const pw.TextStyle(fontSize: 10, color: PdfColors.black)),
-                    ],
-                    pw.SizedBox(height: 4),
-                    pw.Text('Address: ${settings.storeAddress.value}', style: const pw.TextStyle(fontSize: 10, color: PdfColors.black)),
-                  ],
-                ),
-              ],
-            ),
-
-            pw.SizedBox(height: 16),
-            pw.Divider(thickness: 1, color: PdfColors.black),
-            pw.SizedBox(height: 16),
-
-            // 2. Customer Details & Dates
-            pw.Text('Customer Details',
-                style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
-            pw.SizedBox(height: 8),
-            pw.Row(
-              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                pw.Expanded(
-                  child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.Text(nameText, style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
-                      if (phoneText.isNotEmpty) ...[
-                        pw.SizedBox(height: 3),
-                        pw.Text('Phone: $phoneText', style: const pw.TextStyle(fontSize: 11, color: PdfColors.grey800)),
-                      ],
-                      if (addressText.isNotEmpty) ...[
-                        pw.SizedBox(height: 3),
-                        pw.Text('Address: $addressText', style: const pw.TextStyle(fontSize: 11, color: PdfColors.grey800)),
-                      ],
-                      if (emailText.isNotEmpty) ...[
-                        pw.SizedBox(height: 3),
-                        pw.Text('Email: $emailText', style: const pw.TextStyle(fontSize: 11, color: PdfColors.grey800)),
-                      ],
-                    ],
-                  ),
-                ),
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.end,
-                  children: [
-                    pw.Text('Date :   $dateStr',
-                        style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
-                    pw.SizedBox(height: 4),
-                    pw.Text('Due Date :   $validStr',
-                        style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
-                  ],
-                ),
-              ],
-            ),
-
-            pw.SizedBox(height: 14),
-
-            // 3. Products / Services Table (Max 10 items)
-            pw.Container(
-              decoration: const pw.BoxDecoration(
-                border: pw.Border(
-                  bottom: pw.BorderSide(color: PdfColors.black, width: 1.5),
-                  top: pw.BorderSide(color: PdfColors.black, width: 1.5),
-                ),
-              ),
-              padding: const pw.EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-              child: pw.Row(
-                children: [
-                  pw.SizedBox(
-                    width: 40,
-                    child: pw.Text('NO',
-                        style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
-                  ),
-                  pw.Expanded(
-                    child: pw.Text('Product / Service Description',
-                        style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
-                  ),
-                  pw.SizedBox(
-                    width: 100,
-                    child: pw.Text('Amount',
-                        textAlign: pw.TextAlign.right,
-                        style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
-                  ),
-                ],
-              ),
-            ),
-
-            if (items.isEmpty)
-              pw.Padding(
-                padding: const pw.EdgeInsets.symmetric(vertical: 24),
-                child: pw.Center(
-                  child: pw.Text('No items added', style: const pw.TextStyle(fontSize: 12, color: PdfColors.grey700)),
-                ),
-              )
-            else
-              for (int idx = 0; idx < items.length; idx++)
-                pw.Container(
-                  decoration: const pw.BoxDecoration(
-                    border: pw.Border(
-                      bottom: pw.BorderSide(color: PdfColors.grey400, width: 0.5),
-                    ),
-                  ),
-                  padding: const pw.EdgeInsets.symmetric(vertical: 5, horizontal: 4),
-                  child: pw.Row(
-                    children: [
-                      pw.SizedBox(
-                        width: 40,
-                        child: pw.Text('${idx + 1}',
-                            style: const pw.TextStyle(fontSize: 11, color: PdfColors.black)),
-                      ),
-                      pw.Expanded(
-                        child: pw.Text(
-                          items[idx].quantity > 1
-                              ? '${items[idx].productName} (${items[idx].quantity} x ${_formatPdfCurrency(items[idx].price)})'
-                              : items[idx].productName,
-                          maxLines: 1,
-                          overflow: pw.TextOverflow.clip,
-                          style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.black),
-                        ),
-                      ),
-                      pw.SizedBox(
-                        width: 100,
-                        child: pw.Text(
-                          _formatPdfCurrency(items[idx].amount, showSign: true),
-                          textAlign: pw.TextAlign.right,
-                          style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.black),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-            pw.SizedBox(height: 10),
-
-            // 4. Totals (Right Aligned)
-            pw.Align(
-              alignment: pw.Alignment.centerRight,
-              child: pw.SizedBox(
-                width: 250,
-                child: pw.Column(
-                  children: [
-                    pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Text('Total',
-                            style: pw.TextStyle(fontSize: 12, fontWeight: isGst ? pw.FontWeight.normal : pw.FontWeight.bold, color: PdfColors.black)),
-                        pw.Text(_formatPdfCurrency(sub),
-                            style: pw.TextStyle(fontSize: 12, fontWeight: isGst ? pw.FontWeight.normal : pw.FontWeight.bold, color: PdfColors.black)),
-                      ],
-                    ),
-                    if (isGst) ...[
-                      pw.SizedBox(height: 6),
-                      pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                        children: [
-                          pw.Text('GST (${gstPct.toStringAsFixed(gstPct == gstPct.toInt() ? 0 : 1)}%)',
-                              style: const pw.TextStyle(fontSize: 11, color: PdfColors.black)),
-                          pw.Text(_formatPdfCurrency(gstAmt),
-                              style: const pw.TextStyle(fontSize: 11, color: PdfColors.black)),
-                        ],
-                      ),
-                      pw.SizedBox(height: 6),
-                      pw.Divider(thickness: 1, color: PdfColors.black),
-                      pw.SizedBox(height: 4),
-                      pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                        children: [
-                          pw.Text('Total Amount',
-                              style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
-                          pw.Text(_formatPdfCurrency(total),
-                              style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
-                        ],
-                      ),
-                    ] else ...[
-                      pw.SizedBox(height: 6),
-                      pw.Divider(thickness: 1, color: PdfColors.black),
-                      pw.SizedBox(height: 4),
-                      pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                        children: [
-                          pw.Text('Total Amount',
-                              style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
-                          pw.Text(_formatPdfCurrency(total),
-                              style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold, color: PdfColors.black)),
-                        ],
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-          ];
-        },
       ),
     );
 
-    await Printing.layoutPdf(
+    final bool printed = await SaaSPrintModal.show(
+      documentTitle: 'INVOICE / BILL',
+      documentNumber: nameText.replaceAll(' ', '_'),
+      customerName: nameText.isEmpty ? 'Walk-in Customer' : nameText,
+      totalAmountText: _formatPdfCurrency(total),
       onLayout: (PdfPageFormat format) async => doc.save(),
-      name: 'Invoice_Bill_${nameText.replaceAll(' ', '_')}',
     );
 
-    clearForm();
+    if (printed) {
+      clearForm();
+    }
   }
 
   String _formatDate(DateTime dt) {

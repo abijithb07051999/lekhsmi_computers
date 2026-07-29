@@ -282,7 +282,7 @@ class _AccountsViewState extends State<AccountsView> {
                                   },
                                   decoration: InputDecoration(
                                     hintText: 'e.g., 5000',
-                                    hintStyle: GoogleFonts.inter(fontSize: 13, color: const Color(AppColors.TEXTSECONDARY).withValues(alpha: 0.6)),
+                                    hintStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w400, color: const Color(AppColors.HINTTEXT)),
                                     prefixText: '₹ ',
                                     prefixStyle: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTPRIMARY)),
                                     filled: true,
@@ -328,7 +328,7 @@ class _AccountsViewState extends State<AccountsView> {
                                   validator: (val) => val == null || val.trim().isEmpty ? 'Enter reason / description' : null,
                                   decoration: InputDecoration(
                                     hintText: 'e.g., Laptop repair sale, Electricity bill, Store rent...',
-                                    hintStyle: GoogleFonts.inter(fontSize: 13, color: const Color(AppColors.TEXTSECONDARY).withValues(alpha: 0.6)),
+                                    hintStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w400, color: const Color(AppColors.HINTTEXT)),
                                     filled: true,
                                     fillColor: const Color(0xFFF8FAFC),
                                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

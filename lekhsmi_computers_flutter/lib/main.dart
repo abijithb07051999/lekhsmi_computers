@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lekhsmi_computers_flutter/app/routes/app_pages.dart';
 import 'package:lekhsmi_computers_flutter/app/routes/app_routes.dart';
 import 'package:lekhsmi_computers_flutter/binding/bindings.dart';
+import 'package:lekhsmi_computers_flutter/core/constants/app_colors.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 
@@ -33,7 +34,8 @@ void main() async {
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
       // Get visible screen display size (excluding OS taskbar/dock/menu bar so footer is never hidden/cut off)
       final Display primaryDisplay = await screenRetriever.getPrimaryDisplay();
-      final Size visibleSize = primaryDisplay.visibleSize ?? primaryDisplay.size;
+      final Size visibleSize =
+          primaryDisplay.visibleSize ?? primaryDisplay.size;
 
       // Enable resizing and maximizing so the OS Maximize/Restore button is enabled and clickable
       await windowManager.setResizable(true);
@@ -86,6 +88,13 @@ class MyApp extends StatelessWidget {
         onSurface: const Color(0xFF0F172A),
       ),
       textTheme: GoogleFonts.interTextTheme(baseTheme.textTheme),
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle: GoogleFonts.inter(
+          color: const Color(0xFF9CA3AF),
+          fontWeight: FontWeight.w400,
+          fontSize: 13,
+        ),
+      ),
       datePickerTheme: DatePickerThemeData(
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
@@ -94,12 +103,28 @@ class MyApp extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           side: const BorderSide(color: Color(0xFFE2E8F0), width: 1),
         ),
-        headerBackgroundColor: const Color(0xFF0F172A),
+        headerBackgroundColor: const Color(AppColors.PRIMARY),
         headerForegroundColor: Colors.white,
-        headerHeadlineStyle: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white),
-        headerHelpStyle: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFF94A3B8)),
-        weekdayStyle: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF64748B)),
-        dayStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF0F172A)),
+        headerHeadlineStyle: GoogleFonts.inter(
+          fontSize: 22,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+        ),
+        headerHelpStyle: GoogleFonts.inter(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFF94A3B8),
+        ),
+        weekdayStyle: GoogleFonts.inter(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          color: const Color(0xFF64748B),
+        ),
+        dayStyle: GoogleFonts.inter(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFF0F172A),
+        ),
         todayBorder: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
         todayForegroundColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) return Colors.white;
@@ -110,21 +135,25 @@ class MyApp extends StatelessWidget {
           return const Color(0xFF0F172A);
         }),
         dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) return const Color(0xFF2563EB);
+          if (states.contains(WidgetState.selected)) {
+            return const Color(0xFF2563EB);
+          }
           return Colors.transparent;
         }),
         yearStyle: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),
         cancelButtonStyle: ButtonStyle(
-          textStyle: WidgetStateProperty.all(GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
+          textStyle: WidgetStateProperty.all(
+            GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13),
+          ),
           foregroundColor: WidgetStateProperty.all(const Color(0xFF64748B)),
         ),
         confirmButtonStyle: ButtonStyle(
-          textStyle: WidgetStateProperty.all(GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
+          textStyle: WidgetStateProperty.all(
+            GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13),
+          ),
           foregroundColor: WidgetStateProperty.all(const Color(0xFF2563EB)),
         ),
       ),
     );
   }
 }
-
-

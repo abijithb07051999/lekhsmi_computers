@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
 import 'package:lekhsmi_computers_flutter/core/constants/app_colors.dart';
+import 'package:lekhsmi_computers_flutter/core/widgets/saas_date_picker.dart';
 import 'package:lekhsmi_computers_flutter/app/features/orders/controller/orders_controller.dart';
 
 class LiveHistoryOrdersView extends StatefulWidget {
@@ -62,6 +63,84 @@ class _LiveHistoryOrdersViewState extends State<LiveHistoryOrdersView> {
           item: item,
           controller: controller,
           formatDate: _formatDate,
+        );
+      },
+    );
+  }
+
+  void _showEditMoneyModal(BuildContext context, OrderHistory item) {
+    final amountCtrl = TextEditingController(text: item.amount.toString());
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            width: 400,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: const Color(AppColors.WHITE),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Update Order Amount',
+                  style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800, color: const Color(AppColors.TEXTPRIMARY)),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Order ID: #${item.order.orderId}',
+                  style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTSECONDARY)),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  'Price (₹)',
+                  style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: const Color(AppColors.TEXTPRIMARY)),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: amountCtrl,
+                  keyboardType: TextInputType.number,
+                  style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTPRIMARY)),
+                  decoration: InputDecoration(
+                    hintText: 'Enter new price',
+                    filled: true,
+                    fillColor: const Color(0xFFF8FAFC),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFCBD5E1))),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFCBD5E1))),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('Cancel', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTSECONDARY))),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final newAmount = int.tryParse(amountCtrl.text.trim()) ?? item.amount;
+                        await controller.updateOrderAmount(item, newAmount);
+                        if (context.mounted) Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(AppColors.PRIMARY),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: Text('Save', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
@@ -142,7 +221,8 @@ class _LiveHistoryOrdersViewState extends State<LiveHistoryOrdersView> {
                                   decoration: InputDecoration(
                                     hintText: 'Search live orders...',
                                     hintStyle: GoogleFonts.inter(
-                                      color: const Color(AppColors.TEXTSECONDARY).withValues(alpha: 0.6),
+                                      color: const Color(AppColors.HINTTEXT),
+                                      fontWeight: FontWeight.w400,
                                       fontSize: 13,
                                     ),
                                     prefixIcon: const Icon(Icons.search, size: 18, color: Color(AppColors.TEXTSECONDARY)),
@@ -522,6 +602,25 @@ class _LiveHistoryOrdersViewState extends State<LiveHistoryOrdersView> {
                       ),
                     ),
                   ),
+                  if (!isHistory) ...[
+                    const SizedBox(width: 8),
+                    InkWell(
+                      onTap: () => _showEditMoneyModal(context, item),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: const Color(AppColors.PRIMARY).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.edit_outlined,
+                          size: 16,
+                          color: Color(AppColors.PRIMARY),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
 
@@ -903,7 +1002,8 @@ class _OrderHistoryPopupDialogState extends State<_OrderHistoryPopupDialog> {
                     decoration: InputDecoration(
                       hintText: 'Search history...',
                       hintStyle: GoogleFonts.inter(
-                        color: const Color(AppColors.TEXTSECONDARY).withValues(alpha: 0.6),
+                        color: const Color(AppColors.HINTTEXT),
+                        fontWeight: FontWeight.w400,
                         fontSize: 13,
                       ),
                       prefixIcon: const Icon(Icons.search, size: 18, color: Color(AppColors.TEXTSECONDARY)),
@@ -1045,19 +1145,11 @@ class _EditOrderDialogState extends State<_EditOrderDialog> {
   }
 
   Future<void> _pickDate(BuildContext context) async {
-    final picked = await showDatePicker(
-      context: context,
+    final picked = await SaaSDatePicker.show(
+      context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-      builder: (context, child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            colorScheme: const ColorScheme.light(primary: Color(AppColors.PRIMARY)),
-          ),
-          child: child!,
-        );
-      },
+      lastDate: DateTime(2035),
     );
     if (picked != null) {
       setState(() {

@@ -406,7 +406,8 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
                                                   decoration: InputDecoration(
                                                     hintText: 'e.g., Laptop Keyboard Complaint, OS Installation',
                                                     hintStyle: GoogleFonts.inter(
-                                                      color: const Color(AppColors.TEXTSECONDARY).withValues(alpha: 0.5),
+                                                      color: const Color(AppColors.HINTTEXT),
+                                                      fontWeight: FontWeight.w400,
                                                       fontSize: 13,
                                                     ),
                                                     filled: true,

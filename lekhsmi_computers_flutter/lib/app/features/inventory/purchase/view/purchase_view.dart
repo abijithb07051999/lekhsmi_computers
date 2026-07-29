@@ -13,7 +13,7 @@ class _PurchaseItemFormRow {
   int quantity = 1;
   int unitPrice = 0;
 
-  final TextEditingController qtyCtrl = TextEditingController(text: '1');
+  final TextEditingController qtyCtrl = TextEditingController();
 
   int get subtotal => quantity * unitPrice;
 
@@ -177,7 +177,8 @@ class _PurchaseViewState extends State<PurchaseView> {
                         hintText: 'Search by Invoice No, Supplier, Status...',
                         hintStyle: GoogleFonts.inter(
                           fontSize: 13.5,
-                          color: const Color(AppColors.TEXTSECONDARY),
+                          fontWeight: FontWeight.w400,
+                          color: const Color(AppColors.HINTTEXT),
                         ),
                         prefixIcon: const Icon(
                           Icons.search_rounded,
@@ -432,7 +433,9 @@ class _PurchaseViewState extends State<PurchaseView> {
         borderColor = const Color(0xFF86EFAC);
         icon = Icons.check_circle_outline;
         break;
+      case 'partial':
       case 'partially paid':
+      case 'partially_paid':
         textColor = const Color(0xFFD97706);
         bgColor = const Color(0xFFFEF3C7);
         borderColor = const Color(0xFFFDE68A);
@@ -554,7 +557,7 @@ class _PurchaseViewState extends State<PurchaseView> {
     int? selectedSupplierId;
     DateTime selectedDate = DateTime.now();
     final itemRows = <_PurchaseItemFormRow>[_PurchaseItemFormRow()];
-    final paidCtrl = TextEditingController(text: '0');
+    final paidCtrl = TextEditingController();
 
     showDialog(
       context: context,
@@ -572,11 +575,11 @@ class _PurchaseViewState extends State<PurchaseView> {
             if (paidAmount > totalAmount) paidAmount = totalAmount;
             int dueAmount = totalAmount - paidAmount;
 
-            String derivedStatus = 'UNPAID';
-            if (totalAmount > 0 && paidAmount == totalAmount) {
-              derivedStatus = 'PAID';
-            } else if (paidAmount > 0 && paidAmount < totalAmount) {
-              derivedStatus = 'PARTIAL';
+            String derivedStatus = 'Unpaid';
+            if (paidAmount >= totalAmount && totalAmount > 0) {
+              derivedStatus = 'Paid';
+            } else if (paidAmount > 0) {
+              derivedStatus = 'Partially Paid';
             }
 
             return Dialog(
@@ -1043,15 +1046,16 @@ class _PurchaseViewState extends State<PurchaseView> {
 
   // --- EDIT PAYMENT MODAL ---
   void _showEditPaymentDialog(BuildContext context, Purchase purchase) {
-    final paidCtrl = TextEditingController(text: purchase.paidAmount.toString());
+    final paidCtrl = TextEditingController(text: '');
 
     showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setStateModal) {
-            int newPaid = int.tryParse(paidCtrl.text.trim()) ?? 0;
-            if (newPaid < 0) newPaid = 0;
+            int addedAmount = int.tryParse(paidCtrl.text.trim()) ?? 0;
+            if (addedAmount < 0) addedAmount = 0;
+            int newPaid = purchase.paidAmount + addedAmount;
             if (newPaid > purchase.totalAmount) newPaid = purchase.totalAmount;
             final dueAmount = purchase.totalAmount - newPaid;
 
@@ -1080,21 +1084,34 @@ class _PurchaseViewState extends State<PurchaseView> {
                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(AppColors.TEXTPRIMARY)),
                     ),
                     const SizedBox(height: 16),
-                    Text('Total Amount: ${_formatCurrency(purchase.totalAmount)}', style: _labelStyle),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Total Amount: ${_formatCurrency(purchase.totalAmount)}', style: _labelStyle),
+                        Text('Previously Paid: ${_formatCurrency(purchase.paidAmount)}', style: _labelStyle),
+                      ],
+                    ),
                     const SizedBox(height: 16),
-                    Text('Paid Amount (₹)', style: _labelStyle),
+                    Text('Add New Payment Amount (₹)', style: _labelStyle),
                     const SizedBox(height: 8),
                     TextField(
                       controller: paidCtrl,
                       keyboardType: TextInputType.number,
-                      decoration: _inputDecoration('Enter paid amount'),
+                      decoration: _inputDecoration('Enter amount to add'),
                       onChanged: (_) => setStateModal(() {}),
                     ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Remaining Due: ${_formatCurrency(dueAmount)}', style: const TextStyle(fontWeight: FontWeight.w700)),
+                        Text('New Total Paid: ${_formatCurrency(newPaid)}', style: const TextStyle(fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY))),
+                        Text('Remaining Due: ${_formatCurrency(dueAmount)}', style: const TextStyle(fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY))),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
                         _buildPaymentStatusBadge(status),
                       ],
                     ),
@@ -1378,7 +1395,7 @@ final TextStyle _labelStyle = GoogleFonts.inter(
 InputDecoration _inputDecoration(String hint) {
   return InputDecoration(
     hintText: hint,
-    hintStyle: GoogleFonts.inter(fontSize: 14, color: const Color(AppColors.TEXTSECONDARY)),
+    hintStyle: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w400, color: const Color(AppColors.HINTTEXT)),
     filled: true,
     fillColor: const Color(AppColors.WHITE),
     border: OutlineInputBorder(

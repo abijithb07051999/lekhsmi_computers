@@ -14,6 +14,7 @@ class SaaSDropdown {
     EdgeInsetsGeometry? padding,
     Widget? icon,
     TextStyle? style,
+    Widget? hint,
   }) {
     return Container(
       padding: padding ?? const EdgeInsets.symmetric(horizontal: 14),
@@ -25,6 +26,7 @@ class SaaSDropdown {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<T>(
           value: value,
+          hint: hint,
           items: items,
           onChanged: onChanged,
           isExpanded: isExpanded,
@@ -102,7 +104,7 @@ class SaaSDropdownFormField {
       ),
       decoration: decoration ?? InputDecoration(
         hintText: hintText,
-        hintStyle: GoogleFonts.inter(fontSize: 14, color: const Color(AppColors.TEXTSECONDARY)),
+        hintStyle: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w400, color: const Color(AppColors.HINTTEXT)),
         labelText: labelText,
         labelStyle: GoogleFonts.inter(fontSize: 14, color: const Color(AppColors.TEXTSECONDARY)),
         filled: true,
