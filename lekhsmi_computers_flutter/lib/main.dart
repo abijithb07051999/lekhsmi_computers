@@ -1,13 +1,46 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lekhsmi_computers_flutter/app/routes/app_pages.dart';
 import 'package:lekhsmi_computers_flutter/app/routes/app_routes.dart';
 import 'package:lekhsmi_computers_flutter/binding/bindings.dart';
-
+import 'package:window_manager/window_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Enforce horizontal screen only (Landscape orientation for Android tablets and phones) - No vertical screen or rotation
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+
+  // Desktop Window Configuration for Windows, Linux, and macOS
+  if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+    await windowManager.ensureInitialized();
+
+    const WindowOptions windowOptions = WindowOptions(
+      center: true,
+      skipTaskbar: false,
+      titleBarStyle: TitleBarStyle.normal,
+      title: "Lekhsmi Computers",
+    );
+
+    await windowManager.waitUntilReadyToShow(windowOptions, () async {
+      // Open maximized to take the default running screen size / full screen workspace
+      await windowManager.maximize();
+      // Disable resize button and border dragging
+      await windowManager.setResizable(false);
+      // Disable maximize button so only minimize and close buttons are active
+      await windowManager.setMaximizable(false);
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
+
   runApp(const MyApp());
 }
 

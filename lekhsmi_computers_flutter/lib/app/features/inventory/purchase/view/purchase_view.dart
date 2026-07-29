@@ -235,27 +235,42 @@ class _PurchaseViewState extends State<PurchaseView> {
                   )
                 : list.isEmpty
                     ? _buildEmptyState()
-                    : Column(
-                        children: [
-                          _buildTableHeader(),
-                          const SizedBox(height: 8),
-                          Expanded(
-                            child: ListView.separated(
-                              physics: const BouncingScrollPhysics(),
-                              padding: const EdgeInsets.fromLTRB(12, 4, 12, 20),
-                              itemCount: list.length,
-                              separatorBuilder: (context, index) => const Divider(
-                                height: 1,
-                                thickness: 1,
-                                color: Color(0xFFF1F5F9),
+                    : LayoutBuilder(
+                        builder: (context, constraints) {
+                          final double minWidth = 960.0;
+                          final double tableWidth = constraints.maxWidth < minWidth
+                              ? minWidth
+                              : constraints.maxWidth;
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            physics: const BouncingScrollPhysics(),
+                            child: SizedBox(
+                              width: tableWidth,
+                              child: Column(
+                                children: [
+                                  _buildTableHeader(),
+                                  const SizedBox(height: 8),
+                                  Expanded(
+                                    child: ListView.separated(
+                                      physics: const BouncingScrollPhysics(),
+                                      padding: const EdgeInsets.fromLTRB(12, 4, 12, 20),
+                                      itemCount: list.length,
+                                      separatorBuilder: (context, index) => const Divider(
+                                        height: 1,
+                                        thickness: 1,
+                                        color: Color(0xFFF1F5F9),
+                                      ),
+                                      itemBuilder: (context, index) {
+                                        final purchase = list[index];
+                                        return _buildTableRow(context, purchase, index + 1);
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
-                              itemBuilder: (context, index) {
-                                final purchase = list[index];
-                                return _buildTableRow(context, purchase, index + 1);
-                              },
                             ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
           ),
           const SizedBox(height: 20),

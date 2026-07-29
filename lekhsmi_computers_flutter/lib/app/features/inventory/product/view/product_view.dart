@@ -162,147 +162,178 @@ class _ProductViewState extends State<ProductView> {
           ),
           const Divider(height: 1, color: Color(0xFFF1F5F9)),
           const SizedBox(height: 12),
-          // Table Header
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              children: [
-                Expanded(flex: 1, child: Text('NO', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                Expanded(flex: 4, child: Text('Product', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                Expanded(flex: 3, child: Text('Category', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                Expanded(flex: 2, child: Text('Brand', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                Expanded(flex: 2, child: Text('Quality', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                Expanded(flex: 2, child: Text('Quantity', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                Expanded(flex: 2, child: Text('Buy Price [1 Unit]', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                Expanded(flex: 2, child: Text('Sell Price [1 Unit]', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                Expanded(flex: 2, child: Text('Profit [1 Unit]', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                Expanded(flex: 1, child: Text('Action', textAlign: TextAlign.right, style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          // Table Rows
+          // Table Header & Rows with horizontal scroll protection for tablets
           Expanded(
-            child: controller.isLoadingProducts.value
-                ? const Center(child: CircularProgressIndicator(color: Color(AppColors.PRIMARY)))
-                : controller.filteredProducts.isEmpty
-                    ? _buildEmptyState('No products found. Click "Add New Product" to create one.')
-                    : ListView.separated(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(12, 4, 12, 20),
-                        itemCount: controller.filteredProducts.length,
-                        separatorBuilder: (context, index) => const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                        itemBuilder: (context, index) {
-                          final p = controller.filteredProducts[index];
-                          final profit = p.sellPrice - p.buyPrice;
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Text(
-                                    '${index + 1}',
-                                    style: GoogleFonts.inter(
-                                      color: const Color(AppColors.TEXTSECONDARY),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final double minWidth = 980.0;
+                final double tableWidth = constraints.maxWidth < minWidth
+                    ? minWidth
+                    : constraints.maxWidth;
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  child: SizedBox(
+                    width: tableWidth,
+                    child: Column(
+                      children: [
+                        // Table Header
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF8FAFC),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(flex: 1, child: Text('NO', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 4, child: Text('Product', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 3, child: Text('Category', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 2, child: Text('Brand', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 2, child: Text('Quality', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 2, child: Text('Quantity', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 2, child: Text('Buy Price [1 Unit]', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 2, child: Text('Sell Price [1 Unit]', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 2, child: Text('Profit [1 Unit]', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 1, child: Text('Action', textAlign: TextAlign.right, style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        // Table Rows
+                        Expanded(
+                          child: controller.isLoadingProducts.value
+                              ? const Center(child: CircularProgressIndicator(color: Color(AppColors.PRIMARY)))
+                              : controller.filteredProducts.isEmpty
+                                  ? _buildEmptyState('No products found. Click "Add New Product" to create one.')
+                                  : ListView.separated(
+                                      physics: const BouncingScrollPhysics(),
+                                      padding: const EdgeInsets.fromLTRB(12, 4, 12, 20),
+                                      itemCount: controller.filteredProducts.length,
+                                      separatorBuilder: (context, index) => const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                                      itemBuilder: (context, index) {
+                                        final p = controller.filteredProducts[index];
+                                        final profit = p.sellPrice - p.buyPrice;
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                flex: 1,
+                                                child: Text(
+                                                  '${index + 1}',
+                                                  style: GoogleFonts.inter(
+                                                    color: const Color(AppColors.TEXTSECONDARY),
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 4,
+                                                child: Text(
+                                                  p.name,
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: GoogleFonts.inter(
+                                                    color: const Color(AppColors.TEXTPRIMARY),
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 3,
+                                                child: Text(
+                                                  controller.getCategoryName(p),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: GoogleFonts.inter(
+                                                    color: const Color(AppColors.TEXTSECONDARY),
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 2,
+                                                child: Text(
+                                                  controller.getBrandName(p),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: GoogleFonts.inter(
+                                                    color: const Color(AppColors.TEXTPRIMARY),
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 2,
+                                                child: Align(
+                                                  alignment: Alignment.centerLeft,
+                                                  child: _buildQualityText(p.quality),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 2,
+                                                child: Text(
+                                                  '${p.quantity}',
+                                                  style: GoogleFonts.inter(
+                                                    color: const Color(AppColors.TEXTPRIMARY),
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 2,
+                                                child: Text(
+                                                  _formatCurrency(p.buyPrice),
+                                                  style: GoogleFonts.inter(
+                                                    color: const Color(AppColors.TEXTPRIMARY),
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 2,
+                                                child: Text(
+                                                  _formatCurrency(p.sellPrice),
+                                                  style: GoogleFonts.inter(
+                                                    color: const Color(AppColors.TEXTPRIMARY),
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 2,
+                                                child: _buildProfitText(profit),
+                                              ),
+                                              Expanded(
+                                                flex: 1,
+                                                child: Align(
+                                                  alignment: Alignment.centerRight,
+                                                  child: _buildEditIconButton(
+                                                    onTap: () => _showProductDialog(context, product: p),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
                                     ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 4,
-                                  child: Text(
-                                    p.name,
-                                    style: GoogleFonts.inter(
-                                      color: const Color(AppColors.TEXTPRIMARY),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 3,
-                                  child: Text(
-                                    controller.getCategoryName(p),
-                                    style: GoogleFonts.inter(
-                                      color: const Color(AppColors.TEXTSECONDARY),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    controller.getBrandName(p),
-                                    style: GoogleFonts.inter(
-                                      color: const Color(AppColors.TEXTPRIMARY),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: _buildQualityText(p.quality),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    '${p.quantity}',
-                                    style: GoogleFonts.inter(
-                                      color: const Color(AppColors.TEXTPRIMARY),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    _formatCurrency(p.buyPrice),
-                                    style: GoogleFonts.inter(
-                                      color: const Color(AppColors.TEXTPRIMARY),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    _formatCurrency(p.sellPrice),
-                                    style: GoogleFonts.inter(
-                                      color: const Color(AppColors.TEXTPRIMARY),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: _buildProfitText(profit),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: _buildEditIconButton(
-                                      onTap: () => _showProductDialog(context, product: p),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
           const SizedBox(height: 20),
         ],

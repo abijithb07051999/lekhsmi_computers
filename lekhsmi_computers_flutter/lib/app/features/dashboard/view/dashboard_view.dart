@@ -62,12 +62,17 @@ class _DashboardViewState extends State<DashboardView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(AppColors.BACKGROUND),
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Modern Enterprise SaaS Sidebar
-          Container(
-            width: 270,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final double sidebarWidth = constraints.maxWidth < 950
+              ? 210.0
+              : (constraints.maxWidth < 1200 ? 240.0 : 270.0);
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Modern Enterprise SaaS Sidebar
+              Container(
+                width: sidebarWidth,
             decoration: const BoxDecoration(
               color: Color(0xFFFFFFFF),
               border: Border(
@@ -277,10 +282,12 @@ class _DashboardViewState extends State<DashboardView> {
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
+          ],
+        );
+      },
+    ),
+  );
+}
 
   Widget _buildMainContent() {
     switch (_selectedMenu) {
@@ -769,6 +776,7 @@ class _DashboardViewState extends State<DashboardView> {
     RxInt rxValue, {
     bool isCurrency = false,
   }) {
+    final isCompact = MediaQuery.of(Get.context!).size.width < 1200;
     final bgColor = const Color(AppColors.WHITE);
     final textColorPrimary = const Color(AppColors.TEXTPRIMARY);
     final textColorSecondary = const Color(AppColors.TEXTSECONDARY);
@@ -776,7 +784,7 @@ class _DashboardViewState extends State<DashboardView> {
     final iconColor = color;
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(isCompact ? 14 : 20),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(24),
@@ -792,23 +800,25 @@ class _DashboardViewState extends State<DashboardView> {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(isCompact ? 12 : 16),
             decoration: BoxDecoration(
               color: iconBgColor,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: HugeIcon(icon: icon, color: iconColor, size: 28),
+            child: HugeIcon(icon: icon, color: iconColor, size: isCompact ? 22 : 28),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: isCompact ? 10 : 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.plusJakartaSans(
                     color: textColorSecondary,
-                    fontSize: 13,
+                    fontSize: isCompact ? 11.5 : 13,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -827,9 +837,11 @@ class _DashboardViewState extends State<DashboardView> {
                       : value.toString();
                   return Text(
                     displayValue,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.plusJakartaSans(
                       color: textColorPrimary,
-                      fontSize: 24,
+                      fontSize: isCompact ? 19 : 24,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.5,
                     ),
