@@ -31,20 +31,21 @@ void main() async {
     );
 
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
-      // Get physical screen display size
+      // Get visible screen display size (excluding OS taskbar/dock/menu bar so footer is never hidden/cut off)
       final Display primaryDisplay = await screenRetriever.getPrimaryDisplay();
-      final Size screenSize = primaryDisplay.size;
+      final Size visibleSize = primaryDisplay.visibleSize ?? primaryDisplay.size;
 
       // Enable resizing and maximizing so the OS Maximize/Restore button is enabled and clickable
       await windowManager.setResizable(true);
       await windowManager.setMaximizable(true);
 
-      // Set default normal window size to physical screen size
-      await windowManager.setSize(screenSize);
+      // Set default normal window size to visible screen size
+      await windowManager.setSize(visibleSize);
       await windowManager.center();
 
-      // Lock minimum size to physical screen size so cursor border dragging cannot manually resize the window smaller
-      await windowManager.setMinimumSize(screenSize);
+      // Lock minimum size and maximum size to visible screen size so cursor border dragging cannot manually resize the window
+      await windowManager.setMinimumSize(visibleSize);
+      await windowManager.setMaximumSize(visibleSize);
 
       // Open maximized by default
       await windowManager.maximize();
