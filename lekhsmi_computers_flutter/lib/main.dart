@@ -30,12 +30,12 @@ void main() async {
     );
 
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
-      // Open maximized to take the default running screen size / full screen workspace
-      await windowManager.maximize();
-      // Disable resize button and border dragging
-      await windowManager.setResizable(false);
+      // Enable resizable so the OS Maximize button is active and enabled
+      await windowManager.setResizable(true);
       // Enable maximize button as requested
       await windowManager.setMaximizable(true);
+      // Open maximized to take the default running screen size / full screen workspace
+      await windowManager.maximize();
       await windowManager.show();
       await windowManager.focus();
     });
