@@ -1013,6 +1013,8 @@ class _DashboardViewState extends State<DashboardView> {
                           flex: 3,
                           child: Text(
                             s.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.plusJakartaSans(
                               color: const Color(AppColors.TEXTPRIMARY),
                               fontSize: 13,
@@ -1319,299 +1321,338 @@ class _DashboardViewState extends State<DashboardView> {
             onViewAll: () => _navigateToMenu('Stocks'),
           ),
           const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: Text(
-                    'Product Name',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Category',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Brand',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Quality',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Buy Price',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Sell Price',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Profit',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Text(
-                    'Action',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.plusJakartaSans(
-                      color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 4),
           Expanded(
-            child: Obx(() {
-              if (controller.isLoading.value &&
-                  controller.outOfStockProducts.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              final products = controller.outOfStockProducts;
-              if (products.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      HugeIcon(
-                        icon: AppIcons.INVENTORYICON,
-                        color: const Color(
-                          AppColors.TEXTSECONDARY,
-                        ).withValues(alpha: 0.4),
-                        size: 36,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'No products are out of stock',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: const Color(AppColors.TEXTSECONDARY),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              return ListView.separated(
-                physics: const BouncingScrollPhysics(),
-                itemCount: products.length,
-                separatorBuilder: (context, index) =>
-                    const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                itemBuilder: (context, index) {
-                  final p = products[index];
-                  final profit = p.sellPrice - p.buyPrice;
-                  final isRefurbish = p.quality.toLowerCase().contains(
-                    'refurbish',
-                  );
-                  final qualityColor = isRefurbish
-                      ? const Color(AppColors.WARNING)
-                      : const Color(AppColors.INFO);
-                  final qualityBg = isRefurbish
-                      ? const Color(AppColors.WARNING).withValues(alpha: 0.12)
-                      : const Color(AppColors.INFO).withValues(alpha: 0.12);
-
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 12,
-                    ),
-                    child: Row(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final double minWidth = 860.0;
+                final double tableWidth = constraints.maxWidth < minWidth
+                    ? minWidth
+                    : constraints.maxWidth;
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  child: SizedBox(
+                    width: tableWidth,
+                    child: Column(
                       children: [
-                        Expanded(
-                          flex: 3,
-                          child: Text(
-                            p.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.plusJakartaSans(
-                              color: const Color(AppColors.TEXTPRIMARY),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF8FAFC),
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Text(
-                            controller.getCategoryName(p),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.plusJakartaSans(
-                              color: const Color(AppColors.TEXTSECONDARY),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Text(
-                            controller.getBrandName(p),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.plusJakartaSans(
-                              color: const Color(AppColors.TEXTSECONDARY),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: qualityBg,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                p.quality,
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: qualityColor,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  'Product Name',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: const Color(AppColors.TEXTSECONDARY),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Text(
-                            '₹${p.buyPrice}',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.plusJakartaSans(
-                              color: const Color(AppColors.TEXTSECONDARY),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Text(
-                            '₹${p.sellPrice}',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.plusJakartaSans(
-                              color: const Color(AppColors.TEXTPRIMARY),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Text(
-                            '₹$profit',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.plusJakartaSans(
-                              color: const Color(AppColors.SUCCESS),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Center(
-                            child: IconButton(
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              icon: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: const Color(
-                                    AppColors.PRIMARY,
-                                  ).withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: const HugeIcon(
-                                  icon: AppIcons.EDITICON,
-                                  color: Color(AppColors.PRIMARY),
-                                  size: 16,
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  'Category',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: const Color(AppColors.TEXTSECONDARY),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ),
-                              onPressed: () {
-                                _onMenuSelected('Stocks');
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  'Brand',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: const Color(AppColors.TEXTSECONDARY),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  'Quality',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: const Color(AppColors.TEXTSECONDARY),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  'Buy Price',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: const Color(AppColors.TEXTSECONDARY),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  'Sell Price',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: const Color(AppColors.TEXTSECONDARY),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  'Profit',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: const Color(AppColors.TEXTSECONDARY),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Text(
+                                  'Action',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: const Color(AppColors.TEXTSECONDARY),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Expanded(
+                          child: Obx(() {
+                            if (controller.isLoading.value &&
+                                controller.outOfStockProducts.isEmpty) {
+                              return const Center(child: CircularProgressIndicator());
+                            }
+                            final products = controller.outOfStockProducts;
+                            if (products.isEmpty) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    HugeIcon(
+                                      icon: AppIcons.INVENTORYICON,
+                                      color: const Color(
+                                        AppColors.TEXTSECONDARY,
+                                      ).withValues(alpha: 0.4),
+                                      size: 36,
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      'No products are out of stock',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        color: const Color(AppColors.TEXTSECONDARY),
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            return ListView.separated(
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: products.length,
+                              separatorBuilder: (context, index) =>
+                                  const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                              itemBuilder: (context, index) {
+                                final p = products[index];
+                                final profit = p.sellPrice - p.buyPrice;
+                                final isRefurbish = p.quality.toLowerCase().contains(
+                                  'refurbish',
+                                );
+                                final qualityColor = isRefurbish
+                                    ? const Color(AppColors.WARNING)
+                                    : const Color(AppColors.INFO);
+                                final qualityBg = isRefurbish
+                                    ? const Color(AppColors.WARNING).withValues(alpha: 0.12)
+                                    : const Color(AppColors.INFO).withValues(alpha: 0.12);
+
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 12,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 3,
+                                        child: Text(
+                                          p.name,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            color: const Color(AppColors.TEXTPRIMARY),
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Text(
+                                          controller.getCategoryName(p),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            color: const Color(AppColors.TEXTSECONDARY),
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Text(
+                                          controller.getBrandName(p),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            color: const Color(AppColors.TEXTPRIMARY),
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: qualityBg,
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              p.quality,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: GoogleFonts.plusJakartaSans(
+                                                color: qualityColor,
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Text(
+                                          '₹${p.buyPrice}',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            color: const Color(AppColors.TEXTSECONDARY),
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Text(
+                                          '₹${p.sellPrice}',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            color: const Color(AppColors.TEXTPRIMARY),
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Text(
+                                          '₹$profit',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            color: const Color(AppColors.SUCCESS),
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Center(
+                                          child: IconButton(
+                                            padding: EdgeInsets.zero,
+                                            constraints: const BoxConstraints(),
+                                            icon: Container(
+                                              padding: const EdgeInsets.all(8),
+                                              decoration: BoxDecoration(
+                                                color: const Color(
+                                                  AppColors.PRIMARY,
+                                                ).withValues(alpha: 0.1),
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: const HugeIcon(
+                                                icon: AppIcons.EDITICON,
+                                                color: Color(AppColors.PRIMARY),
+                                                size: 16,
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              _onMenuSelected('Stocks');
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
                               },
-                            ),
-                          ),
+                            );
+                          }),
                         ),
                       ],
                     ),
-                  );
-                },
-              );
-            }),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),

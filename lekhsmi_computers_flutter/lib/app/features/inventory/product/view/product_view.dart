@@ -45,10 +45,13 @@ class _ProductViewState extends State<ProductView> {
         color: Color(AppColors.WHITE),
         border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0), width: 1)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        runSpacing: 12,
         children: [
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 'Products & Stock Inventory',
@@ -78,6 +81,7 @@ class _ProductViewState extends State<ProductView> {
             ],
           ),
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -87,6 +91,7 @@ class _ProductViewState extends State<ProductView> {
                   border: Border.all(color: const Color(0xFFE2E8F0)),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(Icons.calendar_today_rounded, size: 14, color: Color(AppColors.TEXTSECONDARY)),
                     const SizedBox(width: 8),
@@ -166,7 +171,7 @@ class _ProductViewState extends State<ProductView> {
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final double minWidth = 980.0;
+                final double minWidth = 1080.0;
                 final double tableWidth = constraints.maxWidth < minWidth
                     ? minWidth
                     : constraints.maxWidth;
@@ -187,16 +192,16 @@ class _ProductViewState extends State<ProductView> {
                           ),
                           child: Row(
                             children: [
-                              Expanded(flex: 1, child: Text('NO', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                              Expanded(flex: 4, child: Text('Product', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                              Expanded(flex: 3, child: Text('Category', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                              Expanded(flex: 2, child: Text('Brand', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                              Expanded(flex: 2, child: Text('Quality', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                              Expanded(flex: 2, child: Text('Quantity', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                              Expanded(flex: 2, child: Text('Buy Price [1 Unit]', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                              Expanded(flex: 2, child: Text('Sell Price [1 Unit]', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                              Expanded(flex: 2, child: Text('Profit [1 Unit]', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
-                              Expanded(flex: 1, child: Text('Action', textAlign: TextAlign.right, style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 1, child: Text('NO', maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 4, child: Text('Product', maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 3, child: Text('Category', maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 2, child: Text('Brand', maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 2, child: Text('Quality', maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 2, child: Text('Quantity', maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 2, child: Text('Buy Price', maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 2, child: Text('Sell Price', maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 2, child: Text('Profit', maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
+                              Expanded(flex: 1, child: Text('Action', maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.right, style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 12, fontWeight: FontWeight.w700))),
                             ],
                           ),
                         ),
@@ -223,6 +228,8 @@ class _ProductViewState extends State<ProductView> {
                                                 flex: 1,
                                                 child: Text(
                                                   '${index + 1}',
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
                                                   style: GoogleFonts.inter(
                                                     color: const Color(AppColors.TEXTSECONDARY),
                                                     fontSize: 13,
@@ -280,6 +287,8 @@ class _ProductViewState extends State<ProductView> {
                                                 flex: 2,
                                                 child: Text(
                                                   '${p.quantity}',
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
                                                   style: GoogleFonts.inter(
                                                     color: const Color(AppColors.TEXTPRIMARY),
                                                     fontSize: 13,
@@ -291,6 +300,8 @@ class _ProductViewState extends State<ProductView> {
                                                 flex: 2,
                                                 child: Text(
                                                   _formatCurrency(p.buyPrice),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
                                                   style: GoogleFonts.inter(
                                                     color: const Color(AppColors.TEXTPRIMARY),
                                                     fontSize: 13,
@@ -302,6 +313,8 @@ class _ProductViewState extends State<ProductView> {
                                                 flex: 2,
                                                 child: Text(
                                                   _formatCurrency(p.sellPrice),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
                                                   style: GoogleFonts.inter(
                                                     color: const Color(AppColors.TEXTPRIMARY),
                                                     fontSize: 13,
@@ -355,6 +368,8 @@ class _ProductViewState extends State<ProductView> {
     }
     return Text(
       quality,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
       style: GoogleFonts.inter(
         color: textColor,
         fontSize: 13,
@@ -369,6 +384,8 @@ class _ProductViewState extends State<ProductView> {
     final formatted = _formatCurrency(absVal);
     return Text(
       isNegative ? '-$formatted' : formatted,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
       style: GoogleFonts.inter(
         color: isNegative ? const Color(0xFFEF4444) : const Color(0xFF10B981),
         fontSize: 13,
