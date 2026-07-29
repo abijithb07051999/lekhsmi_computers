@@ -28,9 +28,7 @@ class _ProductViewState extends State<ProductView> {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(28, 16, 28, 28),
-            child: Obx(() {
-              return _buildProductsTableSection(context);
-            }),
+            child: _buildProductsTableSection(context),
           ),
         ),
       ],
@@ -208,7 +206,7 @@ class _ProductViewState extends State<ProductView> {
                         const SizedBox(height: 8),
                         // Table Rows
                         Expanded(
-                          child: controller.isLoadingProducts.value
+                          child: Obx(() => controller.isLoadingProducts.value
                               ? const Center(child: CircularProgressIndicator(color: Color(AppColors.PRIMARY)))
                               : controller.filteredProducts.isEmpty
                                   ? _buildEmptyState('No products found. Click "Add New Product" to create one.')
@@ -340,6 +338,7 @@ class _ProductViewState extends State<ProductView> {
                                         );
                                       },
                                     ),
+                          ),
                         ),
                       ],
                     ),

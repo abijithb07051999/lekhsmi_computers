@@ -42,9 +42,7 @@ class _PurchaseViewState extends State<PurchaseView> {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(28, 16, 28, 28),
-            child: Obx(() {
-              return _buildPurchasesTableSection(context);
-            }),
+            child: _buildPurchasesTableSection(context),
           ),
         ),
       ],
@@ -140,8 +138,6 @@ class _PurchaseViewState extends State<PurchaseView> {
   }
 
   Widget _buildPurchasesTableSection(BuildContext context) {
-    final list = controller.filteredPurchases;
-
     return Container(
       decoration: BoxDecoration(
         color: const Color(AppColors.WHITE),
@@ -229,49 +225,54 @@ class _PurchaseViewState extends State<PurchaseView> {
           const SizedBox(height: 12),
           // Table Section
           Expanded(
-            child: controller.isLoadingPurchases.value
-                ? const Center(
-                    child: CircularProgressIndicator(color: Color(AppColors.PRIMARY)),
-                  )
-                : list.isEmpty
-                    ? _buildEmptyState()
-                    : LayoutBuilder(
-                        builder: (context, constraints) {
-                          final double minWidth = 960.0;
-                          final double tableWidth = constraints.maxWidth < minWidth
-                              ? minWidth
-                              : constraints.maxWidth;
-                          return SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            physics: const BouncingScrollPhysics(),
-                            child: SizedBox(
-                              width: tableWidth,
-                              child: Column(
-                                children: [
-                                  _buildTableHeader(),
-                                  const SizedBox(height: 8),
-                                  Expanded(
-                                    child: ListView.separated(
-                                      physics: const BouncingScrollPhysics(),
-                                      padding: const EdgeInsets.fromLTRB(12, 4, 12, 20),
-                                      itemCount: list.length,
-                                      separatorBuilder: (context, index) => const Divider(
-                                        height: 1,
-                                        thickness: 1,
-                                        color: Color(0xFFF1F5F9),
-                                      ),
-                                      itemBuilder: (context, index) {
-                                        final purchase = list[index];
-                                        return _buildTableRow(context, purchase, index + 1);
-                                      },
-                                    ),
-                                  ),
-                                ],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final double minWidth = 960.0;
+                final double tableWidth = constraints.maxWidth < minWidth
+                    ? minWidth
+                    : constraints.maxWidth;
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  child: SizedBox(
+                    width: tableWidth,
+                    child: Column(
+                      children: [
+                        _buildTableHeader(),
+                        const SizedBox(height: 8),
+                        Expanded(
+                          child: Obx(() {
+                            final list = controller.filteredPurchases;
+                            if (controller.isLoadingPurchases.value) {
+                              return const Center(
+                                child: CircularProgressIndicator(color: Color(AppColors.PRIMARY)),
+                              );
+                            }
+                            if (list.isEmpty) {
+                              return _buildEmptyState();
+                            }
+                            return ListView.separated(
+                              physics: const BouncingScrollPhysics(),
+                              padding: const EdgeInsets.fromLTRB(12, 4, 12, 20),
+                              itemCount: list.length,
+                              separatorBuilder: (context, index) => const Divider(
+                                height: 1,
+                                thickness: 1,
+                                color: Color(0xFFF1F5F9),
                               ),
-                            ),
-                          );
-                        },
-                      ),
+                              itemBuilder: (context, index) {
+                                final purchase = list[index];
+                                return _buildTableRow(context, purchase, index + 1);
+                              },
+                            );
+                          }),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
           const SizedBox(height: 20),
         ],

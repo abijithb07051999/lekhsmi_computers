@@ -26,15 +26,15 @@ class SettingsView extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(28, 20, 28, 20),
               child: Column(
                 children: [
-                  // Top Section: Store Identity Card (30% space - flex 3)
+                  // Top Section: Store Identity Card (36% space - flex 36)
                   Expanded(
-                    flex: 3,
+                    flex: 36,
                     child: _buildStoreIdentityCard(context, controller),
                   ),
                   const SizedBox(height: 16),
-                  // Bottom Section: LoopSpring Technologies Portfolio Showcase (70% space - flex 7)
+                  // Bottom Section: LoopSpring Technologies Portfolio Showcase (64% space - flex 64)
                   Expanded(
-                    flex: 7,
+                    flex: 64,
                     child: _buildPortfolioShowcaseCard(),
                   ),
                 ],
@@ -268,61 +268,69 @@ class SettingsView extends StatelessWidget {
                     ],
                   ),
 
-                  // 2. MIDDLE: Sleek System Sync & Verification Card (Fills the middle space beautifully!)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.verified_rounded,
-                              color: Color(0xFF10B981),
-                              size: 16,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              'ACTIVE & VERIFIED BUSINESS IDENTITY',
-                              style: GoogleFonts.inter(
-                                fontSize: 10.5,
-                                fontWeight: FontWeight.w800,
-                                color: const Color(0xFF0F172A),
-                                letterSpacing: 0.6,
+                  // 2. MIDDLE: Sleek System Sync & Verification Card (Fills the middle space beautifully with scroll protection)
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFFE2E8F0)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.verified_rounded,
+                                    color: Color(0xFF10B981),
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'ACTIVE & VERIFIED BUSINESS IDENTITY',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.w800,
+                                      color: const Color(0xFF0F172A),
+                                      letterSpacing: 0.6,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Store details automatically synchronize across all PDF Quotations, Invoice Bills, and customer documents.',
-                          style: GoogleFonts.inter(
-                            fontSize: 11.5,
-                            color: const Color(0xFF64748B),
-                            height: 1.3,
+                              const SizedBox(height: 6),
+                              Text(
+                                'Store details automatically synchronize across all PDF Quotations, Invoice Bills, and customer documents.',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11.5,
+                                  color: const Color(0xFF64748B),
+                                  height: 1.3,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 6,
+                                children: [
+                                  _buildSyncTag(
+                                      'Quotation Sync', Icons.check_circle_rounded),
+                                  _buildSyncTag(
+                                      'Invoice Bill Sync', Icons.check_circle_rounded),
+                                  _buildSyncTag(
+                                      'PDF Print Ready', Icons.check_circle_rounded),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 6,
-                          children: [
-                            _buildSyncTag(
-                                'Quotation Sync', Icons.check_circle_rounded),
-                            _buildSyncTag(
-                                'Invoice Bill Sync', Icons.check_circle_rounded),
-                            _buildSyncTag(
-                                'PDF Print Ready', Icons.check_circle_rounded),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
                   ),
 

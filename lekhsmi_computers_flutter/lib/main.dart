@@ -34,8 +34,8 @@ void main() async {
       await windowManager.maximize();
       // Disable resize button and border dragging
       await windowManager.setResizable(false);
-      // Disable maximize button so only minimize and close buttons are active
-      await windowManager.setMaximizable(false);
+      // Enable maximize button as requested
+      await windowManager.setMaximizable(true);
       await windowManager.show();
       await windowManager.focus();
     });
