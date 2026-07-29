@@ -8,6 +8,7 @@ import 'package:lekhsmi_computers_flutter/app/routes/app_pages.dart';
 import 'package:lekhsmi_computers_flutter/app/routes/app_routes.dart';
 import 'package:lekhsmi_computers_flutter/binding/bindings.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:screen_retriever/screen_retriever.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,11 +31,22 @@ void main() async {
     );
 
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
-      // Enable resizable so the OS Maximize button is active and enabled
+      // Get physical screen display size
+      final Display primaryDisplay = await screenRetriever.getPrimaryDisplay();
+      final Size screenSize = primaryDisplay.size;
+
+      // Enable resizing and maximizing so the OS Maximize/Restore button is enabled and clickable
       await windowManager.setResizable(true);
-      // Enable maximize button as requested
       await windowManager.setMaximizable(true);
-      // Open maximized to take the default running screen size / full screen workspace
+
+      // Set default normal window size to physical screen size
+      await windowManager.setSize(screenSize);
+      await windowManager.center();
+
+      // Lock minimum size to physical screen size so cursor border dragging cannot manually resize the window smaller
+      await windowManager.setMinimumSize(screenSize);
+
+      // Open maximized by default
       await windowManager.maximize();
       await windowManager.show();
       await windowManager.focus();

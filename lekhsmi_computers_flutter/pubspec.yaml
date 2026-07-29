@@ -39,6 +39,7 @@ dependencies:
   printing: ^5.15.0
   google_fonts: ^6.2.1
   window_manager: ^0.5.2
+  screen_retriever: ^0.2.0
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
