@@ -35,6 +35,9 @@ dependencies:
     path: ../lekhsmi_computers_client
   serverpod_auth_idp_flutter: 3.4.11
   serverpod_flutter: 3.4.11
+  pdf: ^3.13.0
+  printing: ^5.15.0
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
@@ -64,6 +67,7 @@ flutter:
   # https://flutter.dev/assets-and-images/#from-packages
   assets:
     - assets/config.json
+    - assets/logo/
 dependency_overrides:
   flutter_secure_storage: ^10.0.0
 

@@ -1,0 +1,10 @@
+class: Purchase
+table: purchase
+fields:
+  invoiceNo: String
+  date: DateTime
+  supplier: Supplier?, relation
+  totalAmount: int
+  paidAmount: int
+  dueAmount: int
+  paymentStatus: String

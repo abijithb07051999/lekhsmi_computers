@@ -47,6 +47,12 @@ product:
   - addNewProduct:
   - updateExistingProduct:
   - deleteExistingProduct:
+purchase:
+  - getAllPurchases:
+  - getPurchaseItems:
+  - createPurchase:
+  - updatePurchase:
+  - deletePurchase:
 supplier:
   - getAllSuppliers:
   - addNewSupplier:
@@ -63,3 +69,6 @@ order:
   - updateOrderStatus:
   - getAllOngoingAndPendingOrders:
   - getAllCompletedAndConcelledOrders:
+profile:
+  - getProfile:
+  - saveProfile:

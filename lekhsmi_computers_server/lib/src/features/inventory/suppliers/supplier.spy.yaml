@@ -5,3 +5,4 @@ fields:
   address: String
   contact1: int
   contact2: int
+  status: bool

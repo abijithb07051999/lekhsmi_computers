@@ -20,6 +20,7 @@ abstract class Supplier
     required this.address,
     required this.contact1,
     required this.contact2,
+    required this.status,
   });
 
   factory Supplier({
@@ -28,6 +29,7 @@ abstract class Supplier
     required String address,
     required int contact1,
     required int contact2,
+    required bool status,
   }) = _SupplierImpl;
 
   factory Supplier.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,6 +39,7 @@ abstract class Supplier
       address: jsonSerialization['address'] as String,
       contact1: jsonSerialization['contact1'] as int,
       contact2: jsonSerialization['contact2'] as int,
+      status: _i1.BoolJsonExtension.fromJson(jsonSerialization['status']),
     );
   }
 
@@ -55,6 +58,8 @@ abstract class Supplier
 
   int contact2;
 
+  bool status;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -67,6 +72,7 @@ abstract class Supplier
     String? address,
     int? contact1,
     int? contact2,
+    bool? status,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -77,6 +83,7 @@ abstract class Supplier
       'address': address,
       'contact1': contact1,
       'contact2': contact2,
+      'status': status,
     };
   }
 
@@ -89,6 +96,7 @@ abstract class Supplier
       'address': address,
       'contact1': contact1,
       'contact2': contact2,
+      'status': status,
     };
   }
 
@@ -131,12 +139,14 @@ class _SupplierImpl extends Supplier {
     required String address,
     required int contact1,
     required int contact2,
+    required bool status,
   }) : super._(
          id: id,
          name: name,
          address: address,
          contact1: contact1,
          contact2: contact2,
+         status: status,
        );
 
   /// Returns a shallow copy of this [Supplier]
@@ -149,6 +159,7 @@ class _SupplierImpl extends Supplier {
     String? address,
     int? contact1,
     int? contact2,
+    bool? status,
   }) {
     return Supplier(
       id: id is int? ? id : this.id,
@@ -156,6 +167,7 @@ class _SupplierImpl extends Supplier {
       address: address ?? this.address,
       contact1: contact1 ?? this.contact1,
       contact2: contact2 ?? this.contact2,
+      status: status ?? this.status,
     );
   }
 }
@@ -182,6 +194,11 @@ class SupplierUpdateTable extends _i1.UpdateTable<SupplierTable> {
     table.contact2,
     value,
   );
+
+  _i1.ColumnValue<bool, bool> status(bool value) => _i1.ColumnValue(
+    table.status,
+    value,
+  );
 }
 
 class SupplierTable extends _i1.Table<int?> {
@@ -203,6 +220,10 @@ class SupplierTable extends _i1.Table<int?> {
       'contact2',
       this,
     );
+    status = _i1.ColumnBool(
+      'status',
+      this,
+    );
   }
 
   late final SupplierUpdateTable updateTable;
@@ -215,6 +236,8 @@ class SupplierTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt contact2;
 
+  late final _i1.ColumnBool status;
+
   @override
   List<_i1.Column> get columns => [
     id,
@@ -222,6 +245,7 @@ class SupplierTable extends _i1.Table<int?> {
     address,
     contact1,
     contact2,
+    status,
   ];
 }
 

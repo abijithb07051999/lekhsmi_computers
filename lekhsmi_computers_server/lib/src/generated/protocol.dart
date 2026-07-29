@@ -23,27 +23,34 @@ import 'features/accounts/income/income.dart' as _i8;
 import 'features/inventory/brands/brand.dart' as _i9;
 import 'features/inventory/categories/category.dart' as _i10;
 import 'features/inventory/products/product.dart' as _i11;
-import 'features/inventory/suppliers/supplier.dart' as _i12;
-import 'features/orders/order.dart' as _i13;
-import 'features/orders/order_history.dart' as _i14;
+import 'features/inventory/purchase/purchase.dart' as _i12;
+import 'features/inventory/purchase/purchase_item.dart' as _i13;
+import 'features/inventory/suppliers/supplier.dart' as _i14;
+import 'features/orders/order.dart' as _i15;
+import 'features/orders/order_history.dart' as _i16;
+import 'features/profile/profile.dart' as _i17;
 import 'package:lekhsmi_computers_server/src/generated/features/accounts/accounts_report/accounts_report.dart'
-    as _i15;
-import 'package:lekhsmi_computers_server/src/generated/features/accounts/expense/expense.dart'
-    as _i16;
-import 'package:lekhsmi_computers_server/src/generated/features/accounts/income/income.dart'
-    as _i17;
-import 'package:lekhsmi_computers_server/src/generated/features/inventory/suppliers/supplier.dart'
     as _i18;
-import 'package:lekhsmi_computers_server/src/generated/features/inventory/products/product.dart'
+import 'package:lekhsmi_computers_server/src/generated/features/accounts/expense/expense.dart'
     as _i19;
-import 'package:lekhsmi_computers_server/src/generated/features/orders/order_history.dart'
+import 'package:lekhsmi_computers_server/src/generated/features/accounts/income/income.dart'
     as _i20;
-import 'package:lekhsmi_computers_server/src/generated/features/inventory/brands/brand.dart'
+import 'package:lekhsmi_computers_server/src/generated/features/inventory/suppliers/supplier.dart'
     as _i21;
-import 'package:lekhsmi_computers_server/src/generated/features/inventory/categories/category.dart'
+import 'package:lekhsmi_computers_server/src/generated/features/inventory/products/product.dart'
     as _i22;
-import 'package:lekhsmi_computers_server/src/generated/features/orders/order.dart'
+import 'package:lekhsmi_computers_server/src/generated/features/orders/order_history.dart'
     as _i23;
+import 'package:lekhsmi_computers_server/src/generated/features/inventory/brands/brand.dart'
+    as _i24;
+import 'package:lekhsmi_computers_server/src/generated/features/inventory/categories/category.dart'
+    as _i25;
+import 'package:lekhsmi_computers_server/src/generated/features/inventory/purchase/purchase.dart'
+    as _i26;
+import 'package:lekhsmi_computers_server/src/generated/features/inventory/purchase/purchase_item.dart'
+    as _i27;
+import 'package:lekhsmi_computers_server/src/generated/features/orders/order.dart'
+    as _i28;
 export 'features/accounts/accounts_report/accounts_report.dart';
 export 'features/accounts/accounts_report/month_report.dart';
 export 'features/accounts/expense/expense.dart';
@@ -51,9 +58,12 @@ export 'features/accounts/income/income.dart';
 export 'features/inventory/brands/brand.dart';
 export 'features/inventory/categories/category.dart';
 export 'features/inventory/products/product.dart';
+export 'features/inventory/purchase/purchase.dart';
+export 'features/inventory/purchase/purchase_item.dart';
 export 'features/inventory/suppliers/supplier.dart';
 export 'features/orders/order.dart';
 export 'features/orders/order_history.dart';
+export 'features/profile/profile.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -487,6 +497,230 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'profile',
+      dartName: 'Profile',
+      schema: 'public',
+      module: 'lekhsmi_computers',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'profile_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'storeName',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'phone',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'email',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'website',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'address',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'profile_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'purchase',
+      dartName: 'Purchase',
+      schema: 'public',
+      module: 'lekhsmi_computers',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'purchase_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'invoiceNo',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'date',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'supplierId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'totalAmount',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'paidAmount',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'dueAmount',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'paymentStatus',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'purchase_fk_0',
+          columns: ['supplierId'],
+          referenceTable: 'supplier',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'purchase_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'purchase_item',
+      dartName: 'PurchaseItem',
+      schema: 'public',
+      module: 'lekhsmi_computers',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'purchase_item_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'purchaseId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'productId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'quantity',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'unitPrice',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'purchase_item_fk_0',
+          columns: ['purchaseId'],
+          referenceTable: 'purchase',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'purchase_item_fk_1',
+          columns: ['productId'],
+          referenceTable: 'product',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'purchase_item_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'supplier',
       dartName: 'Supplier',
       schema: 'public',
@@ -522,6 +756,12 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'status',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
         ),
       ],
       foreignKeys: [],
@@ -595,14 +835,23 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i11.Product) {
       return _i11.Product.fromJson(data) as T;
     }
-    if (t == _i12.Supplier) {
-      return _i12.Supplier.fromJson(data) as T;
+    if (t == _i12.Purchase) {
+      return _i12.Purchase.fromJson(data) as T;
     }
-    if (t == _i13.Orders) {
-      return _i13.Orders.fromJson(data) as T;
+    if (t == _i13.PurchaseItem) {
+      return _i13.PurchaseItem.fromJson(data) as T;
     }
-    if (t == _i14.OrderHistory) {
-      return _i14.OrderHistory.fromJson(data) as T;
+    if (t == _i14.Supplier) {
+      return _i14.Supplier.fromJson(data) as T;
+    }
+    if (t == _i15.Orders) {
+      return _i15.Orders.fromJson(data) as T;
+    }
+    if (t == _i16.OrderHistory) {
+      return _i16.OrderHistory.fromJson(data) as T;
+    }
+    if (t == _i17.Profile) {
+      return _i17.Profile.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.AccountsReportEntry?>()) {
       return (data != null ? _i5.AccountsReportEntry.fromJson(data) : null)
@@ -626,14 +875,23 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i11.Product?>()) {
       return (data != null ? _i11.Product.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i12.Supplier?>()) {
-      return (data != null ? _i12.Supplier.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i12.Purchase?>()) {
+      return (data != null ? _i12.Purchase.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i13.Orders?>()) {
-      return (data != null ? _i13.Orders.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i13.PurchaseItem?>()) {
+      return (data != null ? _i13.PurchaseItem.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i14.OrderHistory?>()) {
-      return (data != null ? _i14.OrderHistory.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i14.Supplier?>()) {
+      return (data != null ? _i14.Supplier.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i15.Orders?>()) {
+      return (data != null ? _i15.Orders.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i16.OrderHistory?>()) {
+      return (data != null ? _i16.OrderHistory.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i17.Profile?>()) {
+      return (data != null ? _i17.Profile.fromJson(data) : null) as T;
     }
     if (t == List<_i8.Income>) {
       return (data as List).map((e) => deserialize<_i8.Income>(e)).toList()
@@ -646,44 +904,54 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i15.AccountsReportEntry>) {
+    if (t == List<_i18.AccountsReportEntry>) {
       return (data as List)
-              .map((e) => deserialize<_i15.AccountsReportEntry>(e))
+              .map((e) => deserialize<_i18.AccountsReportEntry>(e))
               .toList()
           as T;
     }
-    if (t == List<_i16.Expense>) {
-      return (data as List).map((e) => deserialize<_i16.Expense>(e)).toList()
+    if (t == List<_i19.Expense>) {
+      return (data as List).map((e) => deserialize<_i19.Expense>(e)).toList()
           as T;
     }
-    if (t == List<_i17.Income>) {
-      return (data as List).map((e) => deserialize<_i17.Income>(e)).toList()
+    if (t == List<_i20.Income>) {
+      return (data as List).map((e) => deserialize<_i20.Income>(e)).toList()
           as T;
     }
-    if (t == List<_i18.Supplier>) {
-      return (data as List).map((e) => deserialize<_i18.Supplier>(e)).toList()
+    if (t == List<_i21.Supplier>) {
+      return (data as List).map((e) => deserialize<_i21.Supplier>(e)).toList()
           as T;
     }
-    if (t == List<_i19.Product>) {
-      return (data as List).map((e) => deserialize<_i19.Product>(e)).toList()
+    if (t == List<_i22.Product>) {
+      return (data as List).map((e) => deserialize<_i22.Product>(e)).toList()
           as T;
     }
-    if (t == List<_i20.OrderHistory>) {
+    if (t == List<_i23.OrderHistory>) {
       return (data as List)
-              .map((e) => deserialize<_i20.OrderHistory>(e))
+              .map((e) => deserialize<_i23.OrderHistory>(e))
               .toList()
           as T;
     }
-    if (t == List<_i21.Brand>) {
-      return (data as List).map((e) => deserialize<_i21.Brand>(e)).toList()
+    if (t == List<_i24.Brand>) {
+      return (data as List).map((e) => deserialize<_i24.Brand>(e)).toList()
           as T;
     }
-    if (t == List<_i22.Category>) {
-      return (data as List).map((e) => deserialize<_i22.Category>(e)).toList()
+    if (t == List<_i25.Category>) {
+      return (data as List).map((e) => deserialize<_i25.Category>(e)).toList()
           as T;
     }
-    if (t == List<_i23.Orders>) {
-      return (data as List).map((e) => deserialize<_i23.Orders>(e)).toList()
+    if (t == List<_i26.Purchase>) {
+      return (data as List).map((e) => deserialize<_i26.Purchase>(e)).toList()
+          as T;
+    }
+    if (t == List<_i27.PurchaseItem>) {
+      return (data as List)
+              .map((e) => deserialize<_i27.PurchaseItem>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i28.Orders>) {
+      return (data as List).map((e) => deserialize<_i28.Orders>(e)).toList()
           as T;
     }
     try {
@@ -707,9 +975,12 @@ class Protocol extends _i1.SerializationManagerServer {
       _i9.Brand => 'Brand',
       _i10.Category => 'Category',
       _i11.Product => 'Product',
-      _i12.Supplier => 'Supplier',
-      _i13.Orders => 'Orders',
-      _i14.OrderHistory => 'OrderHistory',
+      _i12.Purchase => 'Purchase',
+      _i13.PurchaseItem => 'PurchaseItem',
+      _i14.Supplier => 'Supplier',
+      _i15.Orders => 'Orders',
+      _i16.OrderHistory => 'OrderHistory',
+      _i17.Profile => 'Profile',
       _ => null,
     };
   }
@@ -741,12 +1012,18 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'Category';
       case _i11.Product():
         return 'Product';
-      case _i12.Supplier():
+      case _i12.Purchase():
+        return 'Purchase';
+      case _i13.PurchaseItem():
+        return 'PurchaseItem';
+      case _i14.Supplier():
         return 'Supplier';
-      case _i13.Orders():
+      case _i15.Orders():
         return 'Orders';
-      case _i14.OrderHistory():
+      case _i16.OrderHistory():
         return 'OrderHistory';
+      case _i17.Profile():
+        return 'Profile';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -790,14 +1067,23 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'Product') {
       return deserialize<_i11.Product>(data['data']);
     }
+    if (dataClassName == 'Purchase') {
+      return deserialize<_i12.Purchase>(data['data']);
+    }
+    if (dataClassName == 'PurchaseItem') {
+      return deserialize<_i13.PurchaseItem>(data['data']);
+    }
     if (dataClassName == 'Supplier') {
-      return deserialize<_i12.Supplier>(data['data']);
+      return deserialize<_i14.Supplier>(data['data']);
     }
     if (dataClassName == 'Orders') {
-      return deserialize<_i13.Orders>(data['data']);
+      return deserialize<_i15.Orders>(data['data']);
     }
     if (dataClassName == 'OrderHistory') {
-      return deserialize<_i14.OrderHistory>(data['data']);
+      return deserialize<_i16.OrderHistory>(data['data']);
+    }
+    if (dataClassName == 'Profile') {
+      return deserialize<_i17.Profile>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -845,12 +1131,18 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i10.Category.t;
       case _i11.Product:
         return _i11.Product.t;
-      case _i12.Supplier:
-        return _i12.Supplier.t;
-      case _i13.Orders:
-        return _i13.Orders.t;
-      case _i14.OrderHistory:
-        return _i14.OrderHistory.t;
+      case _i12.Purchase:
+        return _i12.Purchase.t;
+      case _i13.PurchaseItem:
+        return _i13.PurchaseItem.t;
+      case _i14.Supplier:
+        return _i14.Supplier.t;
+      case _i15.Orders:
+        return _i15.Orders.t;
+      case _i16.OrderHistory:
+        return _i16.OrderHistory.t;
+      case _i17.Profile:
+        return _i17.Profile.t;
     }
     return null;
   }

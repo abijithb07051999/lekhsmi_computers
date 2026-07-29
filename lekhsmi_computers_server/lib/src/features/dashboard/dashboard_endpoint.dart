@@ -57,8 +57,13 @@ class DashboardEndpoint extends Endpoint {
     return await OrderHistory.db.find(
       session,
       limit: 5,
+      orderDescending: true,
       orderBy: (t) => t.id,
-      where: (t) => t.status.equals('ongoing') | t.status.equals('pending'),
+      where: (t) =>
+          t.status.equals('Ongoing') |
+          t.status.equals('Pending') |
+          t.status.equals('ongoing') |
+          t.status.equals('pending'),
     );
   }
 }

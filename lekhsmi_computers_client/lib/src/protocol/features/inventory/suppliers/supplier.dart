@@ -19,6 +19,7 @@ abstract class Supplier implements _i1.SerializableModel {
     required this.address,
     required this.contact1,
     required this.contact2,
+    required this.status,
   });
 
   factory Supplier({
@@ -27,6 +28,7 @@ abstract class Supplier implements _i1.SerializableModel {
     required String address,
     required int contact1,
     required int contact2,
+    required bool status,
   }) = _SupplierImpl;
 
   factory Supplier.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -36,6 +38,7 @@ abstract class Supplier implements _i1.SerializableModel {
       address: jsonSerialization['address'] as String,
       contact1: jsonSerialization['contact1'] as int,
       contact2: jsonSerialization['contact2'] as int,
+      status: _i1.BoolJsonExtension.fromJson(jsonSerialization['status']),
     );
   }
 
@@ -52,6 +55,8 @@ abstract class Supplier implements _i1.SerializableModel {
 
   int contact2;
 
+  bool status;
+
   /// Returns a shallow copy of this [Supplier]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -61,6 +66,7 @@ abstract class Supplier implements _i1.SerializableModel {
     String? address,
     int? contact1,
     int? contact2,
+    bool? status,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -71,6 +77,7 @@ abstract class Supplier implements _i1.SerializableModel {
       'address': address,
       'contact1': contact1,
       'contact2': contact2,
+      'status': status,
     };
   }
 
@@ -89,12 +96,14 @@ class _SupplierImpl extends Supplier {
     required String address,
     required int contact1,
     required int contact2,
+    required bool status,
   }) : super._(
          id: id,
          name: name,
          address: address,
          contact1: contact1,
          contact2: contact2,
+         status: status,
        );
 
   /// Returns a shallow copy of this [Supplier]
@@ -107,6 +116,7 @@ class _SupplierImpl extends Supplier {
     String? address,
     int? contact1,
     int? contact2,
+    bool? status,
   }) {
     return Supplier(
       id: id is int? ? id : this.id,
@@ -114,6 +124,7 @@ class _SupplierImpl extends Supplier {
       address: address ?? this.address,
       contact1: contact1 ?? this.contact1,
       contact2: contact2 ?? this.contact2,
+      status: status ?? this.status,
     );
   }
 }

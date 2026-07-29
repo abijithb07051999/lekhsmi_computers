@@ -34,9 +34,15 @@ import 'package:lekhsmi_computers_client/src/protocol/features/inventory/brands/
     as _i12;
 import 'package:lekhsmi_computers_client/src/protocol/features/inventory/categories/category.dart'
     as _i13;
-import 'package:lekhsmi_computers_client/src/protocol/features/orders/order.dart'
+import 'package:lekhsmi_computers_client/src/protocol/features/inventory/purchase/purchase.dart'
     as _i14;
-import 'protocol.dart' as _i15;
+import 'package:lekhsmi_computers_client/src/protocol/features/inventory/purchase/purchase_item.dart'
+    as _i15;
+import 'package:lekhsmi_computers_client/src/protocol/features/orders/order.dart'
+    as _i16;
+import 'package:lekhsmi_computers_client/src/protocol/features/profile/profile.dart'
+    as _i17;
+import 'protocol.dart' as _i18;
 
 /// By extending [EmailIdpBaseEndpoint], the email identity provider endpoints
 /// are made available on the server and enable the corresponding sign-in widget
@@ -539,6 +545,55 @@ class EndpointProduct extends _i2.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointPurchase extends _i2.EndpointRef {
+  EndpointPurchase(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'purchase';
+
+  _i3.Future<List<_i14.Purchase>> getAllPurchases() =>
+      caller.callServerEndpoint<List<_i14.Purchase>>(
+        'purchase',
+        'getAllPurchases',
+        {},
+      );
+
+  _i3.Future<List<_i15.PurchaseItem>> getPurchaseItems({
+    required int purchaseId,
+  }) => caller.callServerEndpoint<List<_i15.PurchaseItem>>(
+    'purchase',
+    'getPurchaseItems',
+    {'purchaseId': purchaseId},
+  );
+
+  _i3.Future<_i14.Purchase> createPurchase({
+    required _i14.Purchase purchase,
+    required List<_i15.PurchaseItem> items,
+  }) => caller.callServerEndpoint<_i14.Purchase>(
+    'purchase',
+    'createPurchase',
+    {
+      'purchase': purchase,
+      'items': items,
+    },
+  );
+
+  _i3.Future<_i14.Purchase> updatePurchase({required _i14.Purchase purchase}) =>
+      caller.callServerEndpoint<_i14.Purchase>(
+        'purchase',
+        'updatePurchase',
+        {'purchase': purchase},
+      );
+
+  _i3.Future<_i14.Purchase> deletePurchase({required _i14.Purchase purchase}) =>
+      caller.callServerEndpoint<_i14.Purchase>(
+        'purchase',
+        'deletePurchase',
+        {'purchase': purchase},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointSupplier extends _i2.EndpointRef {
   EndpointSupplier(_i2.EndpointCaller caller) : super(caller);
 
@@ -583,29 +638,29 @@ class EndpointOrder extends _i2.EndpointRef {
   @override
   String get name => 'order';
 
-  _i3.Future<List<_i14.Orders>> getAllOrders() =>
-      caller.callServerEndpoint<List<_i14.Orders>>(
+  _i3.Future<List<_i16.Orders>> getAllOrders() =>
+      caller.callServerEndpoint<List<_i16.Orders>>(
         'order',
         'getAllOrders',
         {},
       );
 
-  _i3.Future<_i14.Orders> addNewOrder({required _i14.Orders order}) =>
-      caller.callServerEndpoint<_i14.Orders>(
+  _i3.Future<_i16.Orders> addNewOrder({required _i16.Orders order}) =>
+      caller.callServerEndpoint<_i16.Orders>(
         'order',
         'addNewOrder',
         {'order': order},
       );
 
-  _i3.Future<_i14.Orders> updateExistingOrder({required _i14.Orders order}) =>
-      caller.callServerEndpoint<_i14.Orders>(
+  _i3.Future<_i16.Orders> updateExistingOrder({required _i16.Orders order}) =>
+      caller.callServerEndpoint<_i16.Orders>(
         'order',
         'updateExistingOrder',
         {'order': order},
       );
 
-  _i3.Future<_i14.Orders> deleteExistingOrder({required _i14.Orders order}) =>
-      caller.callServerEndpoint<_i14.Orders>(
+  _i3.Future<_i16.Orders> deleteExistingOrder({required _i16.Orders order}) =>
+      caller.callServerEndpoint<_i16.Orders>(
         'order',
         'deleteExistingOrder',
         {'order': order},
@@ -657,6 +712,28 @@ class EndpointOrder extends _i2.EndpointRef {
       );
 }
 
+/// {@category Endpoint}
+class EndpointProfile extends _i2.EndpointRef {
+  EndpointProfile(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'profile';
+
+  _i3.Future<_i17.Profile> getProfile() =>
+      caller.callServerEndpoint<_i17.Profile>(
+        'profile',
+        'getProfile',
+        {},
+      );
+
+  _i3.Future<_i17.Profile> saveProfile({required _i17.Profile profile}) =>
+      caller.callServerEndpoint<_i17.Profile>(
+        'profile',
+        'saveProfile',
+        {'profile': profile},
+      );
+}
+
 class Modules {
   Modules(Client client) {
     serverpod_auth_idp = _i1.Caller(client);
@@ -688,7 +765,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i15.Protocol(),
+         _i18.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -706,8 +783,10 @@ class Client extends _i2.ServerpodClientShared {
     brand = EndpointBrand(this);
     category = EndpointCategory(this);
     product = EndpointProduct(this);
+    purchase = EndpointPurchase(this);
     supplier = EndpointSupplier(this);
     order = EndpointOrder(this);
+    profile = EndpointProfile(this);
     modules = Modules(this);
   }
 
@@ -729,9 +808,13 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointProduct product;
 
+  late final EndpointPurchase purchase;
+
   late final EndpointSupplier supplier;
 
   late final EndpointOrder order;
+
+  late final EndpointProfile profile;
 
   late final Modules modules;
 
@@ -746,8 +829,10 @@ class Client extends _i2.ServerpodClientShared {
     'brand': brand,
     'category': category,
     'product': product,
+    'purchase': purchase,
     'supplier': supplier,
     'order': order,
+    'profile': profile,
   };
 
   @override

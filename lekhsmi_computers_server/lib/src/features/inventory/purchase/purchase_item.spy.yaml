@@ -1,0 +1,7 @@
+class: PurchaseItem
+table: purchase_item
+fields:
+  purchase: Purchase?, relation
+  product: Product?, relation
+  quantity: int
+  unitPrice: int
