@@ -64,9 +64,10 @@ class _DashboardViewState extends State<DashboardView> {
       backgroundColor: const Color(AppColors.BACKGROUND),
       body: LayoutBuilder(
         builder: (context, constraints) {
+          final bool isSmallScreen = constraints.maxWidth < 1400;
           final double sidebarWidth = constraints.maxWidth < 950
-              ? 210.0
-              : (constraints.maxWidth < 1200 ? 240.0 : 270.0);
+              ? 190.0
+              : (constraints.maxWidth < 1200 ? 220.0 : 270.0);
           return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -229,7 +230,7 @@ class _DashboardViewState extends State<DashboardView> {
 
                 // LoopSpring Footer with Primary-to-Secondary Gradient Logo
                 Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: EdgeInsets.all(isSmallScreen ? 14.0 : 24.0),
                   child: Column(
                     children: [
                       ShaderMask(
@@ -241,18 +242,20 @@ class _DashboardViewState extends State<DashboardView> {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ).createShader(bounds),
-                        child: const Icon(
+                        child: Icon(
                           Icons.all_inclusive,
                           color: Colors.white,
-                          size: 32,
+                          size: isSmallScreen ? 24 : 32,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: isSmallScreen ? 6 : 12),
                       Text(
-                        'LoopSpring Technologies and \nConsultancy PVT. LTD',
+                        isSmallScreen
+                            ? 'LoopSpring\nTechnologies'
+                            : 'LoopSpring Technologies and \nConsultancy PVT. LTD',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.inter(
-                          fontSize: 10.5,
+                          fontSize: isSmallScreen ? 9.0 : 10.5,
                           color: const Color(
                             AppColors.TEXTSECONDARY,
                           ).withValues(alpha: 0.7),
@@ -358,6 +361,15 @@ class _DashboardViewState extends State<DashboardView> {
   }
 
   Widget _buildDashboardContent() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final bool isSmall = constraints.maxWidth < 750;
+        return _buildDashboardContentInner(isSmall);
+      },
+    );
+  }
+
+  Widget _buildDashboardContentInner(bool isSmall) {
     return Column(
       children: [
         // Premium Enterprise Top Header Bar
@@ -369,74 +381,78 @@ class _DashboardViewState extends State<DashboardView> {
               bottom: BorderSide(color: Color(0xFFE2E8F0), width: 1),
             ),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 22),
+          padding: EdgeInsets.symmetric(horizontal: isSmall ? 18 : 32, vertical: isSmall ? 14 : 22),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Overview',
-                    style: GoogleFonts.inter(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF0F172A),
-                      letterSpacing: -0.6,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Overview',
+                      style: GoogleFonts.inter(
+                        fontSize: isSmall ? 18 : 26,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF0F172A),
+                        letterSpacing: -0.6,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Here is your business summary today.',
-                    style: GoogleFonts.inter(
-                      fontSize: 13.5,
-                      color: const Color(0xFF64748B),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
+                    if (!isSmall) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        'Here is your business summary today.',
+                        style: GoogleFonts.inter(
+                          fontSize: 13.5,
+                          color: const Color(0xFF64748B),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
-              const Spacer(),
               // Styled Date Pill & Refresh Button Circle
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF8FAFC),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: const Color(0xFFE2E8F0),
+                  if (!isSmall)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: const Color(0xFFE2E8F0),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const HugeIcon(
+                            icon: AppIcons.CALENDARICON,
+                            color: Color(0xFF64748B),
+                            size: 16,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            _formatDate(DateTime.now()),
+                            style: GoogleFonts.inter(
+                              color: const Color(0xFF334155),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const HugeIcon(
-                          icon: AppIcons.CALENDARICON,
-                          color: Color(0xFF64748B),
-                          size: 16,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          _formatDate(DateTime.now()),
-                          style: GoogleFonts.inter(
-                            color: const Color(0xFF334155),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
+                  if (!isSmall) const SizedBox(width: 12),
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFFFFF),
                       shape: BoxShape.circle,
@@ -456,7 +472,7 @@ class _DashboardViewState extends State<DashboardView> {
                       icon: const Icon(
                         Icons.refresh_rounded,
                         color: Color(AppColors.PRIMARY),
-                        size: 20,
+                        size: 18,
                       ),
                       tooltip: 'Refresh Dashboard',
                       onPressed: () => controller.refreshDashboardData(),
@@ -471,7 +487,7 @@ class _DashboardViewState extends State<DashboardView> {
         // Desktop Screen Adaptive Content
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(28, 24, 28, 20),
+            padding: EdgeInsets.fromLTRB(isSmall ? 14 : 28, isSmall ? 14 : 24, isSmall ? 14 : 28, isSmall ? 12 : 20),
             child: Column(
               children: [
                 // Metrics Row (fixed compact height)
@@ -484,56 +500,60 @@ class _DashboardViewState extends State<DashboardView> {
                         const Color(AppColors.PRIMARY),
                         controller.totalIncome,
                         isCurrency: true,
+                        isSmall: isSmall,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: isSmall ? 8 : 16),
                     Expanded(
                       child: _buildMetricCard(
                         'Brands',
                         AppIcons.BRANDSCOUNTICON,
                         const Color(AppColors.SECONDAY),
                         controller.brandCount,
+                        isSmall: isSmall,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: isSmall ? 8 : 16),
                     Expanded(
                       child: _buildMetricCard(
                         'Categories',
                         AppIcons.CATEGORYCOUNTICON,
                         const Color(AppColors.INFO),
                         controller.categoryCount,
+                        isSmall: isSmall,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: isSmall ? 8 : 16),
                     Expanded(
                       child: _buildMetricCard(
                         'Suppliers',
                         AppIcons.SUPPLIERCOUNTICON,
                         const Color(AppColors.WARNING),
                         controller.supplierCount,
+                        isSmall: isSmall,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 10),
 
                 // Suppliers and Live Orders Row (adapts dynamically based on running screen size)
                 Expanded(
                   flex: 5,
                   child: Row(
                     children: [
-                      Expanded(flex: 7, child: _buildSuppliersTable()),
-                      const SizedBox(width: 16),
-                      Expanded(flex: 3, child: _buildOrderHistoryTable()),
+                      Expanded(flex: 3, child: _buildSuppliersTable(isSmall: isSmall)),
+                      SizedBox(width: isSmall ? 8 : 16),
+                      Expanded(flex: 2, child: _buildOrderHistoryTable(isSmall: isSmall)),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 10),
 
                 // Out of Stock Table (adapts to remaining screen height down to bottom)
                 Expanded(
                   flex: 4,
-                  child: _buildOutOfStockTable(),
+                  child: _buildOutOfStockTable(isSmall: isSmall),
                 ),
               ],
             ),
@@ -775,8 +795,8 @@ class _DashboardViewState extends State<DashboardView> {
     Color color,
     RxInt rxValue, {
     bool isCurrency = false,
+    bool isSmall = false,
   }) {
-    final isCompact = MediaQuery.of(Get.context!).size.width < 1200;
     final bgColor = const Color(AppColors.WHITE);
     final textColorPrimary = const Color(AppColors.TEXTPRIMARY);
     final textColorSecondary = const Color(AppColors.TEXTSECONDARY);
@@ -784,33 +804,34 @@ class _DashboardViewState extends State<DashboardView> {
     final iconColor = color;
 
     return Container(
-      padding: EdgeInsets.all(isCompact ? 14 : 20),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(isCompact ? 12 : 16),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: iconBgColor,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: HugeIcon(icon: icon, color: iconColor, size: isCompact ? 22 : 28),
+            child: HugeIcon(icon: icon, color: iconColor, size: 20),
           ),
-          SizedBox(width: isCompact ? 10 : 16),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   title,
@@ -818,16 +839,16 @@ class _DashboardViewState extends State<DashboardView> {
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.plusJakartaSans(
                     color: textColorSecondary,
-                    fontSize: isCompact ? 11.5 : 13,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 2),
                 Obx(() {
                   if (rxValue.value == 0 && controller.isLoading.value) {
                     return const SizedBox(
-                      height: 28,
-                      width: 28,
+                      height: 20,
+                      width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     );
                   }
@@ -841,7 +862,7 @@ class _DashboardViewState extends State<DashboardView> {
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.plusJakartaSans(
                       color: textColorPrimary,
-                      fontSize: isCompact ? 19 : 24,
+                      fontSize: 18,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.5,
                     ),
@@ -855,18 +876,23 @@ class _DashboardViewState extends State<DashboardView> {
     );
   }
 
-  Widget _buildCardHeader(String title, {VoidCallback? onViewAll}) {
+  Widget _buildCardHeader(String title, {VoidCallback? onViewAll, bool isSmall = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: const Color(AppColors.TEXTPRIMARY),
+        Expanded(
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: isSmall ? 13 : 18,
+              fontWeight: FontWeight.w800,
+              color: const Color(AppColors.TEXTPRIMARY),
+            ),
           ),
         ),
+        const SizedBox(width: 8),
         Container(
           decoration: BoxDecoration(
             color: const Color(AppColors.PRIMARY).withValues(alpha: 0.08),
@@ -875,17 +901,19 @@ class _DashboardViewState extends State<DashboardView> {
           child: TextButton(
             onPressed: onViewAll ?? () {},
             style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: isSmall ? 8 : 14, vertical: isSmall ? 5 : 8),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             child: Text(
               'View All',
               style: GoogleFonts.plusJakartaSans(
                 color: const Color(AppColors.PRIMARY),
                 fontWeight: FontWeight.w700,
-                fontSize: 12,
+                fontSize: isSmall ? 10 : 12,
               ),
             ),
           ),
@@ -894,12 +922,12 @@ class _DashboardViewState extends State<DashboardView> {
     );
   }
 
-  Widget _buildSuppliersTable() {
+  Widget _buildSuppliersTable({bool isSmall = false}) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(isSmall ? 12 : 20),
       decoration: BoxDecoration(
         color: const Color(AppColors.WHITE),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(isSmall ? 14 : 24),
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
@@ -916,10 +944,11 @@ class _DashboardViewState extends State<DashboardView> {
             'Recent Suppliers',
             onViewAll: () =>
                 _navigateToMenu('Brands / Suppliers', tabIndex: 1),
+            isSmall: isSmall,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: isSmall ? 10 : 16),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            padding: EdgeInsets.symmetric(horizontal: isSmall ? 8 : 14, vertical: isSmall ? 8 : 12),
             decoration: BoxDecoration(
               color: const Color(0xFFF8FAFC),
               borderRadius: BorderRadius.circular(10),
@@ -930,42 +959,38 @@ class _DashboardViewState extends State<DashboardView> {
                   flex: 3,
                   child: Text(
                     'Name',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.plusJakartaSans(
                       color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
-                Expanded(
-                  flex: 4,
-                  child: Text(
-                    'Address',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
+                if (!isSmall)
+                  Expanded(
+                    flex: 4,
+                    child: Text(
+                      'Address',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: const Color(AppColors.TEXTSECONDARY),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
-                ),
                 Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: Text(
-                    'Primary Phone',
+                    'Contact',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.plusJakartaSans(
                       color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Secondary Phone',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -974,9 +999,11 @@ class _DashboardViewState extends State<DashboardView> {
                   flex: 2,
                   child: Text(
                     'Status',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.plusJakartaSans(
                       color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -984,7 +1011,7 @@ class _DashboardViewState extends State<DashboardView> {
               ],
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox.shrink(),
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value && controller.suppliers.isEmpty) {
@@ -1001,15 +1028,15 @@ class _DashboardViewState extends State<DashboardView> {
                         color: const Color(
                           AppColors.TEXTSECONDARY,
                         ).withValues(alpha: 0.4),
-                        size: 36,
+                        size: isSmall ? 24 : 36,
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: isSmall ? 6 : 12),
                       Text(
                         'No suppliers found',
                         style: GoogleFonts.plusJakartaSans(
                           color: const Color(AppColors.TEXTSECONDARY),
                           fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                          fontSize: isSmall ? 11 : 14,
                         ),
                       ),
                     ],
@@ -1017,17 +1044,19 @@ class _DashboardViewState extends State<DashboardView> {
                 );
               }
 
+              final displaySuppliers = suppliers.take(5).toList();
               return ListView.separated(
+                padding: EdgeInsets.zero,
                 physics: const BouncingScrollPhysics(),
-                itemCount: suppliers.length,
+                itemCount: displaySuppliers.length,
                 separatorBuilder: (context, index) =>
                     const Divider(height: 1, color: Color(0xFFF1F5F9)),
                 itemBuilder: (context, index) {
-                  final s = suppliers[index];
+                  final s = displaySuppliers[index];
                   return Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 14,
-                      vertical: 12,
+                      vertical: 6,
                     ),
                     child: Row(
                       children: [
@@ -1039,29 +1068,29 @@ class _DashboardViewState extends State<DashboardView> {
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.plusJakartaSans(
                               color: const Color(AppColors.TEXTPRIMARY),
-                              fontSize: 13,
+                              fontSize: 12,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
-                        Expanded(
-                          flex: 4,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 16.0),
-                            child: Text(
-                              s.address,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.plusJakartaSans(
-                                color: const Color(AppColors.TEXTSECONDARY),
-                                fontSize: 13,
-                                height: 1.4,
+                        if (!isSmall)
+                          Expanded(
+                            flex: 4,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 12.0),
+                              child: Text(
+                                s.address,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: const Color(AppColors.TEXTSECONDARY),
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
                           ),
-                        ),
                         Expanded(
-                          flex: 2,
+                          flex: 3,
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: _buildContactChip(s.contact1.toString()),
@@ -1071,23 +1100,7 @@ class _DashboardViewState extends State<DashboardView> {
                           flex: 2,
                           child: Align(
                             alignment: Alignment.centerLeft,
-                            child: s.contact2 == 0
-                                ? Text(
-                                    '--',
-                                    style: GoogleFonts.plusJakartaSans(
-                                      color: const Color(AppColors.TEXTSECONDARY),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  )
-                                : _buildContactChip(s.contact2.toString()),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: _buildSupplierStatusBadge(s.status),
+                            child: _buildSupplierStatusBadge(s.status, isSmall: isSmall),
                           ),
                         ),
                       ],
@@ -1119,12 +1132,16 @@ class _DashboardViewState extends State<DashboardView> {
             size: 14,
           ),
           const SizedBox(width: 8),
-          Text(
-            number,
-            style: GoogleFonts.plusJakartaSans(
-              color: const Color(AppColors.TEXTSECONDARY),
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+          Flexible(
+            child: Text(
+              number,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.plusJakartaSans(
+                color: const Color(AppColors.TEXTSECONDARY),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -1132,9 +1149,9 @@ class _DashboardViewState extends State<DashboardView> {
     );
   }
 
-  Widget _buildSupplierStatusBadge(bool status) {
+  Widget _buildSupplierStatusBadge(bool status, {bool isSmall = false}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: isSmall ? 6 : 10, vertical: isSmall ? 2 : 4),
       decoration: BoxDecoration(
         color: status ? const Color(0xFFDCFCE7) : const Color(0xFFF1F5F9),
         borderRadius: BorderRadius.circular(20),
@@ -1146,19 +1163,19 @@ class _DashboardViewState extends State<DashboardView> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 6,
-            height: 6,
+            width: isSmall ? 4 : 6,
+            height: isSmall ? 4 : 6,
             decoration: BoxDecoration(
               color: status ? const Color(0xFF16A34A) : const Color(0xFF64748B),
               shape: BoxShape.circle,
             ),
           ),
-          const SizedBox(width: 6),
+          SizedBox(width: isSmall ? 4 : 6),
           Text(
-            status ? 'Active' : 'Inactive',
+            status ? (isSmall ? 'OK' : 'Active') : (isSmall ? 'Off' : 'Inactive'),
             style: GoogleFonts.plusJakartaSans(
               color: status ? const Color(0xFF16A34A) : const Color(0xFF64748B),
-              fontSize: 11,
+              fontSize: isSmall ? 9 : 11,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -1167,12 +1184,12 @@ class _DashboardViewState extends State<DashboardView> {
     );
   }
 
-  Widget _buildOrderHistoryTable() {
+  Widget _buildOrderHistoryTable({bool isSmall = false}) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(isSmall ? 12 : 20),
       decoration: BoxDecoration(
         color: const Color(AppColors.WHITE),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(isSmall ? 14 : 24),
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
@@ -1188,10 +1205,11 @@ class _DashboardViewState extends State<DashboardView> {
           _buildCardHeader(
             'Live Orders',
             onViewAll: () => _navigateToMenu('Live / History'),
+            isSmall: isSmall,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: isSmall ? 10 : 16),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            padding: EdgeInsets.symmetric(horizontal: isSmall ? 8 : 14, vertical: isSmall ? 8 : 12),
             decoration: BoxDecoration(
               color: const Color(0xFFF8FAFC),
               borderRadius: BorderRadius.circular(10),
@@ -1202,31 +1220,38 @@ class _DashboardViewState extends State<DashboardView> {
                   flex: 3,
                   child: Text(
                     'Customer',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.plusJakartaSans(
                       color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Date',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
+                if (!isSmall)
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      'Date',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: const Color(AppColors.TEXTSECONDARY),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
-                ),
                 Expanded(
                   flex: 2,
                   child: Text(
                     'Amount',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.plusJakartaSans(
                       color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -1235,9 +1260,11 @@ class _DashboardViewState extends State<DashboardView> {
                   flex: 2,
                   child: Text(
                     'Status',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.plusJakartaSans(
                       color: const Color(AppColors.TEXTSECONDARY),
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -1245,7 +1272,7 @@ class _DashboardViewState extends State<DashboardView> {
               ],
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox.shrink(),
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value &&
@@ -1263,15 +1290,15 @@ class _DashboardViewState extends State<DashboardView> {
                         color: const Color(
                           AppColors.TEXTSECONDARY,
                         ).withValues(alpha: 0.4),
-                        size: 36,
+                        size: isSmall ? 24 : 36,
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: isSmall ? 6 : 12),
                       Text(
                         'No live orders found',
                         style: GoogleFonts.plusJakartaSans(
                           color: const Color(AppColors.TEXTSECONDARY),
                           fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                          fontSize: isSmall ? 11 : 14,
                         ),
                       ),
                     ],
@@ -1279,13 +1306,15 @@ class _DashboardViewState extends State<DashboardView> {
                 );
               }
 
+              final displayOrders = orders.take(5).toList();
               return ListView.separated(
+                padding: EdgeInsets.zero,
                 physics: const BouncingScrollPhysics(),
-                itemCount: orders.length,
+                itemCount: displayOrders.length,
                 separatorBuilder: (context, index) =>
                     const Divider(height: 1, color: Color(0xFFF1F5F9)),
                 itemBuilder: (context, index) {
-                  final o = orders[index];
+                  final o = displayOrders[index];
                   final statusLower = o.status.toLowerCase();
                   final statusBg = statusLower == 'ongoing'
                       ? const Color(AppColors.PRIMARY).withValues(alpha: 0.1)
@@ -1297,7 +1326,7 @@ class _DashboardViewState extends State<DashboardView> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 14,
-                      vertical: 12,
+                      vertical: 6,
                     ),
                     child: Row(
                       children: [
@@ -1309,24 +1338,25 @@ class _DashboardViewState extends State<DashboardView> {
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.plusJakartaSans(
                               color: const Color(AppColors.TEXTPRIMARY),
-                              fontSize: 13,
+                              fontSize: 12,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
-                        Expanded(
-                          flex: 2,
-                          child: Text(
-                            _formatDate(o.order.date),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.plusJakartaSans(
-                              color: const Color(AppColors.TEXTSECONDARY),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
+                        if (!isSmall)
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              _formatDate(o.order.date),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.plusJakartaSans(
+                                color: const Color(AppColors.TEXTSECONDARY),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
-                        ),
                         Expanded(
                           flex: 2,
                           child: Text(
@@ -1335,7 +1365,7 @@ class _DashboardViewState extends State<DashboardView> {
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.plusJakartaSans(
                               color: const Color(AppColors.TEXTPRIMARY),
-                              fontSize: 13,
+                              fontSize: 12,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
@@ -1378,12 +1408,12 @@ class _DashboardViewState extends State<DashboardView> {
     );
   }
 
-  Widget _buildOutOfStockTable() {
+  Widget _buildOutOfStockTable({bool isSmall = false}) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(isSmall ? 12 : 20),
       decoration: BoxDecoration(
         color: const Color(AppColors.WHITE),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(isSmall ? 14 : 24),
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
@@ -1399,8 +1429,9 @@ class _DashboardViewState extends State<DashboardView> {
           _buildCardHeader(
             'Out of Stock Products',
             onViewAll: () => _navigateToMenu('Stocks'),
+            isSmall: isSmall,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: isSmall ? 10 : 16),
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -1531,7 +1562,7 @@ class _DashboardViewState extends State<DashboardView> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox.shrink(),
                         Expanded(
                           child: Obx(() {
                             if (controller.isLoading.value &&
@@ -1549,15 +1580,15 @@ class _DashboardViewState extends State<DashboardView> {
                                       color: const Color(
                                         AppColors.TEXTSECONDARY,
                                       ).withValues(alpha: 0.4),
-                                      size: 36,
+                                      size: isSmall ? 24 : 36,
                                     ),
-                                    const SizedBox(height: 12),
+                                    SizedBox(height: isSmall ? 6 : 12),
                                     Text(
                                       'No products are out of stock',
                                       style: GoogleFonts.plusJakartaSans(
                                         color: const Color(AppColors.TEXTSECONDARY),
                                         fontWeight: FontWeight.w600,
-                                        fontSize: 14,
+                                        fontSize: isSmall ? 11 : 14,
                                       ),
                                     ),
                                   ],
@@ -1565,13 +1596,15 @@ class _DashboardViewState extends State<DashboardView> {
                               );
                             }
 
+                            final displayProducts = products.take(5).toList();
                             return ListView.separated(
+                              padding: EdgeInsets.zero,
                               physics: const BouncingScrollPhysics(),
-                              itemCount: products.length,
+                              itemCount: displayProducts.length,
                               separatorBuilder: (context, index) =>
                                   const Divider(height: 1, color: Color(0xFFF1F5F9)),
                               itemBuilder: (context, index) {
-                                final p = products[index];
+                                final p = displayProducts[index];
                                 final profit = p.sellPrice - p.buyPrice;
                                 final isRefurbish = p.quality.toLowerCase().contains(
                                   'refurbish',
@@ -1586,7 +1619,7 @@ class _DashboardViewState extends State<DashboardView> {
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 14,
-                                    vertical: 12,
+                                    vertical: 6,
                                   ),
                                   child: Row(
                                     children: [
@@ -1598,7 +1631,7 @@ class _DashboardViewState extends State<DashboardView> {
                                           overflow: TextOverflow.ellipsis,
                                           style: GoogleFonts.plusJakartaSans(
                                             color: const Color(AppColors.TEXTPRIMARY),
-                                            fontSize: 13,
+                                            fontSize: 12,
                                             fontWeight: FontWeight.w700,
                                           ),
                                         ),
@@ -1611,7 +1644,7 @@ class _DashboardViewState extends State<DashboardView> {
                                           overflow: TextOverflow.ellipsis,
                                           style: GoogleFonts.plusJakartaSans(
                                             color: const Color(AppColors.TEXTSECONDARY),
-                                            fontSize: 13,
+                                            fontSize: 12,
                                             fontWeight: FontWeight.w500,
                                           ),
                                         ),
@@ -1624,7 +1657,7 @@ class _DashboardViewState extends State<DashboardView> {
                                           overflow: TextOverflow.ellipsis,
                                           style: GoogleFonts.plusJakartaSans(
                                             color: const Color(AppColors.TEXTPRIMARY),
-                                            fontSize: 13,
+                                            fontSize: 12,
                                             fontWeight: FontWeight.w700,
                                           ),
                                         ),
@@ -1663,7 +1696,7 @@ class _DashboardViewState extends State<DashboardView> {
                                           overflow: TextOverflow.ellipsis,
                                           style: GoogleFonts.plusJakartaSans(
                                             color: const Color(AppColors.TEXTSECONDARY),
-                                            fontSize: 13,
+                                            fontSize: 12,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
@@ -1676,7 +1709,7 @@ class _DashboardViewState extends State<DashboardView> {
                                           overflow: TextOverflow.ellipsis,
                                           style: GoogleFonts.plusJakartaSans(
                                             color: const Color(AppColors.TEXTPRIMARY),
-                                            fontSize: 13,
+                                            fontSize: 12,
                                             fontWeight: FontWeight.w700,
                                           ),
                                         ),
@@ -1689,7 +1722,7 @@ class _DashboardViewState extends State<DashboardView> {
                                           overflow: TextOverflow.ellipsis,
                                           style: GoogleFonts.plusJakartaSans(
                                             color: const Color(AppColors.SUCCESS),
-                                            fontSize: 13,
+                                            fontSize: 12,
                                             fontWeight: FontWeight.w800,
                                           ),
                                         ),

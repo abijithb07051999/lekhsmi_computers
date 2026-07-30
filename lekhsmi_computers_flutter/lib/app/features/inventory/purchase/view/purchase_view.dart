@@ -58,82 +58,98 @@ class _PurchaseViewState extends State<PurchaseView> {
         color: Color(AppColors.WHITE),
         border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0), width: 1)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isSmall = constraints.maxWidth < 700;
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Purchases & Stock History',
-                style: GoogleFonts.inter(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(AppColors.TEXTPRIMARY),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(AppColors.PRIMARY).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  'INVENTORY RECORDS',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(AppColors.PRIMARY),
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                ),
+              Expanded(
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.calendar_today_rounded, size: 14, color: Color(AppColors.TEXTSECONDARY)),
-                    const SizedBox(width: 8),
-                    Text(
-                      _formatDate(DateTime.now()),
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(AppColors.TEXTPRIMARY),
+                    Flexible(
+                      child: Text(
+                        'Purchases & Stock History',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.inter(
+                          fontSize: isSmall ? 15 : 18,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(AppColors.TEXTPRIMARY),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(AppColors.PRIMARY).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        'RECORDS',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(AppColors.PRIMARY),
+                          letterSpacing: 0.5,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 12),
-              Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => controller.refreshAll(),
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(AppColors.WHITE),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (!isSmall) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.calendar_today_rounded, size: 14, color: Color(AppColors.TEXTSECONDARY)),
+                          const SizedBox(width: 8),
+                          Text(
+                            _formatDate(DateTime.now()),
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(AppColors.TEXTPRIMARY),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: const Icon(Icons.refresh_rounded, color: Color(AppColors.TEXTPRIMARY), size: 18),
+                    const SizedBox(width: 12),
+                  ],
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => controller.refreshAll(),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color(AppColors.WHITE),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: const Icon(Icons.refresh_rounded, color: Color(AppColors.TEXTPRIMARY), size: 18),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ],
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -229,7 +245,7 @@ class _PurchaseViewState extends State<PurchaseView> {
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final double minWidth = 960.0;
+                final double minWidth = 680.0;
                 final double tableWidth = constraints.maxWidth < minWidth
                     ? minWidth
                     : constraints.maxWidth;
@@ -323,23 +339,23 @@ class _PurchaseViewState extends State<PurchaseView> {
 
   Widget _buildTableHeader() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         children: [
-          Expanded(flex: 1, child: Text('NO', style: _headerStyle)),
-          Expanded(flex: 2, child: Text('Date', style: _headerStyle)),
-          Expanded(flex: 2, child: Text('Invoice No', style: _headerStyle)),
-          Expanded(flex: 2, child: Text('Supplier', style: _headerStyle)),
-          Expanded(flex: 2, child: Text('Payment Status', style: _headerStyle)),
-          Expanded(flex: 2, child: Text('Total', style: _headerStyle)),
-          Expanded(flex: 2, child: Text('Paid', style: _headerStyle)),
-          Expanded(flex: 2, child: Text('Due', style: _headerStyle)),
-          Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: Text('Action', style: _headerStyle))),
+          Expanded(flex: 1, child: Text('NO', maxLines: 1, overflow: TextOverflow.ellipsis, style: _headerStyle)),
+          Expanded(flex: 2, child: Text('Date', maxLines: 1, overflow: TextOverflow.ellipsis, style: _headerStyle)),
+          Expanded(flex: 2, child: Text('Invoice No', maxLines: 1, overflow: TextOverflow.ellipsis, style: _headerStyle)),
+          Expanded(flex: 3, child: Text('Supplier', maxLines: 1, overflow: TextOverflow.ellipsis, style: _headerStyle)),
+          Expanded(flex: 2, child: Text('Payment Status', maxLines: 1, overflow: TextOverflow.ellipsis, style: _headerStyle)),
+          Expanded(flex: 2, child: Text('Total', maxLines: 1, overflow: TextOverflow.ellipsis, style: _headerStyle)),
+          Expanded(flex: 2, child: Text('Paid', maxLines: 1, overflow: TextOverflow.ellipsis, style: _headerStyle)),
+          Expanded(flex: 2, child: Text('Due', maxLines: 1, overflow: TextOverflow.ellipsis, style: _headerStyle)),
+          Expanded(flex: 2, child: Align(alignment: Alignment.centerRight, child: Text('Action', maxLines: 1, overflow: TextOverflow.ellipsis, style: _headerStyle))),
         ],
       ),
     );
@@ -351,35 +367,43 @@ class _PurchaseViewState extends State<PurchaseView> {
         : (p.dueAmount < p.totalAmount ? const Color(0xFFD97706) : const Color(0xFFDC2626));
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       child: Row(
         children: [
           Expanded(
             flex: 1,
             child: Text(
               index.toString(),
-              style: GoogleFonts.inter(fontSize: 13, color: const Color(AppColors.TEXTSECONDARY), fontWeight: FontWeight.w600),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(fontSize: 11.5, color: const Color(AppColors.TEXTSECONDARY), fontWeight: FontWeight.w600),
             ),
           ),
           Expanded(
             flex: 2,
             child: Text(
               _formatDate(p.date),
-              style: GoogleFonts.inter(fontSize: 13, color: const Color(AppColors.TEXTPRIMARY), fontWeight: FontWeight.w500),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(fontSize: 11.5, color: const Color(AppColors.TEXTPRIMARY), fontWeight: FontWeight.w500),
             ),
           ),
           Expanded(
             flex: 2,
             child: Text(
               p.invoiceNo,
-              style: GoogleFonts.inter(fontSize: 13.5, color: const Color(AppColors.TEXTPRIMARY), fontWeight: FontWeight.w700),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(fontSize: 12, color: const Color(AppColors.TEXTPRIMARY), fontWeight: FontWeight.w700),
             ),
           ),
           Expanded(
-            flex: 2,
+            flex: 3,
             child: Text(
               controller.getSupplierName(p),
-              style: GoogleFonts.inter(fontSize: 13, color: const Color(AppColors.TEXTPRIMARY), fontWeight: FontWeight.w600),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(fontSize: 11.5, color: const Color(AppColors.TEXTPRIMARY), fontWeight: FontWeight.w600),
             ),
           ),
           Expanded(
@@ -393,7 +417,9 @@ class _PurchaseViewState extends State<PurchaseView> {
             flex: 2,
             child: Text(
               _formatCurrency(p.totalAmount),
-              style: GoogleFonts.inter(fontSize: 13.5, color: const Color(AppColors.TEXTPRIMARY), fontWeight: FontWeight.w700),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(fontSize: 12, color: const Color(AppColors.TEXTPRIMARY), fontWeight: FontWeight.w700),
             ),
           ),
           Expanded(
@@ -407,11 +433,13 @@ class _PurchaseViewState extends State<PurchaseView> {
             flex: 2,
             child: Text(
               _formatCurrency(p.dueAmount),
-              style: GoogleFonts.inter(fontSize: 13.5, color: dueColor, fontWeight: FontWeight.w700),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(fontSize: 12, color: dueColor, fontWeight: FontWeight.w700),
             ),
           ),
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Align(
               alignment: Alignment.centerRight,
               child: _buildViewButton(onTap: () => _showPurchaseDetailsModal(context, p)),
@@ -450,7 +478,7 @@ class _PurchaseViewState extends State<PurchaseView> {
         break;
     }
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(20),
@@ -459,11 +487,15 @@ class _PurchaseViewState extends State<PurchaseView> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: textColor, size: 14),
-          const SizedBox(width: 6),
-          Text(
-            status,
-            style: TextStyle(color: textColor, fontSize: 12, fontWeight: FontWeight.w600),
+          Icon(icon, color: textColor, size: 13),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              status,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: textColor, fontSize: 11, fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),
@@ -475,7 +507,7 @@ class _PurchaseViewState extends State<PurchaseView> {
       onTap: onEdit,
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: const Color(0xFFF8FAFC),
           borderRadius: BorderRadius.circular(8),
@@ -484,16 +516,20 @@ class _PurchaseViewState extends State<PurchaseView> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              _formatCurrency(paid),
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Color(AppColors.TEXTPRIMARY),
+            Flexible(
+              child: Text(
+                _formatCurrency(paid),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Color(AppColors.TEXTPRIMARY),
+                ),
               ),
             ),
-            const SizedBox(width: 6),
-            const Icon(Icons.edit_outlined, size: 14, color: Color(AppColors.TEXTSECONDARY)),
+            const SizedBox(width: 4),
+            const Icon(Icons.edit_outlined, size: 13, color: Color(AppColors.TEXTSECONDARY)),
           ],
         ),
       ),
@@ -505,18 +541,22 @@ class _PurchaseViewState extends State<PurchaseView> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          children: const [
-            Icon(Icons.remove_red_eye_outlined, color: Color(AppColors.PRIMARY), size: 16),
-            SizedBox(width: 6),
-            Text(
-              'View',
-              style: TextStyle(
-                color: Color(AppColors.PRIMARY),
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
+          children: [
+            const Icon(Icons.remove_red_eye_outlined, color: Color(AppColors.PRIMARY), size: 14),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                'View',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Color(AppColors.PRIMARY),
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ],
@@ -1381,7 +1421,7 @@ class _PurchaseViewState extends State<PurchaseView> {
 }
 
 final TextStyle _headerStyle = GoogleFonts.inter(
-  fontSize: 12,
+  fontSize: 11,
   fontWeight: FontWeight.w700,
   color: const Color(AppColors.TEXTSECONDARY),
   letterSpacing: 0.5,

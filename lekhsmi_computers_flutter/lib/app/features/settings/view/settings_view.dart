@@ -59,30 +59,36 @@ class SettingsView extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Settings & Store Identity',
-                style: GoogleFonts.inter(
-                  fontSize: 25,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF0F172A),
-                  letterSpacing: -0.6,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Settings & Store Identity',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(
+                    fontSize: 25,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF0F172A),
+                    letterSpacing: -0.6,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Configure Lekhsmi Computers business profile and explore technology partner portfolio',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  color: const Color(0xFF64748B),
-                  fontWeight: FontWeight.w500,
+                const SizedBox(height: 4),
+                Text(
+                  'Configure Lekhsmi Computers business profile and explore technology partner portfolio',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: const Color(0xFF64748B),
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const Spacer(),
+          const SizedBox(width: 16),
           // Styled Date Pill & Refresh
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -175,6 +181,7 @@ class SettingsView extends StatelessWidget {
   // =========================================================================
   Widget _buildStoreIdentityCard(
       BuildContext context, SettingsController controller) {
+    final isSmall = MediaQuery.of(context).size.width <= 1100 || MediaQuery.of(context).size.height <= 800;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -294,13 +301,17 @@ class SettingsView extends StatelessWidget {
                                     size: 16,
                                   ),
                                   const SizedBox(width: 6),
-                                  Text(
-                                    'ACTIVE & VERIFIED BUSINESS IDENTITY',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 10.5,
-                                      fontWeight: FontWeight.w800,
-                                      color: const Color(0xFF0F172A),
-                                      letterSpacing: 0.6,
+                                  Expanded(
+                                    child: Text(
+                                      'ACTIVE & VERIFIED BUSINESS IDENTITY',
+                                      style: GoogleFonts.inter(
+                                        fontSize: isSmall ? 9.5 : 10.5,
+                                        fontWeight: FontWeight.w800,
+                                        color: const Color(0xFF0F172A),
+                                        letterSpacing: 0.6,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 ],
@@ -541,6 +552,15 @@ class SettingsView extends StatelessWidget {
   // BOTTOM SECTION (70% HEIGHT): LOOPSPRING PORTFOLIO CARD (INFINITY ICON)
   // =========================================================================
   Widget _buildPortfolioShowcaseCard() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final bool isSmall = constraints.maxWidth < 950;
+        return _buildPortfolioShowcaseCardInner(isSmall);
+      },
+    );
+  }
+
+  Widget _buildPortfolioShowcaseCardInner(bool isSmall) {
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -577,114 +597,141 @@ class SettingsView extends StatelessWidget {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 1. Partner Header & Contact Bar with INFINITY Icon
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 54,
-                          height: 54,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [
-                                Color(AppColors.PRIMARY),
-                                Color(AppColors.SECONDAY),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(14),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(AppColors.PRIMARY)
-                                    .withValues(alpha: 0.4),
-                                blurRadius: 14,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          // INFINITY ICON ∞ for LoopSpring
-                          child: const Icon(
-                            Icons.all_inclusive_rounded,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+          SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Padding(
+              padding: EdgeInsets.all(isSmall ? 16 : 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 1. Partner Header & Contact Bar with INFINITY Icon
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        flex: 6,
+                        child: Row(
                           children: [
-                            Text(
-                              'LoopSpring Technologies and Consultancy PVT LTD',
-                              style: GoogleFonts.inter(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w800,
+                            Container(
+                              width: isSmall ? 44 : 54,
+                              height: isSmall ? 44 : 54,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(AppColors.PRIMARY),
+                                    Color(AppColors.SECONDAY),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(AppColors.PRIMARY)
+                                        .withValues(alpha: 0.4),
+                                    blurRadius: 14,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              // INFINITY ICON ∞ for LoopSpring
+                              child: Icon(
+                                Icons.all_inclusive_rounded,
                                 color: Colors.white,
-                                letterSpacing: -0.4,
+                                size: isSmall ? 22 : 28,
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Architecture, System Design & Full-Stack Digital Innovation Partner',
-                              style: GoogleFonts.inter(
-                                fontSize: 12.5,
-                                color: const Color(0xFF94A3B8),
-                                fontWeight: FontWeight.w500,
+                            SizedBox(width: isSmall ? 10 : 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    isSmall
+                                        ? 'LoopSpring Technologies & Consultancy'
+                                        : 'LoopSpring Technologies and Consultancy PVT LTD',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.inter(
+                                      fontSize: isSmall ? 15 : 20,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                      letterSpacing: -0.4,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    isSmall
+                                        ? 'Full-Stack Digital Innovation Partner'
+                                        : 'Architecture, System Design & Full-Stack Digital Innovation Partner',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.inter(
+                                      fontSize: isSmall ? 11 : 12.5,
+                                      color: const Color(0xFF94A3B8),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                    // Contact Info Pills
-                    Row(
-                      children: [
-                        _buildDarkContactPill(
-                          icon: Icons.language_rounded,
-                          text: 'www.loopspring.in',
+                      ),
+                      const SizedBox(width: 12),
+                      // Contact Info Pills
+                      Expanded(
+                        flex: 4,
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Wrap(
+                            alignment: WrapAlignment.end,
+                            spacing: 8,
+                            runSpacing: 6,
+                            children: [
+                              _buildDarkContactPill(
+                                icon: Icons.language_rounded,
+                                text: 'www.loopspring.in',
+                                isSmall: isSmall,
+                              ),
+                              _buildDarkContactPill(
+                                icon: Icons.phone_rounded,
+                                text: '+91 98943 65935',
+                                isSmall: isSmall,
+                              ),
+                              if (!isSmall)
+                                _buildDarkContactPill(
+                                  icon: Icons.mail_rounded,
+                                  text: 'loopspring2@gmail.com',
+                                  isSmall: isSmall,
+                                ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(width: 10),
-                        _buildDarkContactPill(
-                          icon: Icons.phone_rounded,
-                          text: '+91 98943 65935',
-                        ),
-                        const SizedBox(width: 10),
-                        _buildDarkContactPill(
-                          icon: Icons.mail_rounded,
-                          text: 'loopspring2@gmail.com',
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Divider(
-                    color: Colors.white.withValues(alpha: 0.08), height: 1),
-                const SizedBox(height: 16),
-
-                // 2. 4 Service Expertise Pillars (Flex 5 - fully expands vertically and horizontally)
-                Text(
-                  'WHAT WE BUILD & CORE TECHNOLOGIES',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF38BDF8),
-                    letterSpacing: 1.2,
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 10),
+                  const SizedBox(height: 16),
+                  Divider(
+                      color: Colors.white.withValues(alpha: 0.08), height: 1),
+                  const SizedBox(height: 16),
 
-                Expanded(
-                  flex: 5,
-                  child: Row(
+                  // 2. 4 Service Expertise Pillars (Fully expands horizontally)
+                  Text(
+                    'WHAT WE BUILD & CORE TECHNOLOGIES',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF38BDF8),
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         child: _buildPortfolioServiceCard(
@@ -701,9 +748,10 @@ class SettingsView extends StatelessWidget {
                             const Color(0xFF0284C7),
                             const Color(0xFF38BDF8)
                           ],
+                          isSmall: isSmall,
                         ),
                       ),
-                      const SizedBox(width: 14),
+                      SizedBox(width: isSmall ? 8 : 14),
                       Expanded(
                         child: _buildPortfolioServiceCard(
                           icon: Icons.install_mobile_rounded,
@@ -719,9 +767,10 @@ class SettingsView extends StatelessWidget {
                             const Color(0xFF7C3AED),
                             const Color(0xFFA78BFA)
                           ],
+                          isSmall: isSmall,
                         ),
                       ),
-                      const SizedBox(width: 14),
+                      SizedBox(width: isSmall ? 8 : 14),
                       Expanded(
                         child: _buildPortfolioServiceCard(
                           icon: Icons.desktop_mac_rounded,
@@ -737,9 +786,10 @@ class SettingsView extends StatelessWidget {
                             const Color(0xFF059669),
                             const Color(0xFF34D399)
                           ],
+                          isSmall: isSmall,
                         ),
                       ),
-                      const SizedBox(width: 14),
+                      SizedBox(width: isSmall ? 8 : 14),
                       Expanded(
                         child: _buildPortfolioServiceCard(
                           icon: Icons.campaign_rounded,
@@ -755,18 +805,16 @@ class SettingsView extends StatelessWidget {
                             const Color(0xFFD97706),
                             const Color(0xFFFBBF24)
                           ],
+                          isSmall: isSmall,
                         ),
                       ),
                     ],
                   ),
-                ),
 
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-                // 3. Complete Enterprise Software Suite (Flex 4 - fully expands to cover all software solutions)
-                Expanded(
-                  flex: 4,
-                  child: Container(
+                  // 3. Complete Enterprise Software Suite
+                  Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
@@ -777,102 +825,122 @@ class SettingsView extends StatelessWidget {
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Row(
                           children: [
                             const Icon(
-                              Icons.auto_awesome_rounded,
+                              Icons.all_inclusive_rounded,
                               color: Color(0xFF38BDF8),
-                              size: 16,
+                              size: 18,
                             ),
                             const SizedBox(width: 8),
-                            Text(
-                              'SPECIALIZED ENTERPRISE SOFTWARE SUITE & CUSTOM SYSTEMS',
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFFE2E8F0),
-                                letterSpacing: 0.8,
+                            Expanded(
+                              child: Text(
+                                'COMPLETE ENTERPRISE SOFTWARE SUITE (READY & CUSTOM BUILT)',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF38BDF8),
+                                  letterSpacing: 1.2,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Wrap(
-                              spacing: 12,
-                              runSpacing: 12,
-                              children: [
-                                _buildSoftwareTag(
-                                    'CRM Software', Icons.people_alt_rounded),
-                                _buildSoftwareTag('ERP Software',
-                                    Icons.account_tree_rounded),
-                                _buildSoftwareTag('Accounting Software',
-                                    Icons.calculate_rounded),
-                                _buildSoftwareTag('E-Commerce Software',
-                                    Icons.shopping_bag_rounded),
-                                _buildSoftwareTag(
-                                    'Billing Software', Icons.receipt_rounded),
-                                _buildSoftwareTag('Matrimony Software',
-                                    Icons.favorite_rounded),
-                                _buildSoftwareTag('Inventory & POS Software',
-                                    Icons.inventory_2_rounded),
-                                _buildSoftwareTag('HRM & Payroll Systems',
-                                    Icons.badge_rounded),
-                                _buildSoftwareTag('Hospital Management',
-                                    Icons.local_hospital_rounded),
-                                _buildSoftwareTag('School & College EMS',
-                                    Icons.school_rounded),
-                                _buildSoftwareTag(
-                                    'Custom Enterprise Workflows',
-                                    Icons.hub_rounded),
-                              ],
-                            ),
+                        const SizedBox(height: 14),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Wrap(
+                            spacing: isSmall ? 8 : 12,
+                            runSpacing: isSmall ? 8 : 12,
+                            children: [
+                              _buildSoftwareTag(
+                                  'CRM Software', Icons.people_alt_rounded,
+                                  isSmall: isSmall),
+                              _buildSoftwareTag('ERP Software',
+                                  Icons.account_tree_rounded,
+                                  isSmall: isSmall),
+                              _buildSoftwareTag('Accounting Software',
+                                  Icons.calculate_rounded,
+                                  isSmall: isSmall),
+                              _buildSoftwareTag('E-Commerce Software',
+                                  Icons.shopping_bag_rounded,
+                                  isSmall: isSmall),
+                              _buildSoftwareTag(
+                                  'Billing Software', Icons.receipt_rounded,
+                                  isSmall: isSmall),
+                              _buildSoftwareTag('Matrimony Software',
+                                  Icons.favorite_rounded,
+                                  isSmall: isSmall),
+                              _buildSoftwareTag('Inventory & POS Software',
+                                  Icons.inventory_2_rounded,
+                                  isSmall: isSmall),
+                              _buildSoftwareTag('HRM & Payroll Systems',
+                                  Icons.badge_rounded,
+                                  isSmall: isSmall),
+                              _buildSoftwareTag('Hospital Management',
+                                  Icons.local_hospital_rounded,
+                                  isSmall: isSmall),
+                              _buildSoftwareTag('School & College EMS',
+                                  Icons.school_rounded,
+                                  isSmall: isSmall),
+                              _buildSoftwareTag(
+                                  'Custom Enterprise Workflows',
+                                  Icons.hub_rounded,
+                                  isSmall: isSmall),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
+                  const SizedBox(height: 14),
 
-                const SizedBox(height: 14),
-
-                // 4. Partner Location Footer
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.location_on_rounded,
-                          size: 15,
-                          color: Color(0xFF64748B),
+                  // 4. Partner Location Footer
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.location_on_rounded,
+                              size: 15,
+                              color: Color(0xFF64748B),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                '13 E.J.M. Complex, Opp. RTO Office, Mulagumoodu, Kanyakumari, Tamilnadu, India - 629167',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.inter(
+                                  fontSize: isSmall ? 10.5 : 12,
+                                  color: const Color(0xFF94A3B8),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '13 E.J.M. Complex, Opp. RTO Office, Mulagumoodu, Kanyakumari, Tamilnadu, India - 629167',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: const Color(0xFF94A3B8),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      'LOOPSPRING.IN',
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF475569),
-                        letterSpacing: 1.5,
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      const SizedBox(width: 12),
+                      Text(
+                        'LOOPSPRING.IN',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF475569),
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -880,9 +948,9 @@ class SettingsView extends StatelessWidget {
     );
   }
 
-  Widget _buildDarkContactPill({required IconData icon, required String text}) {
+  Widget _buildDarkContactPill({required IconData icon, required String text, bool isSmall = false}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      padding: EdgeInsets.symmetric(horizontal: isSmall ? 8 : 12, vertical: isSmall ? 5 : 7),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(20),
@@ -891,12 +959,12 @@ class SettingsView extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 13, color: const Color(0xFF38BDF8)),
-          const SizedBox(width: 6),
+          Icon(icon, size: isSmall ? 11 : 13, color: const Color(0xFF38BDF8)),
+          SizedBox(width: isSmall ? 4 : 6),
           Text(
             text,
             style: GoogleFonts.inter(
-              fontSize: 12,
+              fontSize: isSmall ? 10.5 : 12,
               fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
@@ -912,22 +980,24 @@ class SettingsView extends StatelessWidget {
     required String subtitle,
     required List<String> features,
     required List<Color> gradientColors,
+    bool isSmall = false,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(isSmall ? 10 : 16),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                width: 38,
-                height: 38,
+                width: isSmall ? 28 : 38,
+                height: isSmall ? 28 : 38,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: gradientColors,
@@ -936,14 +1006,14 @@ class SettingsView extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(icon, color: Colors.white, size: 20),
+                child: Icon(icon, color: Colors.white, size: isSmall ? 14 : 20),
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: isSmall ? 6 : 10),
               Expanded(
                 child: Text(
                   title,
                   style: GoogleFonts.inter(
-                    fontSize: 13,
+                    fontSize: isSmall ? 11 : 13,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
                     height: 1.2,
@@ -952,50 +1022,45 @@ class SettingsView extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: isSmall ? 4 : 8),
           Text(
             subtitle,
             style: GoogleFonts.inter(
-              fontSize: 11,
+              fontSize: isSmall ? 9.5 : 11,
               color: const Color(0xFF94A3B8),
-              height: 1.35,
+              height: 1.3,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: isSmall ? 4 : 10),
           Divider(color: Colors.white.withValues(alpha: 0.06), height: 1),
-          const SizedBox(height: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: features
-                  .map(
-                    (f) => Row(
-                      children: [
-                        Icon(
-                          Icons.check_circle_rounded,
-                          size: 13,
-                          color: gradientColors[1],
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            f,
-                            style: GoogleFonts.inter(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                              color: const Color(0xFFE2E8F0),
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
+          SizedBox(height: isSmall ? 4 : 10),
+          ...features.map(
+            (f) => Padding(
+              padding: EdgeInsets.only(bottom: isSmall ? 4 : 6),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.check_circle_rounded,
+                    size: isSmall ? 11 : 13,
+                    color: gradientColors[1],
+                  ),
+                  SizedBox(width: isSmall ? 4 : 6),
+                  Expanded(
+                    child: Text(
+                      f,
+                      style: GoogleFonts.inter(
+                        fontSize: isSmall ? 9.5 : 11,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFFE2E8F0),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  )
-                  .toList(),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -1003,9 +1068,9 @@ class SettingsView extends StatelessWidget {
     );
   }
 
-  Widget _buildSoftwareTag(String name, IconData icon) {
+  Widget _buildSoftwareTag(String name, IconData icon, {bool isSmall = false}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: isSmall ? 8 : 12, vertical: isSmall ? 5 : 8),
       decoration: BoxDecoration(
         color: const Color(0xFF38BDF8).withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(10),
@@ -1016,12 +1081,12 @@ class SettingsView extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: const Color(0xFF38BDF8)),
-          const SizedBox(width: 6),
+          Icon(icon, size: isSmall ? 12 : 14, color: const Color(0xFF38BDF8)),
+          SizedBox(width: isSmall ? 4 : 6),
           Text(
             name,
             style: GoogleFonts.inter(
-              fontSize: 12,
+              fontSize: isSmall ? 10.5 : 12,
               fontWeight: FontWeight.w600,
               color: const Color(0xFF38BDF8),
             ),
