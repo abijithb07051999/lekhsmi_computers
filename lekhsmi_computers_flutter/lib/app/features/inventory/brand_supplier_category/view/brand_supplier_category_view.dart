@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lekhsmi_computers_flutter/core/widgets/app_notification.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -1018,7 +1019,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
             onSave: () {
               final name = nameCtrl.text.trim();
               if (name.isEmpty) {
-                Get.snackbar('Warning', 'Brand name cannot be empty');
+                AppNotification.warning('Warning', 'Brand name cannot be empty');
                 return;
               }
               if (brand == null) {
@@ -1069,7 +1070,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
             onSave: () {
               final name = nameCtrl.text.trim();
               if (name.isEmpty) {
-                Get.snackbar('Warning', 'Category name cannot be empty');
+                AppNotification.warning('Warning', 'Category name cannot be empty');
                 return;
               }
               if (category == null) {
@@ -1160,14 +1161,11 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
               final address = addressCtrl.text.trim();
 
               if (name.isEmpty) {
-                Get.snackbar('Warning', 'Supplier name cannot be empty');
+                AppNotification.warning('Warning', 'Supplier name cannot be empty');
                 return;
               }
               if (c1 == 0) {
-                Get.snackbar(
-                  'Warning',
-                  'Please enter a valid primary contact number',
-                );
+                AppNotification.warning('Warning', 'Please enter a valid primary contact number');
                 return;
               }
 

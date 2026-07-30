@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:lekhsmi_computers_flutter/core/widgets/app_notification.dart';
 import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
 
 class AccountsController extends GetxController {
@@ -65,7 +66,7 @@ class AccountsController extends GetxController {
       incomes.assignAll(incList);
       expenses.assignAll(expList);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load accounting data: $e');
+      AppNotification.error('Error', 'Failed to load accounting data: $e');
     } finally {
       isLoading.value = false;
     }
@@ -119,7 +120,7 @@ class AccountsController extends GetxController {
 
       _rebuildAnnualReportList();
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load annual accounts report: $e');
+      AppNotification.error('Error', 'Failed to load annual accounts report: $e');
     }
   }
 
@@ -235,7 +236,7 @@ class AccountsController extends GetxController {
       await fetchAnnualReport();
       return true;
     } catch (e) {
-      Get.snackbar('Error', 'Failed to save record: $e');
+      AppNotification.error('Error', 'Failed to save record: $e');
       return false;
     }
   }
@@ -246,7 +247,7 @@ class AccountsController extends GetxController {
       await fetchAccounts();
       await fetchAnnualReport();
     } catch (e) {
-      Get.snackbar('Error', 'Failed to delete income: $e');
+      AppNotification.error('Error', 'Failed to delete income: $e');
     }
   }
 
@@ -256,7 +257,7 @@ class AccountsController extends GetxController {
       await fetchAccounts();
       await fetchAnnualReport();
     } catch (e) {
-      Get.snackbar('Error', 'Failed to delete expense: $e');
+      AppNotification.error('Error', 'Failed to delete expense: $e');
     }
   }
 }

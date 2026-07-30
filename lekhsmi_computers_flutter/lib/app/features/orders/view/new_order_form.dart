@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lekhsmi_computers_flutter/core/widgets/app_notification.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lekhsmi_computers_flutter/core/constants/app_colors.dart';
@@ -112,12 +113,7 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
         .toList();
 
     if (complaints.isEmpty) {
-      Get.snackbar(
-        'Missing Complaints',
-        'Please add at least one complaint or repair item.',
-        backgroundColor: Colors.amber.shade50,
-        colorText: Colors.amber.shade900,
-      );
+      AppNotification.warning('Missing Complaints', 'Please add at least one complaint or repair item.');
       return;
     }
 

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:lekhsmi_computers_flutter/core/widgets/app_notification.dart';
 import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
 import '../../../dashboard/controller/dashboard_controller.dart';
 import '../../purchase/controller/purchase_controller.dart';
@@ -36,7 +37,7 @@ class ProductController extends GetxController {
       categories.assignAll(results[1] as List<Category>);
       brands.assignAll(results[2] as List<Brand>);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load products: $e');
+      AppNotification.error('Error', 'Failed to load products: $e');
     } finally {
       isLoadingProducts.value = false;
     }
@@ -89,9 +90,9 @@ class ProductController extends GetxController {
       await fetchProducts();
       _notifyDashboard();
       Get.back();
-      Get.snackbar('Success', 'Product added successfully');
+      AppNotification.success('Success', 'Product added successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to add product: $e');
+      AppNotification.error('Error', 'Failed to add product: $e');
     }
   }
 
@@ -101,9 +102,9 @@ class ProductController extends GetxController {
       await fetchProducts();
       _notifyDashboard();
       Get.back();
-      Get.snackbar('Success', 'Product updated successfully');
+      AppNotification.success('Success', 'Product updated successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to update product: $e');
+      AppNotification.error('Error', 'Failed to update product: $e');
     }
   }
 }

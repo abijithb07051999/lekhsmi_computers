@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:lekhsmi_computers_flutter/core/widgets/app_notification.dart';
 import 'package:get/get.dart';
 import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
 import 'package:lekhsmi_computers_flutter/app/features/dashboard/controller/dashboard_controller.dart';
@@ -64,7 +64,7 @@ class OrdersController extends GetxController {
       liveOrders.assignAll(live);
       historyOrders.assignAll(hist);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load orders: $e');
+      AppNotification.error('Error', 'Failed to load orders: $e');
     } finally {
       isLoading.value = false;
     }
@@ -112,15 +112,10 @@ class OrdersController extends GetxController {
       await _client.order.addNewOrderStatus(statusItem);
       await fetchOrders();
       _notifyDashboard();
-      Get.snackbar(
-        'Success',
-        'Order created successfully (${createdOrder.orderId})',
-        backgroundColor: Colors.green.shade50,
-        colorText: Colors.green.shade800,
-      );
+      AppNotification.success('Success', 'Order created successfully (${createdOrder.orderId})');
       return true;
     } catch (e) {
-      Get.snackbar('Error', 'Failed to create order: $e');
+      AppNotification.error('Error', 'Failed to create order: $e');
       return false;
     } finally {
       isLoading.value = false;
@@ -134,7 +129,7 @@ class OrdersController extends GetxController {
       await fetchOrders();
       _notifyDashboard();
     } catch (e) {
-      Get.snackbar('Error', 'Failed to update status: $e');
+      AppNotification.error('Error', 'Failed to update status: $e');
     }
   }
 
@@ -167,22 +162,10 @@ class OrdersController extends GetxController {
 
       await fetchOrders();
       _notifyDashboard();
-      Get.snackbar(
-        'Order Updated',
-        'Order ${order.orderId} was updated successfully.',
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppNotification.success('Order Updated', 'Order ${order.orderId} was updated successfully.');
       return true;
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to update order details: $e',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppNotification.error('Error', 'Failed to update order details: $e');
       return false;
     } finally {
       isLoading.value = false;
@@ -196,7 +179,7 @@ class OrdersController extends GetxController {
       await fetchOrders();
       _notifyDashboard();
     } catch (e) {
-      Get.snackbar('Error', 'Failed to update price: $e');
+      AppNotification.error('Error', 'Failed to update price: $e');
     }
   }
 

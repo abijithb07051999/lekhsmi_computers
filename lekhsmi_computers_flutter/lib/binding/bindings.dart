@@ -6,7 +6,11 @@ import 'package:serverpod_flutter/serverpod_flutter.dart';
 class LekhsmiBindings implements Bindings {
   @override
   void dependencies() {
-    Get.put<Client>(Client("http://localhost:8080")..connectivityMonitor=FlutterConnectivityMonitor(), permanent: true);
+    Get.put<Client>(
+      Client("http://localhost:8080")
+        ..connectivityMonitor = FlutterConnectivityMonitor(),
+      permanent: true,
+    );
     Get.put<SettingsController>(SettingsController(), permanent: true);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lekhsmi_computers_flutter/core/widgets/app_notification.dart';
 import 'package:get/get.dart';
 import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
 
@@ -65,26 +66,11 @@ class SettingsController extends GetxController {
       storeWebsite.value = updated.website ?? '';
       storeAddress.value = updated.address;
 
-      Get.snackbar(
-        'Success',
-        'Store information updated successfully',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 3),
-      );
+      AppNotification.success('Success', 'Store information updated successfully');
       return true;
     } catch (e) {
       debugPrint('Error updating store profile: $e');
-      Get.snackbar(
-        'Error',
-        'Failed to update store information: $e',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(16),
-      );
+      AppNotification.error('Error', 'Failed to update store information: $e');
       return false;
     } finally {
       isLoading.value = false;

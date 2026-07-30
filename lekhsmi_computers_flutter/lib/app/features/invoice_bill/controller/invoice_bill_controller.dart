@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lekhsmi_computers_flutter/core/widgets/app_notification.dart';
 import 'package:get/get.dart';
 import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
 import 'package:lekhsmi_computers_flutter/app/features/settings/controller/settings_controller.dart';
@@ -84,13 +85,7 @@ class InvoiceBillController extends GetxController {
         selectedProduct.value = matching;
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to load inventory products: $e',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppNotification.error('Error', 'Failed to load inventory products: $e');
     } finally {
       isLoadingProducts.value = false;
     }
@@ -124,14 +119,7 @@ class InvoiceBillController extends GetxController {
       itemQuantityController.selection = TextSelection.fromPosition(
         TextPosition(offset: itemQuantityController.text.length),
       );
-      Get.snackbar(
-        'Max Stock Limit',
-        'Maximum available stock for "${product.name}" is ${product.quantity}.',
-        backgroundColor: const Color(0xFFF59E0B),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-      );
+      AppNotification.warning('Max Stock Limit', 'Maximum available stock for "${product.name}" is ${product.quantity}.');
     }
   }
 
@@ -165,24 +153,12 @@ class InvoiceBillController extends GetxController {
 
   void addItem() {
     if (selectedProduct.value == null) {
-      Get.snackbar(
-        'Product Required',
-        'Please select a product from the inventory list.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppNotification.error('Product Required', 'Please select a product from the inventory list.');
       return;
     }
 
     if (items.length >= 13) {
-      Get.snackbar(
-        'Limit Reached',
-        'A4 sheet printing supports a maximum of 13 products / services.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppNotification.error('Limit Reached', 'A4 sheet printing supports a maximum of 13 products / services.');
       return;
     }
 
@@ -191,24 +167,12 @@ class InvoiceBillController extends GetxController {
     final price = double.tryParse(itemPriceController.text.trim()) ?? product.sellPrice.toDouble();
 
     if (quantity <= 0) {
-      Get.snackbar(
-        'Invalid Quantity',
-        'Please enter a quantity greater than 0.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppNotification.error('Invalid Quantity', 'Please enter a quantity greater than 0.');
       return;
     }
 
     if (quantity > product.quantity) {
-      Get.snackbar(
-        'Insufficient Stock',
-        'Only ${product.quantity} items available in stock for "${product.name}".',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppNotification.error('Insufficient Stock', 'Only ${product.quantity} items available in stock for "${product.name}".');
       return;
     }
 
@@ -241,43 +205,19 @@ class InvoiceBillController extends GetxController {
 
   bool validateBeforePrint() {
     if (customerName.value.trim().isEmpty) {
-      Get.snackbar(
-        'Required Field Missing',
-        'Please enter the Customer Name.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppNotification.error('Required Field Missing', 'Please enter the Customer Name.');
       return false;
     }
     if (phone.value.trim().isEmpty) {
-      Get.snackbar(
-        'Required Field Missing',
-        'Please enter the Phone Number.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppNotification.error('Required Field Missing', 'Please enter the Phone Number.');
       return false;
     }
     if (address.value.trim().isEmpty) {
-      Get.snackbar(
-        'Required Field Missing',
-        'Please enter the Address.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppNotification.error('Required Field Missing', 'Please enter the Address.');
       return false;
     }
     if (items.isEmpty) {
-      Get.snackbar(
-        'No Products Added',
-        'Please add at least one product / service before printing.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppNotification.error('No Products Added', 'Please add at least one product / service before printing.');
       return false;
     }
     return true;
@@ -340,22 +280,9 @@ class InvoiceBillController extends GetxController {
       }
       await refreshProducts();
 
-      Get.snackbar(
-        'Stock Reduced & Printing',
-        'Stock quantities have been automatically deducted for printed items.',
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 4),
-      );
+      AppNotification.success('Stock Reduced & Printing', 'Stock quantities have been automatically deducted for printed items.');
     } catch (e) {
-      Get.snackbar(
-        'Stock Update Notice',
-        'Printing bill, but could not update server stock: $e',
-        backgroundColor: const Color(0xFFF59E0B),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppNotification.warning('Stock Update Notice', 'Printing bill, but could not update server stock: $e');
     }
 
     // 2. GENERATE A4 BLACK & WHITE PDF

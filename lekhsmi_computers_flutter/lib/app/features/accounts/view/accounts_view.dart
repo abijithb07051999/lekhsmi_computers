@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lekhsmi_computers_flutter/core/widgets/app_notification.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
@@ -85,7 +86,7 @@ class _AccountsViewState extends State<AccountsView> {
     if (!_formKey.currentState!.validate()) return;
     final int amount = int.tryParse(_amountCtrl.text.trim()) ?? 0;
     if (amount <= 0) {
-      Get.snackbar('Invalid Amount', 'Please enter a valid positive amount.');
+      AppNotification.warning('Invalid Amount', 'Please enter a valid positive amount.');
       return;
     }
 

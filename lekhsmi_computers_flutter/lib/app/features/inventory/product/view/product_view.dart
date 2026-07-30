@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lekhsmi_computers_flutter/core/widgets/app_notification.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -686,15 +687,15 @@ class _ProductViewState extends State<ProductView> {
               final sellPrice = int.tryParse(sellPriceCtrl.text.trim()) ?? 0;
 
               if (name.isEmpty) {
-                Get.snackbar('Warning', 'Product name cannot be empty');
+                AppNotification.warning('Warning', 'Product name cannot be empty');
                 return;
               }
               if (selectedCategoryId == null || selectedBrandId == null || selectedQuality == null) {
-                Get.snackbar('Warning', 'Please select category, brand, and quality');
+                AppNotification.warning('Warning', 'Please select category, brand, and quality');
                 return;
               }
               if (quantityCtrl.text.trim().isEmpty || buyPriceCtrl.text.trim().isEmpty || sellPriceCtrl.text.trim().isEmpty) {
-                Get.snackbar('Warning', 'Please enter quantity, buy price, and sell price');
+                AppNotification.warning('Warning', 'Please enter quantity, buy price, and sell price');
                 return;
               }
 

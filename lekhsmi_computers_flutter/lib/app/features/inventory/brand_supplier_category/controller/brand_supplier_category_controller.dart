@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:lekhsmi_computers_flutter/core/widgets/app_notification.dart';
 import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
 import '../../../dashboard/controller/dashboard_controller.dart';
 
@@ -56,7 +57,7 @@ class BrandSupplierCategoryController extends GetxController {
       final fetched = await getAllBrands();
       brands.assignAll(fetched);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load brands: $e');
+      AppNotification.error('Error', 'Failed to load brands: $e');
     } finally {
       isLoadingBrands.value = false;
     }
@@ -68,7 +69,7 @@ class BrandSupplierCategoryController extends GetxController {
       final fetched = await getAllCategory();
       categories.assignAll(fetched);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load categories: $e');
+      AppNotification.error('Error', 'Failed to load categories: $e');
     } finally {
       isLoadingCategories.value = false;
     }
@@ -80,7 +81,7 @@ class BrandSupplierCategoryController extends GetxController {
       final fetched = await getAllSuppliers();
       suppliers.assignAll(fetched);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load suppliers: $e');
+      AppNotification.error('Error', 'Failed to load suppliers: $e');
     } finally {
       isLoadingSuppliers.value = false;
     }
@@ -117,9 +118,9 @@ class BrandSupplierCategoryController extends GetxController {
       await fetchBrands();
       _notifyDashboard();
       Get.back();
-      Get.snackbar('Success', 'Brand added successfully');
+      AppNotification.success('Success', 'Brand added successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to add brand: $e');
+      AppNotification.error('Error', 'Failed to add brand: $e');
     }
   }
 
@@ -130,9 +131,9 @@ class BrandSupplierCategoryController extends GetxController {
       await fetchCategories();
       _notifyDashboard();
       Get.back();
-      Get.snackbar('Success', 'Category added successfully');
+      AppNotification.success('Success', 'Category added successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to add category: $e');
+      AppNotification.error('Error', 'Failed to add category: $e');
     }
   }
 
@@ -143,9 +144,9 @@ class BrandSupplierCategoryController extends GetxController {
       await fetchSuppliers();
       _notifyDashboard();
       Get.back();
-      Get.snackbar('Success', 'Supplier added successfully');
+      AppNotification.success('Success', 'Supplier added successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to add supplier: $e');
+      AppNotification.error('Error', 'Failed to add supplier: $e');
     }
   }
 
@@ -156,9 +157,9 @@ class BrandSupplierCategoryController extends GetxController {
       await fetchBrands();
       _notifyDashboard();
       Get.back();
-      Get.snackbar('Success', 'Brand updated successfully');
+      AppNotification.success('Success', 'Brand updated successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to update brand: $e');
+      AppNotification.error('Error', 'Failed to update brand: $e');
     }
   }
 
@@ -169,9 +170,9 @@ class BrandSupplierCategoryController extends GetxController {
       await fetchCategories();
       _notifyDashboard();
       Get.back();
-      Get.snackbar('Success', 'Category updated successfully');
+      AppNotification.success('Success', 'Category updated successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to update category: $e');
+      AppNotification.error('Error', 'Failed to update category: $e');
     }
   }
 
@@ -182,9 +183,9 @@ class BrandSupplierCategoryController extends GetxController {
       await fetchSuppliers();
       _notifyDashboard();
       Get.back();
-      Get.snackbar('Success', 'Supplier updated successfully');
+      AppNotification.success('Success', 'Supplier updated successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to update supplier: $e');
+      AppNotification.error('Error', 'Failed to update supplier: $e');
     }
   }
 }

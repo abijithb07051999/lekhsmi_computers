@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lekhsmi_computers_flutter/core/widgets/app_notification.dart';
 import 'package:get/get.dart';
 import 'package:lekhsmi_computers_flutter/app/features/settings/controller/settings_controller.dart';
 import 'package:lekhsmi_computers_flutter/core/widgets/saas_date_picker.dart';
@@ -101,23 +102,19 @@ class QuotationController extends GetxController {
     final price = double.tryParse(itemPriceController.text.trim());
 
     if (items.length >= 13) {
-      Get.snackbar('Limit Reached', 'Maximum 13 products / services allowed per quotation to fit inside a single A4 sheet.',
-          backgroundColor: const Color(0xFFFEF2F2), colorText: const Color(0xFFEF4444));
+      AppNotification.warning('Limit Reached', 'Maximum 13 products / services allowed per quotation to fit inside a single A4 sheet.');
       return;
     }
     if (name.isEmpty) {
-      Get.snackbar('Validation', 'Please enter a product name',
-          backgroundColor: const Color(0xFFFEF2F2), colorText: const Color(0xFFEF4444));
+      AppNotification.warning('Validation', 'Please enter a product name');
       return;
     }
     if (price == null || price <= 0) {
-      Get.snackbar('Validation', 'Please enter a valid price',
-          backgroundColor: const Color(0xFFFEF2F2), colorText: const Color(0xFFEF4444));
+      AppNotification.warning('Validation', 'Please enter a valid price');
       return;
     }
     if (qty <= 0) {
-      Get.snackbar('Validation', 'Quantity must be at least 1',
-          backgroundColor: const Color(0xFFFEF2F2), colorText: const Color(0xFFEF4444));
+      AppNotification.warning('Validation', 'Quantity must be at least 1');
       return;
     }
 
@@ -182,43 +179,19 @@ class QuotationController extends GetxController {
 
   bool validateBeforePrint() {
     if (customerName.value.trim().isEmpty) {
-      Get.snackbar(
-        'Required Field Missing',
-        'Please enter the Customer Name.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppNotification.error('Required Field Missing', 'Please enter the Customer Name.');
       return false;
     }
     if (phone.value.trim().isEmpty) {
-      Get.snackbar(
-        'Required Field Missing',
-        'Please enter the Phone Number.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppNotification.error('Required Field Missing', 'Please enter the Phone Number.');
       return false;
     }
     if (address.value.trim().isEmpty) {
-      Get.snackbar(
-        'Required Field Missing',
-        'Please enter the Address.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppNotification.error('Required Field Missing', 'Please enter the Address.');
       return false;
     }
     if (items.isEmpty) {
-      Get.snackbar(
-        'No Products Added',
-        'Please add at least one product to print the quotation.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppNotification.error('No Products Added', 'Please add at least one product to print the quotation.');
       return false;
     }
     return true;

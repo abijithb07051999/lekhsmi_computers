@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lekhsmi_computers_flutter/core/widgets/app_notification.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
@@ -984,12 +985,12 @@ class _PurchaseViewState extends State<PurchaseView> {
                         ElevatedButton.icon(
                           onPressed: () async {
                             if (selectedSupplierId == null) {
-                              Get.snackbar('Error', 'Please select a supplier');
+                              AppNotification.error('Error', 'Please select a supplier');
                               return;
                             }
                             final validRows = itemRows.where((r) => r.productId != null).toList();
                             if (validRows.isEmpty) {
-                              Get.snackbar('Error', 'Please add at least 1 valid product item');
+                              AppNotification.error('Error', 'Please add at least 1 valid product item');
                               return;
                             }
 

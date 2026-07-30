@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lekhsmi_computers_flutter/core/widgets/app_notification.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
@@ -1400,7 +1401,7 @@ class _EditOrderDialogState extends State<_EditOrderDialog> {
                           .where((t) => t.isNotEmpty)
                           .toList();
                       if (complaints.isEmpty) {
-                        Get.snackbar('Validation', 'Please enter at least one complaint / service.');
+                        AppNotification.warning('Validation', 'Please enter at least one complaint / service.');
                         return;
                       }
 

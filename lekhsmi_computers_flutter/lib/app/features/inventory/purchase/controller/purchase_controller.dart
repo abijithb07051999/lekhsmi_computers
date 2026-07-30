@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:lekhsmi_computers_flutter/core/widgets/app_notification.dart';
 import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
 import '../../product/controller/product_controller.dart';
 import '../../../dashboard/controller/dashboard_controller.dart';
@@ -55,7 +56,7 @@ class PurchaseController extends GetxController {
       brands.assignAll(results[3] as List<Brand>);
       categories.assignAll(results[4] as List<Category>);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load purchase data: $e');
+      AppNotification.error('Error', 'Failed to load purchase data: $e');
     } finally {
       isLoadingPurchases.value = false;
     }
@@ -111,7 +112,7 @@ class PurchaseController extends GetxController {
     try {
       return await _client.purchase.getPurchaseItems(purchaseId: purchaseId);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load purchase items: $e');
+      AppNotification.error('Error', 'Failed to load purchase items: $e');
       return [];
     }
   }
@@ -125,10 +126,10 @@ class PurchaseController extends GetxController {
       await _client.purchase.createPurchase(purchase: purchase, items: items);
       await fetchPurchases();
       _notifyStockUpdated();
-      Get.snackbar('Success', 'Purchase recorded and stock updated successfully');
+      AppNotification.success('Success', 'Purchase recorded and stock updated successfully');
       return true;
     } catch (e) {
-      Get.snackbar('Error', 'Failed to record purchase: $e');
+      AppNotification.error('Error', 'Failed to record purchase: $e');
       return false;
     } finally {
       isSubmitting.value = false;
@@ -140,9 +141,9 @@ class PurchaseController extends GetxController {
       await _client.purchase.updatePurchase(purchase: purchase);
       await fetchPurchases();
       _notifyStockUpdated();
-      Get.snackbar('Success', 'Payment updated successfully');
+      AppNotification.success('Success', 'Payment updated successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to update payment: $e');
+      AppNotification.error('Error', 'Failed to update payment: $e');
     }
   }
 
@@ -151,9 +152,9 @@ class PurchaseController extends GetxController {
       await _client.purchase.deletePurchase(purchase: purchase);
       await fetchPurchases();
       _notifyStockUpdated();
-      Get.snackbar('Success', 'Purchase deleted successfully');
+      AppNotification.success('Success', 'Purchase deleted successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to delete purchase: $e');
+      AppNotification.error('Error', 'Failed to delete purchase: $e');
     }
   }
 }
