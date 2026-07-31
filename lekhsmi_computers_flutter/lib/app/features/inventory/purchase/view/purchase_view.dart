@@ -257,7 +257,6 @@ class _PurchaseViewState extends State<PurchaseView> {
                     child: Column(
                       children: [
                         _buildTableHeader(),
-                        const SizedBox(height: 8),
                         Expanded(
                           child: Obx(() {
                             final list = controller.filteredPurchases;
@@ -623,7 +622,10 @@ class _PurchaseViewState extends State<PurchaseView> {
               derivedStatus = 'Partially Paid';
             }
 
-            return Dialog(
+            return MediaQuery.removeViewInsets(
+              removeBottom: true,
+              context: context,
+              child: Dialog(
               backgroundColor: Colors.transparent,
               child: Container(
                 width: 900,
@@ -888,6 +890,7 @@ class _PurchaseViewState extends State<PurchaseView> {
                                   child: TextFormField(
                                     controller: row.qtyCtrl,
                                     keyboardType: TextInputType.number,
+                                    scrollPadding: const EdgeInsets.only(bottom: 260),
                                     decoration: _inputDecoration('Qty'),
                                     onChanged: (val) {
                                       setStateModal(() {
@@ -971,6 +974,7 @@ class _PurchaseViewState extends State<PurchaseView> {
                                 TextField(
                                   controller: paidCtrl,
                                   keyboardType: TextInputType.number,
+                                  scrollPadding: const EdgeInsets.only(bottom: 260),
                                   decoration: _inputDecoration('Paid'),
                                   onChanged: (_) => setStateModal(() {}),
                                 ),
@@ -1078,6 +1082,7 @@ class _PurchaseViewState extends State<PurchaseView> {
                   ],
                 ),
               ),
+            ),
             );
           },
         );

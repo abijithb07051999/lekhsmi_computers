@@ -14,6 +14,7 @@ class SettingsView extends StatelessWidget {
     final controller = Get.find<SettingsController>();
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
       body: Column(
         children: [

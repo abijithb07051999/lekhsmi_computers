@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Network Security Configuration
+  Allows plain HTTP (cleartext) traffic to local network IP addresses
+  so the Android tablet can reach the Serverpod backend server on the
+  same WiFi network (e.g. 192.168.x.x).
+-->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Local network range used by the Serverpod dev server -->
+        <domain includeSubdomains="false">192.168.1.39</domain>
+    </domain-config>
+    <!-- Allow cleartext for all private LAN ranges as a fallback -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.0.0</domain>
+    </domain-config>
+</network-security-config>

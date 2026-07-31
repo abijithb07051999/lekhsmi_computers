@@ -7,6 +7,7 @@ import 'package:lekhsmi_computers_flutter/core/widgets/saas_date_picker.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:lekhsmi_computers_flutter/core/widgets/saas_print_modal.dart';
+import 'package:printing/printing.dart';
 import 'dart:math' as math;
 import '../../inventory/product/controller/product_controller.dart';
 
@@ -580,6 +581,16 @@ class InvoiceBillController extends GetxController {
       ),
     );
 
+    if (GetPlatform.isAndroid) {
+      final bytes = await doc.save();
+      final fileName = nameText.isEmpty
+          ? 'Invoice_Bill.pdf'
+          : 'Invoice_Bill_${nameText.replaceAll(' ', '_')}.pdf';
+      await Printing.sharePdf(bytes: bytes, filename: fileName);
+      clearForm();
+      return;
+    }
+
     final bool printed = await SaaSPrintModal.show(
       documentTitle: 'INVOICE / BILL',
       documentNumber: nameText.replaceAll(' ', '_'),
@@ -591,6 +602,10 @@ class InvoiceBillController extends GetxController {
     if (printed) {
       clearForm();
     }
+  }
+
+  Future<void> shareInvoiceBillPdf() async {
+    await printInvoiceBillPdf();
   }
 
   String _formatDate(DateTime dt) {

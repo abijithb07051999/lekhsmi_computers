@@ -14,6 +14,7 @@ class InvoiceBillView extends StatelessWidget {
     final controller = Get.put(InvoiceBillController());
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
       body: Column(
         children: [
@@ -161,7 +162,8 @@ class InvoiceBillView extends StatelessWidget {
         // Form Body
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.fromLTRB(24, 24, 24, 24 + MediaQuery.of(context).viewInsets.bottom),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -320,7 +322,7 @@ class InvoiceBillView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
-                flex: 5,
+                flex: 6,
                 child: _buildProductSelector(context, controller),
               ),
               const SizedBox(width: 8),
@@ -351,7 +353,7 @@ class InvoiceBillView extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                flex: 3,
+                flex: 2,
                 child: _buildTextField(
                   controller: controller.itemPriceController,
                   label: 'Price (₹)',
@@ -572,6 +574,23 @@ class InvoiceBillView extends StatelessWidget {
                         style: GoogleFonts.inter(fontSize: 13, color: const Color(AppColors.TEXTSECONDARY)),
                       ),
                       icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(AppColors.TEXTSECONDARY)),
+                      selectedItemBuilder: (BuildContext context) {
+                        return displayProducts.map<Widget>((Product p) {
+                          return Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              p.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(AppColors.TEXTPRIMARY),
+                              ),
+                            ),
+                          );
+                        }).toList();
+                      },
                       onChanged: (Product? newProduct) {
                         controller.selectProduct(newProduct);
                       },
@@ -803,9 +822,17 @@ class InvoiceBillView extends StatelessWidget {
                   }),
                   const SizedBox(width: 8),
                   ElevatedButton.icon(
-                    onPressed: () => controller.printInvoiceBillPdf(),
-                    icon: const Icon(Icons.print_rounded, size: 16),
-                    label: Text('Print', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700)),
+                    onPressed: () => GetPlatform.isAndroid
+                        ? controller.shareInvoiceBillPdf()
+                        : controller.printInvoiceBillPdf(),
+                    icon: Icon(
+                      GetPlatform.isAndroid ? Icons.share_rounded : Icons.print_rounded,
+                      size: 16,
+                    ),
+                    label: Text(
+                      GetPlatform.isAndroid ? 'Share' : 'Print',
+                      style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF1E293B),
                       foregroundColor: Colors.white,
@@ -1257,6 +1284,7 @@ class InvoiceBillView extends StatelessWidget {
           enabled: enabled,
           keyboardType: isNumber ? TextInputType.number : TextInputType.text,
           onChanged: onChanged,
+          scrollPadding: const EdgeInsets.only(bottom: 220),
           style: TextStyle(
             fontSize: 13,
             color: enabled

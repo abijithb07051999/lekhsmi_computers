@@ -13,6 +13,7 @@ class QuotationView extends StatelessWidget {
     final controller = Get.put(QuotationController());
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
       body: Column(
         children: [
@@ -98,6 +99,7 @@ class QuotationView extends StatelessWidget {
   }
 
   Widget _buildFormSection(BuildContext context, QuotationController controller) {
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
     return Container(
       color: Colors.white,
       child: Column(
@@ -155,7 +157,8 @@ class QuotationView extends StatelessWidget {
           // Scrollable Form Body
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.fromLTRB(24, 24, 24, 24 + keyboardHeight),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -651,6 +654,7 @@ class QuotationView extends StatelessWidget {
         TextField(
           controller: controller,
           keyboardType: isNumber ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
+          scrollPadding: const EdgeInsets.only(bottom: 220),
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -738,9 +742,17 @@ class QuotationView extends StatelessWidget {
                     }),
                     const SizedBox(width: 8),
                     ElevatedButton.icon(
-                      onPressed: () => controller.printQuotationPdf(),
-                      icon: const Icon(Icons.print_rounded, size: 16),
-                      label: Text('Print', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700)),
+                      onPressed: () => GetPlatform.isAndroid
+                          ? controller.shareQuotationPdf()
+                          : controller.printQuotationPdf(),
+                      icon: Icon(
+                        GetPlatform.isAndroid ? Icons.share_rounded : Icons.print_rounded,
+                        size: 16,
+                      ),
+                      label: Text(
+                        GetPlatform.isAndroid ? 'Share' : 'Print',
+                        style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF1E293B),
                         foregroundColor: Colors.white,

@@ -10,21 +10,21 @@
 # Configuration for the main API test server.
 apiServer:
   port: 0
-  publicHost: localhost
+  publicHost: 192.168.1.39
   publicPort: 0
   publicScheme: http
 
 # Configuration for the Insights test server.
 insightsServer:
   port: 0
-  publicHost: localhost
+  publicHost: 192.168.1.39
   publicPort: 0
   publicScheme: http
 
 # Configuration for the web test server.
 webServer:
   port: 0
-  publicHost: localhost
+  publicHost: 192.168.1.39
   publicPort: 0
   publicScheme: http
 

@@ -55,6 +55,7 @@ class _AccountsReportViewState extends State<AccountsReportView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
       body: Column(
         children: [
@@ -134,7 +135,7 @@ class _AccountsReportViewState extends State<AccountsReportView> {
                         children: [
                           // Card Header Bar
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                             decoration: const BoxDecoration(
                               border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9))),
                             ),
@@ -202,7 +203,7 @@ class _AccountsReportViewState extends State<AccountsReportView> {
 
                           // Table Header Row
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                             color: const Color(0xFFF8FAFC),
                             child: Row(
                               children: [

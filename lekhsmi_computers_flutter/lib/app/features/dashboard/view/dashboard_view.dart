@@ -61,6 +61,7 @@ class _DashboardViewState extends State<DashboardView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: const Color(AppColors.BACKGROUND),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -325,6 +326,7 @@ class _DashboardViewState extends State<DashboardView> {
 
   Widget _buildEmptyContent(String title) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
       body: Center(
         child: Column(

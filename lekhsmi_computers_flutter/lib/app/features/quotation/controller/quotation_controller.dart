@@ -6,6 +6,7 @@ import 'package:lekhsmi_computers_flutter/core/widgets/saas_date_picker.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:lekhsmi_computers_flutter/core/widgets/saas_print_modal.dart';
+import 'package:printing/printing.dart';
 
 class QuotationItem {
   final String productName;
@@ -514,6 +515,16 @@ class QuotationController extends GetxController {
       ),
     );
 
+    if (GetPlatform.isAndroid) {
+      final bytes = await doc.save();
+      final fileName = quotationNumber.value.isEmpty
+          ? 'Quotation.pdf'
+          : '${quotationNumber.value}.pdf';
+      await Printing.sharePdf(bytes: bytes, filename: fileName);
+      clearForm();
+      return;
+    }
+
     final bool printed = await SaaSPrintModal.show(
       documentTitle: 'QUOTATION',
       documentNumber: quotationNumber.value.isEmpty ? 'Quotation' : quotationNumber.value,
@@ -525,6 +536,10 @@ class QuotationController extends GetxController {
     if (printed) {
       clearForm();
     }
+  }
+
+  Future<void> shareQuotationPdf() async {
+    await printQuotationPdf();
   }
 
   String _formatPdfCurrency(double amount, {bool showSign = false}) {

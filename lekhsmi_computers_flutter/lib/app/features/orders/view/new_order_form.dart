@@ -54,7 +54,7 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
 
   void _addComplaintRow() {
     setState(() {
-      _complaintRows.add(_ComplaintRow());
+      _complaintRows.insert(0, _ComplaintRow());
     });
   }
 
@@ -142,6 +142,7 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
       body: Column(
         children: [
@@ -171,14 +172,16 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Left Col: Customer Details & Amount
-                              Expanded(
-                                flex: 6,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Left Col: Customer Details & Amount
+                            Expanded(
+                              flex: 6,
+                              child: SingleChildScrollView(
+                                physics: const BouncingScrollPhysics(),
+                                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
                                 child: Container(
                                   padding: const EdgeInsets.all(24),
                                   decoration: BoxDecoration(
@@ -198,7 +201,6 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
                                         ),
                                       ),
                                       const SizedBox(height: 20),
-
                                       _buildTextField(
                                         controller: _nameCtrl,
                                         label: 'Customer Name',
@@ -206,7 +208,6 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
                                         validator: (val) => val == null || val.trim().isEmpty ? 'Enter customer name' : null,
                                       ),
                                       const SizedBox(height: 16),
-
                                       Row(
                                         children: [
                                           Expanded(
@@ -234,7 +235,6 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
                                         ],
                                       ),
                                       const SizedBox(height: 16),
-
                                       _buildTextField(
                                         controller: _emailCtrl,
                                         label: 'Email Address (Optional)',
@@ -242,7 +242,6 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
                                         keyboardType: TextInputType.emailAddress,
                                       ),
                                       const SizedBox(height: 16),
-
                                       _buildTextField(
                                         controller: _addressCtrl,
                                         label: 'Customer Address',
@@ -251,7 +250,6 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
                                         validator: (val) => val == null || val.trim().isEmpty ? 'Enter customer address' : null,
                                       ),
                                       const SizedBox(height: 20),
-
                                       Row(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
@@ -269,7 +267,6 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
                                                   ),
                                                 ),
                                                 const SizedBox(height: 8),
-
                                                 InkWell(
                                                   onTap: () => _pickDate(context),
                                                   borderRadius: BorderRadius.circular(12),
@@ -321,125 +318,124 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 24),
-
-                              // Right Col: Complaints & Requirements
-                              Expanded(
-                                flex: 5,
-                                child: Container(
-                                  padding: const EdgeInsets.all(24),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFF8FAFC),
-                                    borderRadius: BorderRadius.circular(18),
-                                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            'Complaints / Requirements',
-                                            style: GoogleFonts.inter(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700,
-                                              color: const Color(AppColors.TEXTPRIMARY),
-                                            ),
+                            ),
+                            const SizedBox(width: 24),
+                            // Right Col: Complaints & Requirements
+                            Expanded(
+                              flex: 5,
+                              child: Container(
+                                padding: const EdgeInsets.all(24),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF8FAFC),
+                                  borderRadius: BorderRadius.circular(18),
+                                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Complaints / Requirements',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                            color: const Color(AppColors.TEXTPRIMARY),
                                           ),
-                                          TextButton.icon(
-                                            onPressed: _addComplaintRow,
-                                            icon: const Icon(Icons.add_circle_outline, size: 18),
-                                            label: Text('Add Complaint', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'Specify all reported issues or services required for this order',
-                                        style: GoogleFonts.inter(
-                                          fontSize: 13,
-                                          color: const Color(AppColors.TEXTSECONDARY).withValues(alpha: 0.8),
                                         ),
+                                        TextButton.icon(
+                                          onPressed: _addComplaintRow,
+                                          icon: const Icon(Icons.add_circle_outline, size: 18),
+                                          label: Text('Add Complaint', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Specify all reported issues or services required for this order',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 13,
+                                        color: const Color(AppColors.TEXTSECONDARY).withValues(alpha: 0.8),
                                       ),
-                                      const SizedBox(height: 16),
-
-                                      ListView.separated(
-                                        shrinkWrap: true,
-                                        physics: const NeverScrollableScrollPhysics(),
-                                        itemCount: _complaintRows.length,
-                                        separatorBuilder: (_, _) => const SizedBox(height: 12),
-                                        itemBuilder: (context, idx) {
-                                          final row = _complaintRows[idx];
-                                          return Row(
-                                            key: ValueKey(row.id),
-                                            children: [
-                                              Container(
-                                                width: 28,
-                                                height: 28,
-                                                alignment: Alignment.center,
-                                                decoration: BoxDecoration(
-                                                  color: const Color(AppColors.PRIMARY).withValues(alpha: 0.1),
-                                                  shape: BoxShape.circle,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    ListView.separated(
+                                      shrinkWrap: true,
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      itemCount: _complaintRows.length,
+                                      separatorBuilder: (_, _) => const SizedBox(height: 12),
+                                      itemBuilder: (context, idx) {
+                                        final row = _complaintRows[idx];
+                                        return Row(
+                                          key: ValueKey(row.id),
+                                          children: [
+                                            Container(
+                                              width: 28,
+                                              height: 28,
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                color: const Color(AppColors.PRIMARY).withValues(alpha: 0.1),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Text(
+                                                '${_complaintRows.length - idx}',
+                                                style: GoogleFonts.inter(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: const Color(AppColors.PRIMARY),
                                                 ),
-                                                child: Text(
-                                                  '${idx + 1}',
-                                                  style: GoogleFonts.inter(
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: TextFormField(
+                                                controller: row.controller,
+                                                scrollPadding: const EdgeInsets.only(bottom: 220),
+                                                style: GoogleFonts.inter(
+                                                  fontSize: 14,
+                                                  color: const Color(AppColors.TEXTPRIMARY),
+                                                ),
+                                                decoration: InputDecoration(
+                                                  hintText: 'e.g., Laptop Keyboard Complaint, OS Installation',
+                                                  hintStyle: GoogleFonts.inter(
+                                                    color: const Color(AppColors.HINTTEXT),
+                                                    fontWeight: FontWeight.w400,
                                                     fontSize: 13,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: const Color(AppColors.PRIMARY),
+                                                  ),
+                                                  filled: true,
+                                                  fillColor: const Color(AppColors.WHITE),
+                                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                                  border: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(12),
+                                                    borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                                                  ),
+                                                  enabledBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(12),
+                                                    borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                                                  ),
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(12),
+                                                    borderSide: const BorderSide(color: Color(AppColors.PRIMARY), width: 1.5),
                                                   ),
                                                 ),
                                               ),
-                                              const SizedBox(width: 12),
-                                              Expanded(
-                                                child: TextFormField(
-                                                  controller: row.controller,
-                                                  style: GoogleFonts.inter(
-                                                    fontSize: 14,
-                                                    color: const Color(AppColors.TEXTPRIMARY),
-                                                  ),
-                                                  decoration: InputDecoration(
-                                                    hintText: 'e.g., Laptop Keyboard Complaint, OS Installation',
-                                                    hintStyle: GoogleFonts.inter(
-                                                      color: const Color(AppColors.HINTTEXT),
-                                                      fontWeight: FontWeight.w400,
-                                                      fontSize: 13,
-                                                    ),
-                                                    filled: true,
-                                                    fillColor: const Color(AppColors.WHITE),
-                                                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                                    border: OutlineInputBorder(
-                                                      borderRadius: BorderRadius.circular(12),
-                                                      borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
-                                                    ),
-                                                    enabledBorder: OutlineInputBorder(
-                                                      borderRadius: BorderRadius.circular(12),
-                                                      borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
-                                                    ),
-                                                    focusedBorder: OutlineInputBorder(
-                                                      borderRadius: BorderRadius.circular(12),
-                                                      borderSide: const BorderSide(color: Color(AppColors.PRIMARY), width: 1.5),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              IconButton(
-                                                onPressed: _complaintRows.length > 1 ? () => _removeComplaintRow(idx) : null,
-                                                icon: const Icon(Icons.delete_outline, color: Color(0xFFDC2626), size: 20),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      ),
-                                      const SizedBox(height: 20),
-                                    ],
-                                  ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            IconButton(
+                                              onPressed: _complaintRows.length > 1 ? () => _removeComplaintRow(idx) : null,
+                                              icon: const Icon(Icons.delete_outline, color: Color(0xFFDC2626), size: 20),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                    const SizedBox(height: 20),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -618,6 +614,7 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
           keyboardType: keyboardType,
           maxLines: maxLines,
           validator: validator,
+          scrollPadding: const EdgeInsets.only(bottom: 220),
           style: GoogleFonts.inter(
             fontSize: 14,
             color: const Color(AppColors.TEXTPRIMARY),

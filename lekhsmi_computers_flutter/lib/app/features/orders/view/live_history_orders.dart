@@ -150,6 +150,7 @@ class _LiveHistoryOrdersViewState extends State<LiveHistoryOrdersView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
       body: Column(
         children: [
