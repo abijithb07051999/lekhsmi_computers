@@ -198,9 +198,9 @@ class QuotationController extends GetxController {
     return true;
   }
 
-  Future<void> printQuotationPdf() async {
+  Future<pw.Document?> _generatePdfDoc() async {
     if (!validateBeforePrint()) {
-      return;
+      return null;
     }
     final doc = pw.Document();
     final settings = Get.find<SettingsController>();
@@ -515,13 +515,19 @@ class QuotationController extends GetxController {
       ),
     );
 
-    if (GetPlatform.isAndroid) {
-      final bytes = await doc.save();
-      final fileName = quotationNumber.value.isEmpty
-          ? 'Quotation.pdf'
-          : '${quotationNumber.value}.pdf';
-      await Printing.sharePdf(bytes: bytes, filename: fileName);
-      clearForm();
+    return doc;
+  }
+
+  Future<void> printQuotationPdf() async {
+    final doc = await _generatePdfDoc();
+    if (doc == null) return;
+
+    if (GetPlatform.isMobile) {
+      final bool printed = await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async => doc.save(),
+        name: quotationNumber.value.isEmpty ? 'Quotation' : quotationNumber.value,
+      );
+      if (printed) clearForm();
       return;
     }
 
@@ -533,13 +539,19 @@ class QuotationController extends GetxController {
       onLayout: (PdfPageFormat format) async => doc.save(),
     );
 
-    if (printed) {
-      clearForm();
-    }
+    if (printed) clearForm();
   }
 
   Future<void> shareQuotationPdf() async {
-    await printQuotationPdf();
+    final doc = await _generatePdfDoc();
+    if (doc == null) return;
+
+    final bytes = await doc.save();
+    final fileName = quotationNumber.value.isEmpty
+        ? 'Quotation.pdf'
+        : '${quotationNumber.value}.pdf';
+    await Printing.sharePdf(bytes: bytes, filename: fileName);
+    clearForm();
   }
 
   String _formatPdfCurrency(double amount, {bool showSign = false}) {

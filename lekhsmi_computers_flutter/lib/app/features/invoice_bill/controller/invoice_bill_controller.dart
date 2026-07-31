@@ -241,12 +241,7 @@ class InvoiceBillController extends GetxController {
   }
 
   // Deduct Stock from backend inventory and Print Black & White A4 PDF
-  Future<void> printInvoiceBillPdf() async {
-    if (!validateBeforePrint()) {
-      return;
-    }
-
-    // 1. DEDUCT STOCK ON SERVER
+  Future<void> _deductStock() async {
     try {
       final allProducts = await _client.product.getAllProducts();
       for (final item in items) {
@@ -281,12 +276,17 @@ class InvoiceBillController extends GetxController {
       }
       await refreshProducts();
 
-      AppNotification.success('Stock Reduced & Printing', 'Stock quantities have been automatically deducted for printed items.');
+      AppNotification.success('Stock Reduced', 'Stock quantities have been automatically deducted for printed items.');
     } catch (e) {
-      AppNotification.warning('Stock Update Notice', 'Printing bill, but could not update server stock: $e');
+      AppNotification.warning('Stock Update Notice', 'Generating bill, but could not update server stock: $e');
+    }
+  }
+
+  Future<pw.Document?> _generatePdfDoc() async {
+    if (!validateBeforePrint()) {
+      return null;
     }
 
-    // 2. GENERATE A4 BLACK & WHITE PDF
     final doc = pw.Document();
     final settings = Get.find<SettingsController>();
 
@@ -581,13 +581,25 @@ class InvoiceBillController extends GetxController {
       ),
     );
 
-    if (GetPlatform.isAndroid) {
-      final bytes = await doc.save();
-      final fileName = nameText.isEmpty
-          ? 'Invoice_Bill.pdf'
-          : 'Invoice_Bill_${nameText.replaceAll(' ', '_')}.pdf';
-      await Printing.sharePdf(bytes: bytes, filename: fileName);
-      clearForm();
+    return doc;
+  }
+
+  Future<void> printInvoiceBillPdf() async {
+    final doc = await _generatePdfDoc();
+    if (doc == null) return;
+
+    await _deductStock();
+
+    final nameText = nameController.text.trim().isEmpty ? 'Valued Customer' : nameController.text.trim();
+
+    if (GetPlatform.isMobile) {
+      final bool printed = await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async => doc.save(),
+        name: nameText.isEmpty
+            ? 'Invoice_Bill'
+            : 'Invoice_Bill_${nameText.replaceAll(' ', '_')}',
+      );
+      if (printed) clearForm();
       return;
     }
 
@@ -595,17 +607,27 @@ class InvoiceBillController extends GetxController {
       documentTitle: 'INVOICE / BILL',
       documentNumber: nameText.replaceAll(' ', '_'),
       customerName: nameText.isEmpty ? 'Walk-in Customer' : nameText,
-      totalAmountText: _formatPdfCurrency(total),
+      totalAmountText: _formatPdfCurrency(totalAmount),
       onLayout: (PdfPageFormat format) async => doc.save(),
     );
 
-    if (printed) {
-      clearForm();
-    }
+    if (printed) clearForm();
   }
 
   Future<void> shareInvoiceBillPdf() async {
-    await printInvoiceBillPdf();
+    final doc = await _generatePdfDoc();
+    if (doc == null) return;
+
+    await _deductStock();
+
+    final bytes = await doc.save();
+    final nameText = nameController.text.trim().isEmpty ? 'Valued Customer' : nameController.text.trim();
+    final fileName = nameText.isEmpty
+        ? 'Invoice_Bill.pdf'
+        : 'Invoice_Bill_${nameText.replaceAll(' ', '_')}.pdf';
+        
+    await Printing.sharePdf(bytes: bytes, filename: fileName);
+    clearForm();
   }
 
   String _formatDate(DateTime dt) {

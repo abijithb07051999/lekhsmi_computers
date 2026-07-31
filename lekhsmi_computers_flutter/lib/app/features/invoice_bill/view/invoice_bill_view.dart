@@ -821,16 +821,26 @@ class InvoiceBillView extends StatelessWidget {
                     );
                   }),
                   const SizedBox(width: 8),
-                  ElevatedButton.icon(
-                    onPressed: () => GetPlatform.isAndroid
-                        ? controller.shareInvoiceBillPdf()
-                        : controller.printInvoiceBillPdf(),
-                    icon: Icon(
-                      GetPlatform.isAndroid ? Icons.share_rounded : Icons.print_rounded,
-                      size: 16,
+                  if (GetPlatform.isMobile) ...[
+                    ElevatedButton.icon(
+                      onPressed: () => controller.shareInvoiceBillPdf(),
+                      icon: const Icon(Icons.share_rounded, size: 16),
+                      label: Text('Share', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFF1F5F9),
+                        foregroundColor: const Color(0xFF0F172A),
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
                     ),
+                    const SizedBox(width: 8),
+                  ],
+                  ElevatedButton.icon(
+                    onPressed: () => controller.printInvoiceBillPdf(),
+                    icon: const Icon(Icons.print_rounded, size: 16),
                     label: Text(
-                      GetPlatform.isAndroid ? 'Share' : 'Print',
+                      GetPlatform.isMobile ? 'Save / Print' : 'Print',
                       style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700),
                     ),
                     style: ElevatedButton.styleFrom(

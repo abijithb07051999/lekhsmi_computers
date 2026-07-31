@@ -75,223 +75,226 @@ class _DashboardViewState extends State<DashboardView> {
               // Modern Enterprise SaaS Sidebar
               Container(
                 width: sidebarWidth,
-            decoration: const BoxDecoration(
-              color: Color(0xFFFFFFFF),
-              border: Border(
-                right: BorderSide(color: Color(0xFFE2E8F0), width: 1),
-              ),
-            ),
-            child: Column(
-              children: [
-                // Logo & Workspace Brand Header
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(22, 28, 22, 18),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: Image.asset(
-                          'assets/logo/lexmi_computers_logo.png',
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: const Color(AppColors.PRIMARY),
-                              child: Center(
-                                child: Text(
-                                  'LC',
-                                  style: GoogleFonts.inter(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                  ),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFFFFFF),
+                  border: Border(
+                    right: BorderSide(color: Color(0xFFE2E8F0), width: 1),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    // Logo & Workspace Brand Header
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(22, 28, 22, 18),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ShaderMask(
-                              shaderCallback: (bounds) => const LinearGradient(
-                                colors: [
-                                  Color(AppColors.PRIMARY),
-                                  Color(AppColors.SECONDAY),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ).createShader(bounds),
-                              child: Obx(() {
-                                return Text(
-                                  Get.find<SettingsController>().storeName.value,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 13.5,
-                                    fontWeight: FontWeight.w900,
-                                    color: Colors.white,
-                                    letterSpacing: -0.3,
+                              ],
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            child: Image.asset(
+                              'assets/logo/lexmi_computers_logo.png',
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: const Color(AppColors.PRIMARY),
+                                  child: Center(
+                                    child: Text(
+                                      'LC',
+                                      style: GoogleFonts.inter(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                    ),
                                   ),
                                 );
-                              }),
+                              },
                             ),
-                            const SizedBox(height: 3),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(
-                                  AppColors.PRIMARY,
-                                ).withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Text(
-                                'ENTERPRISE ERP',
-                                style: GoogleFonts.inter(
-                                  fontSize: 9.5,
-                                  fontWeight: FontWeight.w700,
-                                  color: const Color(AppColors.PRIMARY),
-                                  letterSpacing: 0.6,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                const SizedBox(height: 16),
-
-                // Navigation
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    physics: const BouncingScrollPhysics(),
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: 12,
-                          bottom: 8,
-                          top: 4,
-                        ),
-                        child: Text(
-                          'MAIN MENU',
-                          style: GoogleFonts.inter(
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.w700,
-                            color: const Color(
-                              AppColors.TEXTSECONDARY,
-                            ).withValues(alpha: 0.7),
-                            letterSpacing: 1.2,
                           ),
-                        ),
-                      ),
-                      _buildNavItem('Dashboard', AppIcons.DASHBOARDICON),
-                      _buildNavExpansionItem(
-                        'Inventory',
-                        AppIcons.INVENTORYICON,
-                        [
-                          'Brands / Suppliers',
-                          'Purchase',
-                          'Stocks',
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ShaderMask(
+                                  shaderCallback: (bounds) =>
+                                      const LinearGradient(
+                                        colors: [
+                                          Color(AppColors.PRIMARY),
+                                          Color(AppColors.SECONDAY),
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ).createShader(bounds),
+                                  child: Obx(() {
+                                    return Text(
+                                      Get.find<SettingsController>()
+                                          .storeName
+                                          .value,
+                                      style: GoogleFonts.inter(
+                                        fontSize: 13.5,
+                                        fontWeight: FontWeight.w900,
+                                        color: Colors.white,
+                                        letterSpacing: -0.3,
+                                      ),
+                                    );
+                                  }),
+                                ),
+                                const SizedBox(height: 3),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(
+                                      AppColors.PRIMARY,
+                                    ).withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Text(
+                                    'ENTERPRISE ERP',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 9.5,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(AppColors.PRIMARY),
+                                      letterSpacing: 0.6,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
-                      _buildNavExpansionItem('Orders', AppIcons.ORDERICON, [
-                        'New Order',
-                        'Live / History',
-                      ]),
-                      _buildNavExpansionItem(
-                        'Accounts',
-                        AppIcons.ACCOUNSTICON,
-                        ['Income / Expense', 'Report'],
+                    ),
+                    // const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                    const SizedBox(height: 16),
+
+                    // Navigation
+                    Expanded(
+                      child: ListView(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        physics: const BouncingScrollPhysics(),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 12,
+                              bottom: 8,
+                              top: 4,
+                            ),
+                            child: Text(
+                              'MAIN MENU',
+                              style: GoogleFonts.inter(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(
+                                  AppColors.TEXTSECONDARY,
+                                ).withValues(alpha: 0.7),
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                          _buildNavItem('Dashboard', AppIcons.DASHBOARDICON),
+                          _buildNavExpansionItem(
+                            'Inventory',
+                            AppIcons.INVENTORYICON,
+                            [
+                              'Brands / Suppliers',
+                              'Purchase',
+                              'Stocks',
+                            ],
+                          ),
+                          _buildNavExpansionItem('Orders', AppIcons.ORDERICON, [
+                            'New Order',
+                            'Live / History',
+                          ]),
+                          _buildNavExpansionItem(
+                            'Accounts',
+                            AppIcons.ACCOUNSTICON,
+                            ['Income / Expense', 'Report'],
+                          ),
+                          _buildNavItem('Quotation', AppIcons.QUOTATIONICON),
+                          _buildNavItem('Invoice / Bill', AppIcons.INVOICEICON),
+                          _buildNavItem('Settings', AppIcons.SETTINGSICON),
+                        ],
                       ),
-                      _buildNavItem('Quotation', AppIcons.QUOTATIONICON),
-                      _buildNavItem('Invoice / Bill', AppIcons.INVOICEICON),
-                      _buildNavItem('Settings', AppIcons.SETTINGSICON),
-                    ],
+                    ),
+
+                    // LoopSpring Footer with Primary-to-Secondary Gradient Logo
+                    Padding(
+                      padding: EdgeInsets.all(isSmallScreen ? 14.0 : 24.0),
+                      child: Column(
+                        children: [
+                          ShaderMask(
+                            shaderCallback: (bounds) => const LinearGradient(
+                              colors: [
+                                Color(AppColors.PRIMARY),
+                                Color(AppColors.SECONDAY),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ).createShader(bounds),
+                            child: Icon(
+                              Icons.all_inclusive,
+                              color: Colors.white,
+                              size: isSmallScreen ? 24 : 32,
+                            ),
+                          ),
+                          SizedBox(height: isSmallScreen ? 6 : 12),
+                          Text(
+                            isSmallScreen
+                                ? 'LoopSpring\nTechnologies'
+                                : 'LoopSpring Technologies and \nConsultancy PVT. LTD',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.inter(
+                              fontSize: isSmallScreen ? 9.0 : 10.5,
+                              color: const Color(
+                                AppColors.TEXTSECONDARY,
+                              ).withValues(alpha: 0.7),
+                              fontWeight: FontWeight.w600,
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Main Content Area
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(32),
+                    bottomLeft: Radius.circular(32),
+                  ),
+                  child: Container(
+                    color: const Color(
+                      0xFFF1F5F9,
+                    ), // Slightly different shade to create modern depth
+                    child: _buildMainContent(),
                   ),
                 ),
-
-                // LoopSpring Footer with Primary-to-Secondary Gradient Logo
-                Padding(
-                  padding: EdgeInsets.all(isSmallScreen ? 14.0 : 24.0),
-                  child: Column(
-                    children: [
-                      ShaderMask(
-                        shaderCallback: (bounds) => const LinearGradient(
-                          colors: [
-                            Color(AppColors.PRIMARY),
-                            Color(AppColors.SECONDAY),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ).createShader(bounds),
-                        child: Icon(
-                          Icons.all_inclusive,
-                          color: Colors.white,
-                          size: isSmallScreen ? 24 : 32,
-                        ),
-                      ),
-                      SizedBox(height: isSmallScreen ? 6 : 12),
-                      Text(
-                        isSmallScreen
-                            ? 'LoopSpring\nTechnologies'
-                            : 'LoopSpring Technologies and \nConsultancy PVT. LTD',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(
-                          fontSize: isSmallScreen ? 9.0 : 10.5,
-                          color: const Color(
-                            AppColors.TEXTSECONDARY,
-                          ).withValues(alpha: 0.7),
-                          fontWeight: FontWeight.w600,
-                          height: 1.4,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Main Content Area
-          Expanded(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(32),
-                bottomLeft: Radius.circular(32),
               ),
-              child: Container(
-                color: const Color(
-                  0xFFF1F5F9,
-                ), // Slightly different shade to create modern depth
-                child: _buildMainContent(),
-              ),
-            ),
-          ),
-          ],
-        );
-      },
-    ),
-  );
-}
+            ],
+          );
+        },
+      ),
+    );
+  }
 
   Widget _buildMainContent() {
     switch (_selectedMenu) {
@@ -383,7 +386,10 @@ class _DashboardViewState extends State<DashboardView> {
               bottom: BorderSide(color: Color(0xFFE2E8F0), width: 1),
             ),
           ),
-          padding: EdgeInsets.symmetric(horizontal: isSmall ? 18 : 32, vertical: isSmall ? 14 : 22),
+          padding: EdgeInsets.symmetric(
+            horizontal: isSmall ? 18 : 32,
+            vertical: isSmall ? 14 : 22,
+          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -489,7 +495,12 @@ class _DashboardViewState extends State<DashboardView> {
         // Desktop Screen Adaptive Content
         Expanded(
           child: Padding(
-            padding: EdgeInsets.fromLTRB(isSmall ? 14 : 28, isSmall ? 14 : 24, isSmall ? 14 : 28, isSmall ? 12 : 20),
+            padding: EdgeInsets.fromLTRB(
+              isSmall ? 14 : 28,
+              isSmall ? 14 : 24,
+              isSmall ? 14 : 28,
+              isSmall ? 12 : 20,
+            ),
             child: Column(
               children: [
                 // Metrics Row (fixed compact height)
@@ -544,9 +555,15 @@ class _DashboardViewState extends State<DashboardView> {
                   flex: 5,
                   child: Row(
                     children: [
-                      Expanded(flex: 3, child: _buildSuppliersTable(isSmall: isSmall)),
+                      Expanded(
+                        flex: 3,
+                        child: _buildSuppliersTable(isSmall: isSmall),
+                      ),
                       SizedBox(width: isSmall ? 8 : 16),
-                      Expanded(flex: 2, child: _buildOrderHistoryTable(isSmall: isSmall)),
+                      Expanded(
+                        flex: 2,
+                        child: _buildOrderHistoryTable(isSmall: isSmall),
+                      ),
                     ],
                   ),
                 ),
@@ -684,7 +701,9 @@ class _DashboardViewState extends State<DashboardView> {
             children: [
               HugeIcon(
                 icon: icon,
-                color: const Color(AppColors.TEXTSECONDARY).withValues(alpha: 0.8),
+                color: const Color(
+                  AppColors.TEXTSECONDARY,
+                ).withValues(alpha: 0.8),
                 size: 19,
               ),
               const SizedBox(width: 12),
@@ -692,7 +711,9 @@ class _DashboardViewState extends State<DashboardView> {
                 child: Text(
                   title,
                   style: GoogleFonts.inter(
-                    color: const Color(AppColors.TEXTPRIMARY).withValues(alpha: 0.85),
+                    color: const Color(
+                      AppColors.TEXTPRIMARY,
+                    ).withValues(alpha: 0.85),
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                     letterSpacing: -0.1,
@@ -701,7 +722,9 @@ class _DashboardViewState extends State<DashboardView> {
               ),
               Icon(
                 Icons.keyboard_arrow_down_rounded,
-                color: const Color(AppColors.TEXTSECONDARY).withValues(alpha: 0.7),
+                color: const Color(
+                  AppColors.TEXTSECONDARY,
+                ).withValues(alpha: 0.7),
                 size: 18,
               ),
             ],
@@ -757,8 +780,9 @@ class _DashboardViewState extends State<DashboardView> {
                             decoration: BoxDecoration(
                               color: isActive
                                   ? Colors.white
-                                  : const Color(AppColors.TEXTSECONDARY)
-                                      .withValues(alpha: 0.4),
+                                  : const Color(
+                                      AppColors.TEXTSECONDARY,
+                                    ).withValues(alpha: 0.4),
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -878,7 +902,11 @@ class _DashboardViewState extends State<DashboardView> {
     );
   }
 
-  Widget _buildCardHeader(String title, {VoidCallback? onViewAll, bool isSmall = false}) {
+  Widget _buildCardHeader(
+    String title, {
+    VoidCallback? onViewAll,
+    bool isSmall = false,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -903,7 +931,10 @@ class _DashboardViewState extends State<DashboardView> {
           child: TextButton(
             onPressed: onViewAll ?? () {},
             style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: isSmall ? 8 : 14, vertical: isSmall ? 5 : 8),
+              padding: EdgeInsets.symmetric(
+                horizontal: isSmall ? 8 : 14,
+                vertical: isSmall ? 5 : 8,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -944,13 +975,15 @@ class _DashboardViewState extends State<DashboardView> {
         children: [
           _buildCardHeader(
             'Recent Suppliers',
-            onViewAll: () =>
-                _navigateToMenu('Brands / Suppliers', tabIndex: 1),
+            onViewAll: () => _navigateToMenu('Brands / Suppliers', tabIndex: 1),
             isSmall: isSmall,
           ),
           SizedBox(height: isSmall ? 10 : 16),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: isSmall ? 8 : 14, vertical: isSmall ? 8 : 12),
+            padding: EdgeInsets.symmetric(
+              horizontal: isSmall ? 8 : 14,
+              vertical: isSmall ? 8 : 12,
+            ),
             decoration: BoxDecoration(
               color: const Color(0xFFF8FAFC),
               borderRadius: BorderRadius.circular(10),
@@ -1102,7 +1135,10 @@ class _DashboardViewState extends State<DashboardView> {
                           flex: 2,
                           child: Align(
                             alignment: Alignment.centerLeft,
-                            child: _buildSupplierStatusBadge(s.status, isSmall: isSmall),
+                            child: _buildSupplierStatusBadge(
+                              s.status,
+                              isSmall: isSmall,
+                            ),
                           ),
                         ),
                       ],
@@ -1153,7 +1189,10 @@ class _DashboardViewState extends State<DashboardView> {
 
   Widget _buildSupplierStatusBadge(bool status, {bool isSmall = false}) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: isSmall ? 6 : 10, vertical: isSmall ? 2 : 4),
+      padding: EdgeInsets.symmetric(
+        horizontal: isSmall ? 6 : 10,
+        vertical: isSmall ? 2 : 4,
+      ),
       decoration: BoxDecoration(
         color: status ? const Color(0xFFDCFCE7) : const Color(0xFFF1F5F9),
         borderRadius: BorderRadius.circular(20),
@@ -1174,7 +1213,9 @@ class _DashboardViewState extends State<DashboardView> {
           ),
           SizedBox(width: isSmall ? 4 : 6),
           Text(
-            status ? (isSmall ? 'OK' : 'Active') : (isSmall ? 'Off' : 'Inactive'),
+            status
+                ? (isSmall ? 'OK' : 'Active')
+                : (isSmall ? 'Off' : 'Inactive'),
             style: GoogleFonts.plusJakartaSans(
               color: status ? const Color(0xFF16A34A) : const Color(0xFF64748B),
               fontSize: isSmall ? 9 : 11,
@@ -1211,7 +1252,10 @@ class _DashboardViewState extends State<DashboardView> {
           ),
           SizedBox(height: isSmall ? 10 : 16),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: isSmall ? 8 : 14, vertical: isSmall ? 8 : 12),
+            padding: EdgeInsets.symmetric(
+              horizontal: isSmall ? 8 : 14,
+              vertical: isSmall ? 8 : 12,
+            ),
             decoration: BoxDecoration(
               color: const Color(0xFFF8FAFC),
               borderRadius: BorderRadius.circular(10),
@@ -1449,7 +1493,10 @@ class _DashboardViewState extends State<DashboardView> {
                     child: Column(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFF8FAFC),
                             borderRadius: BorderRadius.circular(10),
@@ -1569,7 +1616,9 @@ class _DashboardViewState extends State<DashboardView> {
                           child: Obx(() {
                             if (controller.isLoading.value &&
                                 controller.outOfStockProducts.isEmpty) {
-                              return const Center(child: CircularProgressIndicator());
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
                             }
                             final products = controller.outOfStockProducts;
                             if (products.isEmpty) {
@@ -1588,7 +1637,9 @@ class _DashboardViewState extends State<DashboardView> {
                                     Text(
                                       'No products are out of stock',
                                       style: GoogleFonts.plusJakartaSans(
-                                        color: const Color(AppColors.TEXTSECONDARY),
+                                        color: const Color(
+                                          AppColors.TEXTSECONDARY,
+                                        ),
                                         fontWeight: FontWeight.w600,
                                         fontSize: isSmall ? 11 : 14,
                                       ),
@@ -1604,19 +1655,28 @@ class _DashboardViewState extends State<DashboardView> {
                               physics: const BouncingScrollPhysics(),
                               itemCount: displayProducts.length,
                               separatorBuilder: (context, index) =>
-                                  const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                                  const Divider(
+                                    height: 1,
+                                    color: Color(0xFFF1F5F9),
+                                  ),
                               itemBuilder: (context, index) {
                                 final p = displayProducts[index];
                                 final profit = p.sellPrice - p.buyPrice;
-                                final isRefurbish = p.quality.toLowerCase().contains(
-                                  'refurbish',
-                                );
+                                final isRefurbish = p.quality
+                                    .toLowerCase()
+                                    .contains(
+                                      'refurbish',
+                                    );
                                 final qualityColor = isRefurbish
                                     ? const Color(AppColors.WARNING)
                                     : const Color(AppColors.INFO);
                                 final qualityBg = isRefurbish
-                                    ? const Color(AppColors.WARNING).withValues(alpha: 0.12)
-                                    : const Color(AppColors.INFO).withValues(alpha: 0.12);
+                                    ? const Color(
+                                        AppColors.WARNING,
+                                      ).withValues(alpha: 0.12)
+                                    : const Color(
+                                        AppColors.INFO,
+                                      ).withValues(alpha: 0.12);
 
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -1632,7 +1692,9 @@ class _DashboardViewState extends State<DashboardView> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: GoogleFonts.plusJakartaSans(
-                                            color: const Color(AppColors.TEXTPRIMARY),
+                                            color: const Color(
+                                              AppColors.TEXTPRIMARY,
+                                            ),
                                             fontSize: 12,
                                             fontWeight: FontWeight.w700,
                                           ),
@@ -1645,7 +1707,9 @@ class _DashboardViewState extends State<DashboardView> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: GoogleFonts.plusJakartaSans(
-                                            color: const Color(AppColors.TEXTSECONDARY),
+                                            color: const Color(
+                                              AppColors.TEXTSECONDARY,
+                                            ),
                                             fontSize: 12,
                                             fontWeight: FontWeight.w500,
                                           ),
@@ -1658,7 +1722,9 @@ class _DashboardViewState extends State<DashboardView> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: GoogleFonts.plusJakartaSans(
-                                            color: const Color(AppColors.TEXTPRIMARY),
+                                            color: const Color(
+                                              AppColors.TEXTPRIMARY,
+                                            ),
                                             fontSize: 12,
                                             fontWeight: FontWeight.w700,
                                           ),
@@ -1675,17 +1741,19 @@ class _DashboardViewState extends State<DashboardView> {
                                             ),
                                             decoration: BoxDecoration(
                                               color: qualityBg,
-                                              borderRadius: BorderRadius.circular(8),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
                                             child: Text(
                                               p.quality,
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
-                                              style: GoogleFonts.plusJakartaSans(
-                                                color: qualityColor,
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.w700,
-                                              ),
+                                              style:
+                                                  GoogleFonts.plusJakartaSans(
+                                                    color: qualityColor,
+                                                    fontSize: 11,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
                                             ),
                                           ),
                                         ),
@@ -1697,7 +1765,9 @@ class _DashboardViewState extends State<DashboardView> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: GoogleFonts.plusJakartaSans(
-                                            color: const Color(AppColors.TEXTSECONDARY),
+                                            color: const Color(
+                                              AppColors.TEXTSECONDARY,
+                                            ),
                                             fontSize: 12,
                                             fontWeight: FontWeight.w600,
                                           ),
@@ -1710,7 +1780,9 @@ class _DashboardViewState extends State<DashboardView> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: GoogleFonts.plusJakartaSans(
-                                            color: const Color(AppColors.TEXTPRIMARY),
+                                            color: const Color(
+                                              AppColors.TEXTPRIMARY,
+                                            ),
                                             fontSize: 12,
                                             fontWeight: FontWeight.w700,
                                           ),
@@ -1723,7 +1795,9 @@ class _DashboardViewState extends State<DashboardView> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: GoogleFonts.plusJakartaSans(
-                                            color: const Color(AppColors.SUCCESS),
+                                            color: const Color(
+                                              AppColors.SUCCESS,
+                                            ),
                                             fontSize: 12,
                                             fontWeight: FontWeight.w800,
                                           ),
@@ -1741,7 +1815,8 @@ class _DashboardViewState extends State<DashboardView> {
                                                 color: const Color(
                                                   AppColors.PRIMARY,
                                                 ).withValues(alpha: 0.1),
-                                                borderRadius: BorderRadius.circular(10),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
                                               ),
                                               child: const HugeIcon(
                                                 icon: AppIcons.EDITICON,
