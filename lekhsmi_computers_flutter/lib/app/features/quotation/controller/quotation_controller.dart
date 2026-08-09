@@ -5,8 +5,10 @@ import 'package:lekhsmi_computers_flutter/app/features/settings/controller/setti
 import 'package:lekhsmi_computers_flutter/core/widgets/saas_date_picker.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'dart:typed_data';
 import 'package:lekhsmi_computers_flutter/core/widgets/saas_print_modal.dart';
 import 'package:printing/printing.dart';
+import 'package:lekhsmi_computers_flutter/core/utils/android_file_saver.dart';
 
 class QuotationItem {
   final String productName;
@@ -518,6 +520,26 @@ class QuotationController extends GetxController {
     return doc;
   }
 
+  Future<Uint8List> generatePdfBytes(PdfPageFormat format) async {
+    final doc = await _generatePdfDoc();
+    if (doc == null) return Uint8List(0);
+    return await doc.save();
+  }
+
+  Future<void> saveQuotationPdf() async {
+    final doc = await _generatePdfDoc();
+    if (doc == null) return;
+    final bytes = await doc.save();
+    await AndroidFileSaver.savePdf(isQuotation: true, bytes: bytes);
+  }
+
+  Future<void> savePdfDesktop() async {
+    final doc = await _generatePdfDoc();
+    if (doc == null) return;
+    final bytes = await doc.save();
+    await AndroidFileSaver.savePdfWithDialog(isQuotation: true, bytes: bytes);
+  }
+
   Future<void> printQuotationPdf() async {
     final doc = await _generatePdfDoc();
     if (doc == null) return;
@@ -547,11 +569,7 @@ class QuotationController extends GetxController {
     if (doc == null) return;
 
     final bytes = await doc.save();
-    final fileName = quotationNumber.value.isEmpty
-        ? 'Quotation.pdf'
-        : '${quotationNumber.value}.pdf';
-    await Printing.sharePdf(bytes: bytes, filename: fileName);
-    clearForm();
+    await AndroidFileSaver.sharePdf(isQuotation: true, bytes: bytes);
   }
 
   String _formatPdfCurrency(double amount, {bool showSign = false}) {

@@ -9,6 +9,8 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:lekhsmi_computers_flutter/core/widgets/saas_print_modal.dart';
 import 'package:printing/printing.dart';
 import 'dart:math' as math;
+import 'dart:typed_data';
+import 'package:lekhsmi_computers_flutter/core/utils/android_file_saver.dart';
 import '../../inventory/product/controller/product_controller.dart';
 
 class InvoiceBillItem {
@@ -61,6 +63,8 @@ class InvoiceBillController extends GetxController {
   final isLoadingProducts = false.obs;
 
   // Item Form Controllers for Quantity & Price
+  final isCustomItem = false.obs;
+  final customItemNameController = TextEditingController();
   final itemQuantityController = TextEditingController();
   final itemPriceController = TextEditingController();
 
@@ -104,6 +108,7 @@ class InvoiceBillController extends GetxController {
   }
 
   void validateQuantityInput(String val) {
+    if (isCustomItem.value) return; // Skip validation for custom items
     final product = selectedProduct.value;
     if (product == null) return;
 
@@ -153,13 +158,45 @@ class InvoiceBillController extends GetxController {
   }
 
   void addItem() {
-    if (selectedProduct.value == null) {
-      AppNotification.error('Product Required', 'Please select a product from the inventory list.');
+    if (items.length >= 13) {
+      AppNotification.error('Limit Reached', 'A4 sheet printing supports a maximum of 13 products / services.');
       return;
     }
 
-    if (items.length >= 13) {
-      AppNotification.error('Limit Reached', 'A4 sheet printing supports a maximum of 13 products / services.');
+    if (isCustomItem.value) {
+      final name = customItemNameController.text.trim();
+      if (name.isEmpty) {
+        AppNotification.error('Name Required', 'Please enter a name for the custom item.');
+        return;
+      }
+      
+      final quantity = int.tryParse(itemQuantityController.text.trim()) ?? 1;
+      final price = double.tryParse(itemPriceController.text.trim()) ?? 0.0;
+
+      if (quantity <= 0) {
+        AppNotification.error('Invalid Quantity', 'Please enter a quantity greater than 0.');
+        return;
+      }
+
+      items.add(
+        InvoiceBillItem(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          productId: null,
+          productName: name,
+          quantity: quantity,
+          price: price,
+        ),
+      );
+
+      // Clear selection for next item
+      customItemNameController.clear();
+      itemQuantityController.clear();
+      itemPriceController.clear();
+      return;
+    }
+
+    if (selectedProduct.value == null) {
+      AppNotification.error('Product Required', 'Please select a product from the inventory list.');
       return;
     }
 
@@ -231,9 +268,13 @@ class InvoiceBillController extends GetxController {
     addressController.clear();
     gstInputController.text = '18';
     gstPercentage.value = 18.0;
+    
+    isCustomItem.value = false;
+    customItemNameController.clear();
     itemQuantityController.clear();
     itemPriceController.clear();
     selectedProduct.value = null;
+    
     items.clear();
     currentDate.value = DateTime.now();
     validUptoDate.value = DateTime.now().add(const Duration(days: 30));
@@ -584,6 +625,20 @@ class InvoiceBillController extends GetxController {
     return doc;
   }
 
+  Future<void> savePdfDesktop() async {
+    final doc = await _generatePdfDoc();
+    if (doc == null) return;
+
+    await _deductStock();
+    final bytes = await doc.save();
+    
+    await AndroidFileSaver.savePdfWithDialog(
+      isQuotation: false,
+      bytes: bytes,
+    );
+    clearForm();
+  }
+
   Future<void> printInvoiceBillPdf() async {
     final doc = await _generatePdfDoc();
     if (doc == null) return;
@@ -614,6 +669,22 @@ class InvoiceBillController extends GetxController {
     if (printed) clearForm();
   }
 
+  Future<Uint8List> generatePdfBytes(PdfPageFormat format) async {
+    final doc = await _generatePdfDoc();
+    if (doc == null) return Uint8List(0);
+    return await doc.save();
+  }
+
+  Future<void> saveInvoiceBillPdf() async {
+    final doc = await _generatePdfDoc();
+    if (doc == null) return;
+
+    await _deductStock();
+
+    final bytes = await doc.save();
+    await AndroidFileSaver.savePdf(isQuotation: false, bytes: bytes);
+  }
+
   Future<void> shareInvoiceBillPdf() async {
     final doc = await _generatePdfDoc();
     if (doc == null) return;
@@ -621,13 +692,7 @@ class InvoiceBillController extends GetxController {
     await _deductStock();
 
     final bytes = await doc.save();
-    final nameText = nameController.text.trim().isEmpty ? 'Valued Customer' : nameController.text.trim();
-    final fileName = nameText.isEmpty
-        ? 'Invoice_Bill.pdf'
-        : 'Invoice_Bill_${nameText.replaceAll(' ', '_')}.pdf';
-        
-    await Printing.sharePdf(bytes: bytes, filename: fileName);
-    clearForm();
+    await AndroidFileSaver.sharePdf(isQuotation: false, bytes: bytes);
   }
 
   String _formatDate(DateTime dt) {

@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
 import 'package:lekhsmi_computers_flutter/core/constants/app_colors.dart';
 import 'package:lekhsmi_computers_flutter/core/widgets/saas_date_picker.dart';
+import 'package:lekhsmi_computers_flutter/core/utils/responsive_utils.dart';
+import 'accounts_mobile_view.dart';
 import '../controller/accounts_controller.dart';
 
 class AccountsView extends StatefulWidget {
@@ -104,6 +106,9 @@ class _AccountsViewState extends State<AccountsView> {
 
   @override
   Widget build(BuildContext context) {
+    if (ResponsiveUtils.isPhone(context)) {
+      return const AccountsMobileView();
+    }
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
@@ -118,18 +123,22 @@ class _AccountsViewState extends State<AccountsView> {
               child: Column(
                 children: [
                   // Top Summary Stats Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Showing cash flow for ${controller.currentMonthName}',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: const Color(AppColors.TEXTSECONDARY),
-                          fontWeight: FontWeight.w600,
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Showing cash flow for ${controller.currentMonthName}',
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            color: const Color(AppColors.TEXTSECONDARY),
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                      Obx(() {
+                        const SizedBox(width: 16),
+                        Obx(() {
                         return Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -160,6 +169,7 @@ class _AccountsViewState extends State<AccountsView> {
                         );
                       }),
                     ],
+                  ),
                   ),
                   const SizedBox(height: 16),
 
@@ -197,6 +207,7 @@ class _AccountsViewState extends State<AccountsView> {
                               ),
                               const SizedBox(height: 8),
                               Container(
+                                width: 230,
                                 height: 48,
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
@@ -205,8 +216,8 @@ class _AccountsViewState extends State<AccountsView> {
                                 ),
                                 child: Row(
                                   children: [
-                                    _buildTypeButton('Income', const Color(0xFF10B981), Icons.arrow_downward),
-                                    _buildTypeButton('Expense', const Color(0xFFEF4444), Icons.arrow_upward),
+                                    Expanded(child: _buildTypeButton('Income', const Color(0xFF10B981), Icons.arrow_downward)),
+                                    Expanded(child: _buildTypeButton('Expense', const Color(0xFFEF4444), Icons.arrow_upward)),
                                   ],
                                 ),
                               ),
@@ -392,35 +403,36 @@ class _AccountsViewState extends State<AccountsView> {
                   ),
                   const SizedBox(height: 16),
 
-                  // 3. Two Separate Tables Side by Side (Left: Income, Right: Expense)
+                  // 3. Two Separate Tables Stacked Vertically (Top 50%: Income, Bottom 50%: Expense)
                   Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // LEFT SIDE: INCOME TABLE
-                        Expanded(
-                          child: _buildTableCard(
-                            title: 'Income Table',
-                            subtitle: 'Revenues & sales income',
-                            icon: Icons.trending_up,
-                            headerColor: const Color(0xFF10B981),
-                            isIncome: true,
-                          ),
-                        ),
-                        const SizedBox(width: 24),
+                    child: ResponsiveUtils.isPhone(context)
+                        ? _buildMobileAccountsSection()
+                        : Column(
+                            children: [
+                              // TOP HALF (50% VERTICAL SPACE): INCOME TABLE
+                              Expanded(
+                                child: _buildTableCard(
+                                  title: 'Income Table',
+                                  subtitle: 'Revenues & sales income',
+                                  icon: Icons.trending_up,
+                                  headerColor: const Color(0xFF10B981),
+                                  isIncome: true,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
 
-                        // RIGHT SIDE: EXPENSE TABLE
-                        Expanded(
-                          child: _buildTableCard(
-                            title: 'Expense Table',
-                            subtitle: 'Store costs & bills',
-                            icon: Icons.trending_down,
-                            headerColor: const Color(0xFFEF4444),
-                            isIncome: false,
+                              // BOTTOM HALF (50% VERTICAL SPACE): EXPENSE TABLE
+                              Expanded(
+                                child: _buildTableCard(
+                                  title: 'Expense Table',
+                                  subtitle: 'Store costs & bills',
+                                  icon: Icons.trending_down,
+                                  headerColor: const Color(0xFFEF4444),
+                                  isIncome: false,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
                   ),
                   const SizedBox(height: 20),
                 ],
@@ -435,15 +447,20 @@ class _AccountsViewState extends State<AccountsView> {
   Widget _buildTitleSection() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: const BoxDecoration(
         color: Color(AppColors.WHITE),
         border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0), width: 1)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        runSpacing: 10,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
                 'Income / Expense Cash Flow',
@@ -453,7 +470,6 @@ class _AccountsViewState extends State<AccountsView> {
                   color: const Color(AppColors.TEXTPRIMARY),
                 ),
               ),
-              const SizedBox(width: 10),
               Container(
                 width: 8,
                 height: 8,
@@ -462,7 +478,6 @@ class _AccountsViewState extends State<AccountsView> {
                   shape: BoxShape.circle,
                 ),
               ),
-              const SizedBox(width: 10),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
@@ -481,7 +496,10 @@ class _AccountsViewState extends State<AccountsView> {
               ),
             ],
           ),
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -491,6 +509,7 @@ class _AccountsViewState extends State<AccountsView> {
                   border: Border.all(color: const Color(0xFFE2E8F0)),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(
                       Icons.calendar_today_outlined,
@@ -509,7 +528,6 @@ class _AccountsViewState extends State<AccountsView> {
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
               Material(
                 color: Colors.transparent,
                 child: InkWell(
@@ -550,6 +568,7 @@ class _AccountsViewState extends State<AccountsView> {
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon,
@@ -889,6 +908,163 @@ class _AccountsViewState extends State<AccountsView> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildMobileAccountListCard({required bool isIncome}) {
+    return Obx(() {
+      final list = isIncome ? controller.incomes : controller.expenses;
+      final color = isIncome ? const Color(0xFF10B981) : const Color(0xFFEF4444);
+      final title = isIncome ? 'Income History' : 'Expense History';
+      final icon = isIncome ? Icons.trending_up : Icons.trending_down;
+
+      return Container(
+        decoration: BoxDecoration(
+          color: const Color(AppColors.WHITE),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.08),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(icon, color: color, size: 18),
+                      const SizedBox(width: 8),
+                      Text(
+                        '$title (${list.length})',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: color,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: list.isEmpty
+                  ? Center(
+                      child: Text(
+                        isIncome ? 'No income entries found.' : 'No expense entries found.',
+                        style: GoogleFonts.inter(fontSize: 13, color: const Color(AppColors.TEXTSECONDARY)),
+                      ),
+                    )
+                  : ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.all(12),
+                      itemCount: list.length,
+                      itemBuilder: (context, index) {
+                        final item = list[index];
+                        final String reason;
+                        final DateTime date;
+                        final int amount;
+                        final VoidCallback onDelete;
+                        if (isIncome) {
+                          final inc = item as Income;
+                          reason = inc.reason;
+                          date = inc.date;
+                          amount = inc.amount;
+                          onDelete = () => controller.deleteIncome(inc);
+                        } else {
+                          final exp = item as Expense;
+                          reason = exp.reason;
+                          date = exp.date;
+                          amount = exp.amount;
+                          onDelete = () => controller.deleteExpense(exp);
+                        }
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF8FAFC),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFFE2E8F0)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      reason,
+                                      style: GoogleFonts.inter(
+                                        fontSize: 13.5,
+                                        fontWeight: FontWeight.w700,
+                                        color: const Color(AppColors.TEXTPRIMARY),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _formatDate(date),
+                                      style: GoogleFonts.inter(
+                                        fontSize: 11.5,
+                                        color: const Color(AppColors.TEXTSECONDARY),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    _formatCurrency(amount, showSign: false),
+                                    style: GoogleFonts.inter(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800,
+                                      color: color,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete_outline, color: Color(0xFFEF4444), size: 20),
+                                    onPressed: onDelete,
+                                    tooltip: 'Delete',
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildMobileAccountsSection() {
+    return Column(
+      children: [
+        Expanded(
+          child: _buildMobileAccountListCard(isIncome: true),
+        ),
+        const SizedBox(height: 14),
+        Expanded(
+          child: _buildMobileAccountListCard(isIncome: false),
+        ),
+      ],
     );
   }
 }

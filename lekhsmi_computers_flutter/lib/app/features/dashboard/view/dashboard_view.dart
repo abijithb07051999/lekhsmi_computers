@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
 import 'package:lekhsmi_computers_flutter/app/features/inventory/brand_supplier_category/view/brand_supplier_category_view.dart';
 import 'package:lekhsmi_computers_flutter/app/features/inventory/product/view/product_view.dart';
 import 'package:lekhsmi_computers_flutter/app/features/inventory/purchase/view/purchase_view.dart';
@@ -13,6 +14,8 @@ import 'package:lekhsmi_computers_flutter/app/features/quotation/view/quotation_
 import 'package:lekhsmi_computers_flutter/app/features/invoice_bill/view/invoice_bill_view.dart';
 import 'package:lekhsmi_computers_flutter/app/features/settings/controller/settings_controller.dart';
 import 'package:lekhsmi_computers_flutter/app/features/settings/view/settings_view.dart';
+import 'package:lekhsmi_computers_flutter/core/utils/responsive_utils.dart';
+import 'dashboard_mobile_view.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../controller/dashboard_controller.dart';
@@ -60,6 +63,15 @@ class _DashboardViewState extends State<DashboardView> {
 
   @override
   Widget build(BuildContext context) {
+    if (ResponsiveUtils.isPhone(context)) {
+      return DashboardMobileView(
+        selectedMenu: _selectedMenu,
+        onMenuSelected: _onMenuSelected,
+        navigateToMenu: _navigateToMenu,
+        brandSupplierTabIndex: _brandSupplierTabIndex,
+        buildMainContent: _buildMainContent,
+      );
+    }
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: const Color(AppColors.BACKGROUND),
@@ -504,76 +516,151 @@ class _DashboardViewState extends State<DashboardView> {
             child: Column(
               children: [
                 // Metrics Row (fixed compact height)
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildMetricCard(
-                        'Total Income',
-                        AppIcons.TOTALINCOMEICON,
-                        const Color(AppColors.PRIMARY),
-                        controller.totalIncome,
-                        isCurrency: true,
-                        isSmall: isSmall,
+                if (isSmall)
+                  Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildMetricCard(
+                              'Total Income',
+                              AppIcons.TOTALINCOMEICON,
+                              const Color(AppColors.PRIMARY),
+                              controller.totalIncome,
+                              isCurrency: true,
+                              isSmall: true,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _buildMetricCard(
+                              'Brands',
+                              AppIcons.BRANDSCOUNTICON,
+                              const Color(AppColors.SECONDAY),
+                              controller.brandCount,
+                              isSmall: true,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(width: isSmall ? 8 : 16),
-                    Expanded(
-                      child: _buildMetricCard(
-                        'Brands',
-                        AppIcons.BRANDSCOUNTICON,
-                        const Color(AppColors.SECONDAY),
-                        controller.brandCount,
-                        isSmall: isSmall,
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildMetricCard(
+                              'Categories',
+                              AppIcons.CATEGORYCOUNTICON,
+                              const Color(AppColors.INFO),
+                              controller.categoryCount,
+                              isSmall: true,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _buildMetricCard(
+                              'Suppliers',
+                              AppIcons.SUPPLIERCOUNTICON,
+                              const Color(AppColors.WARNING),
+                              controller.supplierCount,
+                              isSmall: true,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(width: isSmall ? 8 : 16),
-                    Expanded(
-                      child: _buildMetricCard(
-                        'Categories',
-                        AppIcons.CATEGORYCOUNTICON,
-                        const Color(AppColors.INFO),
-                        controller.categoryCount,
-                        isSmall: isSmall,
-                      ),
-                    ),
-                    SizedBox(width: isSmall ? 8 : 16),
-                    Expanded(
-                      child: _buildMetricCard(
-                        'Suppliers',
-                        AppIcons.SUPPLIERCOUNTICON,
-                        const Color(AppColors.WARNING),
-                        controller.supplierCount,
-                        isSmall: isSmall,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-
-                // Suppliers and Live Orders Row (adapts dynamically based on running screen size)
-                Expanded(
-                  flex: 5,
-                  child: Row(
+                    ],
+                  )
+                else
+                  Row(
                     children: [
                       Expanded(
-                        flex: 3,
-                        child: _buildSuppliersTable(isSmall: isSmall),
+                        child: _buildMetricCard(
+                          'Total Income',
+                          AppIcons.TOTALINCOMEICON,
+                          const Color(AppColors.PRIMARY),
+                          controller.totalIncome,
+                          isCurrency: true,
+                          isSmall: false,
+                        ),
                       ),
-                      SizedBox(width: isSmall ? 8 : 16),
+                      const SizedBox(width: 16),
                       Expanded(
-                        flex: 2,
-                        child: _buildOrderHistoryTable(isSmall: isSmall),
+                        child: _buildMetricCard(
+                          'Brands',
+                          AppIcons.BRANDSCOUNTICON,
+                          const Color(AppColors.SECONDAY),
+                          controller.brandCount,
+                          isSmall: false,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildMetricCard(
+                          'Categories',
+                          AppIcons.CATEGORYCOUNTICON,
+                          const Color(AppColors.INFO),
+                          controller.categoryCount,
+                          isSmall: false,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildMetricCard(
+                          'Suppliers',
+                          AppIcons.SUPPLIERCOUNTICON,
+                          const Color(AppColors.WARNING),
+                          controller.supplierCount,
+                          isSmall: false,
+                        ),
                       ),
                     ],
                   ),
-                ),
                 const SizedBox(height: 10),
 
-                // Out of Stock Table (adapts to remaining screen height down to bottom)
-                Expanded(
-                  flex: 4,
-                  child: _buildOutOfStockTable(isSmall: isSmall),
-                ),
+                // Adaptive layout: vertical scrolling when screen is compact/narrow to prevent ANY bottom overflow
+                if (isSmall ||
+                    MediaQuery.of(context).size.width < 1100 ||
+                    MediaQuery.of(context).size.height < 850) ...[
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                        children: [
+                          _buildSuppliersTable(isSmall: true),
+                          const SizedBox(height: 16),
+                          _buildOrderHistoryTable(isSmall: true),
+                          const SizedBox(height: 16),
+                          _buildOutOfStockTable(isSmall: true),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
+                  ),
+                ] else ...[
+                  // Suppliers and Live Orders Row
+                  Expanded(
+                    flex: 5,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: _buildSuppliersTable(isSmall: isSmall),
+                        ),
+                        SizedBox(width: isSmall ? 8 : 16),
+                        Expanded(
+                          flex: 2,
+                          child: _buildOrderHistoryTable(isSmall: isSmall),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Out of Stock Table (adapts to remaining screen height down to bottom)
+                  Expanded(
+                    flex: 4,
+                    child: _buildOutOfStockTable(isSmall: isSmall),
+                  ),
+                ],
               ],
             ),
           ),
@@ -907,22 +994,21 @@ class _DashboardViewState extends State<DashboardView> {
     VoidCallback? onViewAll,
     bool isSmall = false,
   }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      runSpacing: 6,
       children: [
-        Expanded(
-          child: Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: isSmall ? 13 : 18,
-              fontWeight: FontWeight.w800,
-              color: const Color(AppColors.TEXTPRIMARY),
-            ),
+        Text(
+          title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: isSmall ? 13 : 18,
+            fontWeight: FontWeight.w800,
+            color: const Color(AppColors.TEXTPRIMARY),
           ),
         ),
-        const SizedBox(width: 8),
         Container(
           decoration: BoxDecoration(
             color: const Color(AppColors.PRIMARY).withValues(alpha: 0.08),
@@ -941,13 +1027,24 @@ class _DashboardViewState extends State<DashboardView> {
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            child: Text(
-              'View All',
-              style: GoogleFonts.plusJakartaSans(
-                color: const Color(AppColors.PRIMARY),
-                fontWeight: FontWeight.w700,
-                fontSize: isSmall ? 10 : 12,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'View All',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: isSmall ? 11 : 13,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(AppColors.PRIMARY),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.arrow_forward_rounded,
+                  size: isSmall ? 12 : 14,
+                  color: const Color(AppColors.PRIMARY),
+                ),
+              ],
             ),
           ),
         ),
@@ -956,6 +1053,15 @@ class _DashboardViewState extends State<DashboardView> {
   }
 
   Widget _buildSuppliersTable({bool isSmall = false}) {
+    if (ResponsiveUtils.isPhone(Get.context!) ||
+        isSmall ||
+        MediaQuery.of(Get.context!).size.width < 750) {
+      return Obx(() {
+        final displaySuppliers = controller.suppliers.take(5).toList();
+        return _buildSuppliersMobileCardList(displaySuppliers);
+      });
+    }
+
     return Container(
       padding: EdgeInsets.all(isSmall ? 12 : 20),
       decoration: BoxDecoration(
@@ -1080,6 +1186,9 @@ class _DashboardViewState extends State<DashboardView> {
               }
 
               final displaySuppliers = suppliers.take(5).toList();
+              if (ResponsiveUtils.isPhone(Get.context!)) {
+                return _buildSuppliersMobileCardList(displaySuppliers);
+              }
               return ListView.separated(
                 padding: EdgeInsets.zero,
                 physics: const BouncingScrollPhysics(),
@@ -1228,6 +1337,14 @@ class _DashboardViewState extends State<DashboardView> {
   }
 
   Widget _buildOrderHistoryTable({bool isSmall = false}) {
+    if (ResponsiveUtils.isPhone(Get.context!) ||
+        isSmall ||
+        MediaQuery.of(Get.context!).size.width < 750) {
+      return Obx(() {
+        final displayOrders = controller.recentOrders.take(5).toList();
+        return _buildOrderHistoryMobileCardList(displayOrders);
+      });
+    }
     return Container(
       padding: EdgeInsets.all(isSmall ? 12 : 20),
       decoration: BoxDecoration(
@@ -1455,6 +1572,14 @@ class _DashboardViewState extends State<DashboardView> {
   }
 
   Widget _buildOutOfStockTable({bool isSmall = false}) {
+    if (ResponsiveUtils.isPhone(Get.context!) ||
+        isSmall ||
+        MediaQuery.of(Get.context!).size.width < 900) {
+      return Obx(() {
+        final products = controller.outOfStockProducts.take(5).toList();
+        return _buildOutOfStockMobileCardList(products);
+      });
+    }
     return Container(
       padding: EdgeInsets.all(isSmall ? 12 : 20),
       decoration: BoxDecoration(
@@ -1478,372 +1603,685 @@ class _DashboardViewState extends State<DashboardView> {
             isSmall: isSmall,
           ),
           SizedBox(height: isSmall ? 10 : 16),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 12,
+            ),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    'Product Name',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(
+                      color: const Color(AppColors.TEXTSECONDARY),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'Category',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(
+                      color: const Color(AppColors.TEXTSECONDARY),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'Brand',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(
+                      color: const Color(AppColors.TEXTSECONDARY),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'Quality',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(
+                      color: const Color(AppColors.TEXTSECONDARY),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'Buy Price',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(
+                      color: const Color(AppColors.TEXTSECONDARY),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'Sell Price',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(
+                      color: const Color(AppColors.TEXTSECONDARY),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'Profit',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(
+                      color: const Color(AppColors.TEXTSECONDARY),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    'Action',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.plusJakartaSans(
+                      color: const Color(AppColors.TEXTSECONDARY),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 4),
           Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final double minWidth = 860.0;
-                final double tableWidth = constraints.maxWidth < minWidth
-                    ? minWidth
-                    : constraints.maxWidth;
-                return SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  child: SizedBox(
-                    width: tableWidth,
-                    child: Column(
+            child: Obx(() {
+              if (controller.isLoading.value &&
+                  controller.outOfStockProducts.isEmpty) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              final products = controller.outOfStockProducts;
+              if (products.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      HugeIcon(
+                        icon: AppIcons.INVENTORYICON,
+                        color: const Color(
+                          AppColors.TEXTSECONDARY,
+                        ).withValues(alpha: 0.4),
+                        size: isSmall ? 24 : 36,
+                      ),
+                      SizedBox(height: isSmall ? 6 : 12),
+                      Text(
+                        'No products are out of stock',
+                        style: GoogleFonts.plusJakartaSans(
+                          color: const Color(
+                            AppColors.TEXTSECONDARY,
+                          ),
+                          fontWeight: FontWeight.w600,
+                          fontSize: isSmall ? 11 : 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              final displayProducts = products.take(5).toList();
+              return ListView.separated(
+                padding: EdgeInsets.zero,
+                physics: const BouncingScrollPhysics(),
+                itemCount: displayProducts.length,
+                separatorBuilder: (context, index) =>
+                    const Divider(
+                      height: 1,
+                      color: Color(0xFFF1F5F9),
+                    ),
+                itemBuilder: (context, index) {
+                  final p = displayProducts[index];
+                  final profit = p.sellPrice - p.buyPrice;
+                  final isRefurbish = p.quality
+                      .toLowerCase()
+                      .contains(
+                        'refurbish',
+                      );
+                  final qualityColor = isRefurbish
+                      ? const Color(AppColors.WARNING)
+                      : const Color(AppColors.INFO);
+                  final qualityBg = isRefurbish
+                      ? const Color(
+                          AppColors.WARNING,
+                        ).withValues(alpha: 0.12)
+                      : const Color(
+                          AppColors.INFO,
+                        ).withValues(alpha: 0.12);
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 6,
+                    ),
+                    child: Row(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF8FAFC),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 3,
-                                child: Text(
-                                  'Product Name',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: const Color(AppColors.TEXTSECONDARY),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            p.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.plusJakartaSans(
+                              color: const Color(
+                                AppColors.TEXTPRIMARY,
                               ),
-                              Expanded(
-                                flex: 2,
-                                child: Text(
-                                  'Category',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: const Color(AppColors.TEXTSECONDARY),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: Text(
-                                  'Brand',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: const Color(AppColors.TEXTSECONDARY),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: Text(
-                                  'Quality',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: const Color(AppColors.TEXTSECONDARY),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: Text(
-                                  'Buy Price',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: const Color(AppColors.TEXTSECONDARY),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: Text(
-                                  'Sell Price',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: const Color(AppColors.TEXTSECONDARY),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: Text(
-                                  'Profit',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: const Color(AppColors.TEXTSECONDARY),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Text(
-                                  'Action',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: const Color(AppColors.TEXTSECONDARY),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ],
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
-                        const SizedBox.shrink(),
                         Expanded(
-                          child: Obx(() {
-                            if (controller.isLoading.value &&
-                                controller.outOfStockProducts.isEmpty) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                            final products = controller.outOfStockProducts;
-                            if (products.isEmpty) {
-                              return Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    HugeIcon(
-                                      icon: AppIcons.INVENTORYICON,
-                                      color: const Color(
-                                        AppColors.TEXTSECONDARY,
-                                      ).withValues(alpha: 0.4),
-                                      size: isSmall ? 24 : 36,
+                          flex: 2,
+                          child: Text(
+                            controller.getCategoryName(p),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.plusJakartaSans(
+                              color: const Color(
+                                AppColors.TEXTSECONDARY,
+                              ),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            controller.getBrandName(p),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.plusJakartaSans(
+                              color: const Color(
+                                AppColors.TEXTPRIMARY,
+                              ),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: qualityBg,
+                                borderRadius:
+                                    BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                p.quality,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style:
+                                    GoogleFonts.plusJakartaSans(
+                                      color: qualityColor,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
                                     ),
-                                    SizedBox(height: isSmall ? 6 : 12),
-                                    Text(
-                                      'No products are out of stock',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        color: const Color(
-                                          AppColors.TEXTSECONDARY,
-                                        ),
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: isSmall ? 11 : 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-
-                            final displayProducts = products.take(5).toList();
-                            return ListView.separated(
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            '₹${p.buyPrice}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.plusJakartaSans(
+                              color: const Color(
+                                AppColors.TEXTSECONDARY,
+                              ),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            '₹${p.sellPrice}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.plusJakartaSans(
+                              color: const Color(
+                                AppColors.TEXTPRIMARY,
+                              ),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            '₹$profit',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.plusJakartaSans(
+                              color: const Color(
+                                AppColors.SUCCESS,
+                              ),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Center(
+                            child: IconButton(
                               padding: EdgeInsets.zero,
-                              physics: const BouncingScrollPhysics(),
-                              itemCount: displayProducts.length,
-                              separatorBuilder: (context, index) =>
-                                  const Divider(
-                                    height: 1,
-                                    color: Color(0xFFF1F5F9),
-                                  ),
-                              itemBuilder: (context, index) {
-                                final p = displayProducts[index];
-                                final profit = p.sellPrice - p.buyPrice;
-                                final isRefurbish = p.quality
-                                    .toLowerCase()
-                                    .contains(
-                                      'refurbish',
-                                    );
-                                final qualityColor = isRefurbish
-                                    ? const Color(AppColors.WARNING)
-                                    : const Color(AppColors.INFO);
-                                final qualityBg = isRefurbish
-                                    ? const Color(
-                                        AppColors.WARNING,
-                                      ).withValues(alpha: 0.12)
-                                    : const Color(
-                                        AppColors.INFO,
-                                      ).withValues(alpha: 0.12);
-
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 14,
-                                    vertical: 6,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 3,
-                                        child: Text(
-                                          p.name,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: GoogleFonts.plusJakartaSans(
-                                            color: const Color(
-                                              AppColors.TEXTPRIMARY,
-                                            ),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Text(
-                                          controller.getCategoryName(p),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: GoogleFonts.plusJakartaSans(
-                                            color: const Color(
-                                              AppColors.TEXTSECONDARY,
-                                            ),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Text(
-                                          controller.getBrandName(p),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: GoogleFonts.plusJakartaSans(
-                                            color: const Color(
-                                              AppColors.TEXTPRIMARY,
-                                            ),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: qualityBg,
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            child: Text(
-                                              p.quality,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style:
-                                                  GoogleFonts.plusJakartaSans(
-                                                    color: qualityColor,
-                                                    fontSize: 11,
-                                                    fontWeight: FontWeight.w700,
-                                                  ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Text(
-                                          '₹${p.buyPrice}',
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: GoogleFonts.plusJakartaSans(
-                                            color: const Color(
-                                              AppColors.TEXTSECONDARY,
-                                            ),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Text(
-                                          '₹${p.sellPrice}',
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: GoogleFonts.plusJakartaSans(
-                                            color: const Color(
-                                              AppColors.TEXTPRIMARY,
-                                            ),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Text(
-                                          '₹$profit',
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: GoogleFonts.plusJakartaSans(
-                                            color: const Color(
-                                              AppColors.SUCCESS,
-                                            ),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w800,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Center(
-                                          child: IconButton(
-                                            padding: EdgeInsets.zero,
-                                            constraints: const BoxConstraints(),
-                                            icon: Container(
-                                              padding: const EdgeInsets.all(8),
-                                              decoration: BoxDecoration(
-                                                color: const Color(
-                                                  AppColors.PRIMARY,
-                                                ).withValues(alpha: 0.1),
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              child: const HugeIcon(
-                                                icon: AppIcons.EDITICON,
-                                                color: Color(AppColors.PRIMARY),
-                                                size: 16,
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              _onMenuSelected('Stocks');
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
+                              constraints: const BoxConstraints(),
+                              icon: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: const Color(
+                                    AppColors.PRIMARY,
+                                  ).withValues(alpha: 0.1),
+                                  borderRadius:
+                                      BorderRadius.circular(10),
+                                ),
+                                child: const HugeIcon(
+                                  icon: AppIcons.EDITICON,
+                                  color: Color(AppColors.PRIMARY),
+                                  size: 16,
+                                ),
+                              ),
+                              onPressed: () {
+                                _onMenuSelected('Stocks');
                               },
-                            );
-                          }),
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              );
+            }),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSuppliersMobileCardList(List<Supplier> displaySuppliers) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(AppColors.WHITE),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildCardHeader(
+            'Recent Suppliers',
+            onViewAll: () => _navigateToMenu('Brands / Suppliers', tabIndex: 1),
+            isSmall: true,
+          ),
+          const SizedBox(height: 12),
+          for (final s in displaySuppliers)
+            Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          s.name,
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: const Color(AppColors.TEXTPRIMARY),
+                          ),
+                        ),
+                      ),
+                      _buildSupplierStatusBadge(s.status, isSmall: true),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    s.address,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: const Color(AppColors.TEXTSECONDARY),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  _buildContactChip(s.contact1.toString()),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderHistoryMobileCardList(List<OrderHistory> displayOrders) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(AppColors.WHITE),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildCardHeader(
+            'Order History Overview',
+            onViewAll: () => _navigateToMenu('Live / History', tabIndex: 1),
+            isSmall: true,
+          ),
+          const SizedBox(height: 12),
+          if (displayOrders.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: Text(
+                  'No live orders found',
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: const Color(AppColors.TEXTSECONDARY),
+                  ),
+                ),
+              ),
+            )
+          else
+            for (final o in displayOrders)
+              Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Order #${o.order.orderId}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                              color: const Color(AppColors.PRIMARY),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color:
+                                  o.status.toString().toLowerCase() == 'ongoing'
+                                      ? const Color(
+                                          AppColors.PRIMARY,
+                                        ).withValues(alpha: 0.1)
+                                      : const Color(
+                                          AppColors.WARNING,
+                                        ).withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              o.status.toString(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color:
+                                    o.status.toString().toLowerCase() ==
+                                            'ongoing'
+                                        ? const Color(AppColors.PRIMARY)
+                                        : const Color(AppColors.WARNING),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      o.order.customerName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: const Color(AppColors.TEXTPRIMARY),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            _formatDate(o.order.date),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: const Color(AppColors.TEXTSECONDARY),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            '₹${o.amount}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                              color: const Color(AppColors.TEXTPRIMARY),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOutOfStockMobileCardList(List<Product> outOfStockProducts) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(AppColors.WHITE),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildCardHeader(
+            'Stock Alert (Out of Stock)',
+            onViewAll: () => _navigateToMenu('Stocks', tabIndex: 0),
+            isSmall: true,
+          ),
+          const SizedBox(height: 12),
+          if (outOfStockProducts.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: Text(
+                  'No products are out of stock',
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: const Color(AppColors.TEXTSECONDARY),
+                  ),
+                ),
+              ),
+            )
+          else
+            for (final p in outOfStockProducts.take(5))
+              Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFEF2F2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFFECACA)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            p.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                              color: const Color(0xFF991B1B),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFDC2626),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              'Qty: ${p.quantity}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${controller.getCategoryName(p)} • ${controller.getBrandName(p)}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: const Color(0xFFB91C1C),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '₹${p.sellPrice}',
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF991B1B),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Quality: ${p.quality}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color:
+                            const Color(0xFF991B1B).withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
         ],
       ),
     );

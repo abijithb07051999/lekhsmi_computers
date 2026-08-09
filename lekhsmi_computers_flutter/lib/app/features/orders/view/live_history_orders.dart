@@ -5,7 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
 import 'package:lekhsmi_computers_flutter/core/constants/app_colors.dart';
 import 'package:lekhsmi_computers_flutter/core/widgets/saas_date_picker.dart';
+import 'package:lekhsmi_computers_flutter/core/utils/responsive_utils.dart';
 import 'package:lekhsmi_computers_flutter/app/features/orders/controller/orders_controller.dart';
+import 'live_history_orders_mobile_view.dart';
 
 class LiveHistoryOrdersView extends StatefulWidget {
   const LiveHistoryOrdersView({super.key});
@@ -74,72 +76,118 @@ class _LiveHistoryOrdersViewState extends State<LiveHistoryOrdersView> {
     showDialog(
       context: context,
       builder: (context) {
+        final isPhone = ResponsiveUtils.isPhone(context);
+        final maxH = MediaQuery.of(context).size.height * 0.85;
         return Dialog(
           backgroundColor: Colors.transparent,
-          child: Container(
-            width: 400,
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: const Color(AppColors.WHITE),
-              borderRadius: BorderRadius.circular(20),
+          elevation: 0,
+          insetPadding: EdgeInsets.symmetric(horizontal: isPhone ? 14 : 32, vertical: 16),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: 440,
+              maxHeight: maxH,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Update Order Amount',
-                  style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800, color: const Color(AppColors.TEXTPRIMARY)),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Order ID: #${item.order.orderId}',
-                  style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTSECONDARY)),
-                ),
-                const SizedBox(height: 18),
-                Text(
-                  'Price (₹)',
-                  style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: const Color(AppColors.TEXTPRIMARY)),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: amountCtrl,
-                  keyboardType: TextInputType.number,
-                  style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTPRIMARY)),
-                  decoration: InputDecoration(
-                    hintText: 'Enter new price',
-                    filled: true,
-                    fillColor: const Color(0xFFF8FAFC),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFCBD5E1))),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFCBD5E1))),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(AppColors.WHITE),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.12),
+                    blurRadius: 40,
+                    offset: const Offset(0, 16),
                   ),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                ],
+              ),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text('Cancel', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTSECONDARY))),
+                    Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.currency_rupee, color: Color(0xFF10B981), size: 22),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Update Order Amount',
+                                style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800, color: const Color(AppColors.TEXTPRIMARY)),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Order ID: #${item.order.orderId}',
+                                style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTSECONDARY)),
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => Navigator.pop(context),
+                          icon: const Icon(Icons.close, color: Color(AppColors.TEXTSECONDARY)),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final newAmount = int.tryParse(amountCtrl.text.trim()) ?? item.amount;
-                        await controller.updateOrderAmount(item, newAmount);
-                        if (context.mounted) Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(AppColors.PRIMARY),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Price (₹)',
+                      style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: const Color(AppColors.TEXTPRIMARY)),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: amountCtrl,
+                      keyboardType: TextInputType.number,
+                      style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTPRIMARY)),
+                      decoration: InputDecoration(
+                        hintText: 'Enter new price',
+                        filled: true,
+                        fillColor: const Color(0xFFF8FAFC),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFCBD5E1))),
+                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFCBD5E1))),
+                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(AppColors.PRIMARY), width: 1.5)),
                       ),
-                      child: Text('Save', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text('Cancel', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTSECONDARY))),
+                        ),
+                        const SizedBox(width: 12),
+                        ElevatedButton(
+                          onPressed: () async {
+                            final newAmount = int.tryParse(amountCtrl.text.trim()) ?? item.amount;
+                            await controller.updateOrderAmount(item, newAmount);
+                            if (context.mounted) Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(AppColors.PRIMARY),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          child: Text('Save Price', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         );
@@ -149,6 +197,14 @@ class _LiveHistoryOrdersViewState extends State<LiveHistoryOrdersView> {
 
   @override
   Widget build(BuildContext context) {
+    if (ResponsiveUtils.isPhone(context)) {
+      return LiveHistoryOrdersMobileView(
+        controller: controller,
+        buildTitleSection: _buildTitleSection,
+        onShowOrderHistoryPopup: _showOrderHistoryPopup,
+        buildOrderCard: (ctx, item, {required isHistory}) => _buildOrderCard(ctx, item, isHistory: isHistory),
+      );
+    }
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
@@ -178,10 +234,14 @@ class _LiveHistoryOrdersViewState extends State<LiveHistoryOrdersView> {
                     // Top Sub-Header Bar Inside Card
                     Padding(
                       padding: const EdgeInsets.all(24),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Wrap(
+                        alignment: WrapAlignment.spaceBetween,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 16,
+                        runSpacing: 12,
                         children: [
                           Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
                                 'Active Live Orders',
@@ -212,7 +272,10 @@ class _LiveHistoryOrdersViewState extends State<LiveHistoryOrdersView> {
                               }),
                             ],
                           ),
-                          Row(
+                          Wrap(
+                            spacing: 12,
+                            runSpacing: 10,
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               SizedBox(
                                 width: 260,
@@ -243,7 +306,6 @@ class _LiveHistoryOrdersViewState extends State<LiveHistoryOrdersView> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 12),
                               SizedBox(
                                 height: 48,
                                 child: TextButton.icon(
@@ -333,15 +395,20 @@ class _LiveHistoryOrdersViewState extends State<LiveHistoryOrdersView> {
   Widget _buildTitleSection() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: const BoxDecoration(
         color: Color(AppColors.WHITE),
         border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0), width: 1)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        runSpacing: 10,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
                 'Live Service & Repair Orders',
@@ -351,7 +418,6 @@ class _LiveHistoryOrdersViewState extends State<LiveHistoryOrdersView> {
                   color: const Color(AppColors.TEXTPRIMARY),
                 ),
               ),
-              const SizedBox(width: 10),
               Container(
                 width: 8,
                 height: 8,
@@ -360,7 +426,6 @@ class _LiveHistoryOrdersViewState extends State<LiveHistoryOrdersView> {
                   shape: BoxShape.circle,
                 ),
               ),
-              const SizedBox(width: 10),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
@@ -379,7 +444,10 @@ class _LiveHistoryOrdersViewState extends State<LiveHistoryOrdersView> {
               ),
             ],
           ),
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -389,6 +457,7 @@ class _LiveHistoryOrdersViewState extends State<LiveHistoryOrdersView> {
                   border: Border.all(color: const Color(0xFFE2E8F0)),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(
                       Icons.calendar_today_outlined,
@@ -407,7 +476,6 @@ class _LiveHistoryOrdersViewState extends State<LiveHistoryOrdersView> {
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
               Material(
                 color: Colors.transparent,
                 child: InkWell(
@@ -435,275 +503,323 @@ class _LiveHistoryOrdersViewState extends State<LiveHistoryOrdersView> {
     final order = item.order;
 
     return Container(
-      padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
-        color: const Color(AppColors.WHITE),
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: const Color(0xFF0F172A).withValues(alpha: 0.04),
             blurRadius: 16,
-            offset: const Offset(0, 6),
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Row 1: Order ID & Date
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                order.orderId,
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(AppColors.TEXTPRIMARY),
-                ),
-              ),
-              Row(
-                children: [
-                  const Icon(Icons.calendar_today_outlined, size: 15, color: Color(AppColors.TEXTSECONDARY)),
-                  const SizedBox(width: 8),
-                  Text(
-                    _formatDate(order.date),
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(AppColors.TEXTSECONDARY),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          // Row 2: Customer Contact Subtitle & Status Badge/Dropdown
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 12,
-                  runSpacing: 8,
+          // Header Section
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 16,
+              runSpacing: 12,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      order.customerName,
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(AppColors.TEXTPRIMARY),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0F172A),
+                        borderRadius: BorderRadius.circular(14),
                       ),
+                      child: const Icon(Icons.receipt_long_rounded, color: Colors.white, size: 22),
                     ),
-                    _buildDotSeparator(),
-                    _buildIconText(Icons.phone_outlined, '+91 ${order.contact1}'),
-                    if (order.contact2 != null && order.contact2! > 0) ...[
-                      _buildDotSeparator(),
-                      _buildIconText(Icons.phone_android_outlined, '+91 ${order.contact2}'),
-                    ],
-                    if (order.email != null && order.email!.isNotEmpty) ...[
-                      _buildDotSeparator(),
-                      _buildIconText(Icons.email_outlined, order.email!),
-                    ],
-                    _buildDotSeparator(),
-                    _buildIconText(Icons.location_on_outlined, order.address),
+                    const SizedBox(width: 14),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          order.orderId,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 16.5,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF0F172A),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(Icons.event_note_rounded, size: 14, color: Color(0xFF64748B)),
+                            const SizedBox(width: 6),
+                            Text(
+                              _formatDate(order.date),
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF64748B),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-              ),
-              const SizedBox(width: 16),
-              // Status Badge or Dropdown
-              _buildStatusSelector(item, isHistory),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          // Row 3: Complaints
-          Text(
-            'Complaints',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: const Color(AppColors.TEXTPRIMARY),
+                _buildStatusSelector(item, isHistory),
+              ],
             ),
           ),
-          const SizedBox(height: 10),
+          const Divider(height: 1, color: Color(0xFFE2E8F0)),
 
-          Column(
-            children: order.complaints.asMap().entries.map((e) {
-              final idx = e.key + 1;
-              final text = e.value;
-              return Container(
-                width: double.infinity,
-                margin: const EdgeInsets.only(bottom: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFFF1F5F9)),
+          // Customer Details Section
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  order.customerName,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF0F172A),
+                  ),
                 ),
-                child: Row(
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
                   children: [
-                    Text(
-                      '$idx',
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF94A3B8),
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Text(
-                        text,
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(AppColors.TEXTPRIMARY),
-                        ),
-                      ),
-                    ),
+                    _buildEliteContactTag(Icons.phone_rounded, '+91 ${order.contact1}', const Color(0xFF0284C7)),
+                    if (order.contact2 != null && order.contact2! > 0)
+                      _buildEliteContactTag(Icons.phone_android_rounded, '+91 ${order.contact2}', const Color(0xFF0284C7)),
+                    if (order.email != null && order.email!.isNotEmpty)
+                      _buildEliteContactTag(Icons.alternate_email_rounded, order.email!, const Color(0xFF10B981)),
+                    _buildEliteContactTag(Icons.location_on_rounded, order.address, const Color(0xFFF59E0B)),
                   ],
                 ),
-              );
-            }).toList(),
+              ],
+            ),
           ),
-          const SizedBox(height: 20),
 
-          // Row 4: Price & Action Buttons
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    'Price (₹)',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(AppColors.TEXTSECONDARY),
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF8FAFC),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                    ),
-                    child: Text(
-                      _formatCurrency(item.amount),
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(AppColors.TEXTPRIMARY),
-                      ),
-                    ),
-                  ),
-                  if (!isHistory) ...[
-                    const SizedBox(width: 8),
-                    InkWell(
-                      onTap: () => _showEditMoneyModal(context, item),
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: const Color(AppColors.PRIMARY).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.edit_outlined,
-                          size: 16,
-                          color: Color(AppColors.PRIMARY),
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-
-              // Action Buttons
-              if (!isHistory)
+          // Complaints Section
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            decoration: const BoxDecoration(
+              color: Color(0xFFF8FAFC),
+              border: Border.symmetric(horizontal: BorderSide(color: Color(0xFFF1F5F9))),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Row(
                   children: [
-                    OutlinedButton.icon(
-                      onPressed: () => _showEditOrderModal(context, item),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(AppColors.PRIMARY),
-                        side: const BorderSide(color: Color(AppColors.PRIMARY)),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    const Icon(Icons.build_circle_rounded, size: 16, color: Color(0xFF64748B)),
+                    const SizedBox(width: 8),
+                    Text(
+                      'COMPLAINTS / REQUIREMENTS',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF64748B),
+                        letterSpacing: 0.5,
                       ),
-                      icon: const Icon(Icons.edit_outlined, size: 16),
-                      label: Text('Edit Order', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
-                    ),
-                    const SizedBox(width: 12),
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        controller.updateOrderStatus(item, 'Cancelled');
-                      },
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFFEF4444),
-                        side: const BorderSide(color: Color(0xFFFCA5A5)),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      icon: const Icon(Icons.close, size: 16),
-                      label: Text('Cancel', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
-                    ),
-                    const SizedBox(width: 12),
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        controller.updateOrderStatus(item, 'Completed');
-                      },
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF10B981),
-                        side: const BorderSide(color: Color(0xFF6EE7B7)),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      icon: const Icon(Icons.check_circle_outline, size: 16),
-                      label: Text('Completed', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
                     ),
                   ],
                 ),
-            ],
+                const SizedBox(height: 12),
+                ...order.complaints.asMap().entries.map((e) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 2),
+                          padding: const EdgeInsets.all(5),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFE2E8F0),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            '${e.key + 1}',
+                            style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w800, color: const Color(0xFF475569)),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            e.value,
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF334155),
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+
+          // Footer: Price & Actions
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(24), bottomRight: Radius.circular(24)),
+            ),
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 16,
+              runSpacing: 16,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'ESTIMATED PRICE',
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF94A3B8),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _formatCurrency(item.amount),
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF0F172A),
+                          ),
+                        ),
+                        if (!isHistory) ...[
+                          const SizedBox(width: 10),
+                          InkWell(
+                            onTap: () => _showEditMoneyModal(context, item),
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF1F5F9),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(Icons.edit_rounded, size: 14, color: Color(0xFF64748B)),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+                if (!isHistory)
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      _buildEliteActionButton(
+                        icon: Icons.edit_rounded,
+                        label: 'Edit',
+                        color: const Color(0xFF0F172A),
+                        onTap: () => _showEditOrderModal(context, item),
+                      ),
+                      _buildEliteActionButton(
+                        icon: Icons.close_rounded,
+                        label: 'Cancel',
+                        color: const Color(0xFFEF4444),
+                        onTap: () => controller.updateOrderStatus(item, 'Cancelled'),
+                      ),
+                      _buildEliteActionButton(
+                        icon: Icons.check_circle_rounded,
+                        label: 'Complete',
+                        color: const Color(0xFF10B981),
+                        isPrimary: true,
+                        onTap: () => controller.updateOrderStatus(item, 'Completed'),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDotSeparator() {
+  Widget _buildEliteContactTag(IconData icon, String text, Color color) {
     return Container(
-      width: 4,
-      height: 4,
-      decoration: const BoxDecoration(
-        color: Color(0xFFCBD5E1),
-        shape: BoxShape.circle,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.15)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: GoogleFonts.inter(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildIconText(IconData icon, String text) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 14, color: const Color(AppColors.TEXTSECONDARY)),
-        const SizedBox(width: 6),
-        Text(
-          text,
-          style: GoogleFonts.inter(
-            fontSize: 13,
-            color: const Color(AppColors.TEXTSECONDARY),
-            fontWeight: FontWeight.w500,
-          ),
+  Widget _buildEliteActionButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+    bool isPrimary = false,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: isPrimary ? color : Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: isPrimary ? color : const Color(0xFFE2E8F0)),
         ),
-      ],
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: isPrimary ? Colors.white : color),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: isPrimary ? Colors.white : color,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -835,14 +951,18 @@ class _OrderHistoryPopupDialogState extends State<_OrderHistoryPopupDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 40),
+      insetPadding: ResponsiveUtils.isPhone(context)
+          ? const EdgeInsets.all(12)
+          : const EdgeInsets.symmetric(horizontal: 40, vertical: 40),
       child: Container(
         width: 960,
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.92,
+          maxWidth: MediaQuery.of(context).size.width * 0.95,
           maxHeight: MediaQuery.of(context).size.height * 0.88,
         ),
-        padding: const EdgeInsets.all(32),
+        padding: ResponsiveUtils.isPhone(context)
+            ? const EdgeInsets.all(16)
+            : const EdgeInsets.all(32),
         decoration: BoxDecoration(
           color: const Color(AppColors.WHITE),
           borderRadius: BorderRadius.circular(24),
@@ -863,7 +983,10 @@ class _OrderHistoryPopupDialogState extends State<_OrderHistoryPopupDialog> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Row(
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 10,
+                    runSpacing: 6,
                     children: [
                       Text(
                         'Order History',
@@ -873,7 +996,6 @@ class _OrderHistoryPopupDialogState extends State<_OrderHistoryPopupDialog> {
                           color: const Color(AppColors.TEXTPRIMARY),
                         ),
                       ),
-                      const SizedBox(width: 8),
                       Container(
                         width: 8,
                         height: 8,
@@ -882,16 +1004,12 @@ class _OrderHistoryPopupDialogState extends State<_OrderHistoryPopupDialog> {
                           shape: BoxShape.circle,
                         ),
                       ),
-                      const SizedBox(width: 14),
-                      Flexible(
-                        child: Text(
-                          'Completed & Cancelled Orders',
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            color: const Color(AppColors.TEXTSECONDARY).withValues(alpha: 0.8),
-                            fontWeight: FontWeight.w500,
-                          ),
-                          overflow: TextOverflow.ellipsis,
+                      Text(
+                        'Completed & Cancelled Orders',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          color: const Color(AppColors.TEXTSECONDARY).withValues(alpha: 0.8),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -913,8 +1031,9 @@ class _OrderHistoryPopupDialogState extends State<_OrderHistoryPopupDialog> {
               spacing: 16,
               runSpacing: 12,
               children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 8,
                   children: [
                     // Year filter dropdown
                     Obx(() {
@@ -950,7 +1069,6 @@ class _OrderHistoryPopupDialogState extends State<_OrderHistoryPopupDialog> {
                         ),
                       );
                     }),
-                    const SizedBox(width: 10),
                     // Month filter dropdown
                     Obx(() {
                       final selectedM = widget.controller.selectedHistoryMonth.value;
@@ -1160,14 +1278,42 @@ class _EditOrderDialogState extends State<_EditOrderDialog> {
     }
   }
 
+  Widget _buildResponsiveRow({
+    required bool isPhone,
+    required Widget first,
+    required Widget second,
+    int flex1 = 1,
+    int flex2 = 1,
+  }) {
+    if (isPhone) {
+      return Column(
+        children: [
+          first,
+          const SizedBox(height: 14),
+          second,
+        ],
+      );
+    }
+    return Row(
+      children: [
+        Expanded(flex: flex1, child: first),
+        const SizedBox(width: 16),
+        Expanded(flex: flex2, child: second),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isPhone = ResponsiveUtils.isPhone(context);
+    final maxH = MediaQuery.of(context).size.height * 0.88;
     return Dialog(
       backgroundColor: Colors.transparent,
+      insetPadding: EdgeInsets.symmetric(horizontal: isPhone ? 14 : 32, vertical: 16),
       child: Container(
         width: 680,
-        constraints: const BoxConstraints(maxHeight: 720),
-        padding: const EdgeInsets.all(32),
+        constraints: BoxConstraints(maxHeight: maxH),
+        padding: EdgeInsets.all(isPhone ? 20 : 32),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
@@ -1179,36 +1325,40 @@ class _EditOrderDialogState extends State<_EditOrderDialog> {
             ),
           ],
         ),
-        child: Form(
-          key: _formKey,
-          child: Column(
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Edit Order Details',
-                        style: GoogleFonts.inter(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(AppColors.TEXTPRIMARY),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Edit Order Details',
+                          style: GoogleFonts.inter(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(AppColors.TEXTPRIMARY),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Update customer information or complaints for ${widget.item.order.orderId}',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: const Color(AppColors.TEXTSECONDARY),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Update customer information or complaints for ${widget.item.order.orderId}',
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            color: const Color(AppColors.TEXTSECONDARY),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
+                  const SizedBox(width: 12),
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
                     icon: const Icon(Icons.close, color: Color(AppColors.TEXTSECONDARY)),
@@ -1216,76 +1366,57 @@ class _EditOrderDialogState extends State<_EditOrderDialog> {
                 ],
               ),
               const SizedBox(height: 24),
-              Flexible(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildInput(
-                              controller: _nameCtrl,
-                              label: 'Customer Name',
-                              icon: Icons.person_outline,
-                              validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildInput(
-                              controller: _phone1Ctrl,
-                              label: 'Phone Number (Primary)',
-                              icon: Icons.phone_outlined,
-                              isNumber: true,
-                              validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
-                            ),
-                          ),
-                        ],
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                      _buildResponsiveRow(
+                        isPhone: isPhone,
+                        first: _buildInput(
+                          controller: _nameCtrl,
+                          label: 'Customer Name',
+                          icon: Icons.person_outline,
+                          validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+                        ),
+                        second: _buildInput(
+                          controller: _phone1Ctrl,
+                          label: 'Phone Number (Primary)',
+                          icon: Icons.phone_outlined,
+                          isPhone: true,
+                          validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+                        ),
                       ),
                       const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildInput(
-                              controller: _phone2Ctrl,
-                              label: 'Phone Number (Alt / Optional)',
-                              icon: Icons.phone_outlined,
-                              isNumber: true,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildInput(
-                              controller: _emailCtrl,
-                              label: 'Email (Optional)',
-                              icon: Icons.email_outlined,
-                            ),
-                          ),
-                        ],
+                      _buildResponsiveRow(
+                        isPhone: isPhone,
+                        first: _buildInput(
+                          controller: _phone2Ctrl,
+                          label: 'Phone Number (Alt / Optional)',
+                          icon: Icons.phone_outlined,
+                          isPhone: true,
+                        ),
+                        second: _buildInput(
+                          controller: _emailCtrl,
+                          label: 'Email (Optional)',
+                          icon: Icons.email_outlined,
+                        ),
                       ),
                       const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: _buildInput(
-                              controller: _addressCtrl,
-                              label: 'Address',
-                              icon: Icons.location_on_outlined,
-                              validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildInput(
-                              controller: _amountCtrl,
-                              label: 'Price (₹)',
-                              icon: Icons.currency_rupee,
-                              isNumber: true,
-                            ),
-                          ),
-                        ],
+                      _buildResponsiveRow(
+                        isPhone: isPhone,
+                        first: _buildInput(
+                          controller: _addressCtrl,
+                          label: 'Address',
+                          icon: Icons.location_on_outlined,
+                          validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+                        ),
+                        second: _buildInput(
+                          controller: _amountCtrl,
+                          label: 'Price (₹)',
+                          icon: Icons.currency_rupee,
+                          isNumber: true,
+                        ),
+                        flex1: 2,
+                        flex2: 1,
                       ),
                       const SizedBox(height: 16),
                       InkWell(
@@ -1302,15 +1433,17 @@ class _EditOrderDialogState extends State<_EditOrderDialog> {
                             children: [
                               const Icon(Icons.calendar_today_outlined, size: 18, color: Color(AppColors.PRIMARY)),
                               const SizedBox(width: 12),
-                              Text(
-                                'Order Date: ${widget.formatDate(_selectedDate)}',
-                                style: GoogleFonts.inter(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(AppColors.TEXTPRIMARY),
+                              Expanded(
+                                child: Text(
+                                  'Order Date: ${widget.formatDate(_selectedDate)}',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(AppColors.TEXTPRIMARY),
+                                  ),
                                 ),
                               ),
-                              const Spacer(),
+                              const SizedBox(width: 8),
                               const Icon(Icons.edit_calendar_outlined, size: 18, color: Color(AppColors.TEXTSECONDARY)),
                             ],
                           ),
@@ -1320,12 +1453,14 @@ class _EditOrderDialogState extends State<_EditOrderDialog> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Complaints / Services Requested',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(AppColors.TEXTPRIMARY),
+                          Expanded(
+                            child: Text(
+                              'Complaints / Services Requested',
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(AppColors.TEXTPRIMARY),
+                              ),
                             ),
                           ),
                           TextButton.icon(
@@ -1375,9 +1510,7 @@ class _EditOrderDialogState extends State<_EditOrderDialog> {
                           ),
                         );
                       }),
-                    ],
-                  ),
-                ),
+                ],
               ),
               const SizedBox(height: 24),
               Row(
@@ -1435,6 +1568,7 @@ class _EditOrderDialogState extends State<_EditOrderDialog> {
           ),
         ),
       ),
+      ),
     );
   }
 
@@ -1443,11 +1577,12 @@ class _EditOrderDialogState extends State<_EditOrderDialog> {
     required String label,
     required IconData icon,
     bool isNumber = false,
+    bool isPhone = false,
     String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
-      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+      keyboardType: isPhone ? TextInputType.phone : (isNumber ? TextInputType.number : TextInputType.text),
       validator: validator,
       decoration: InputDecoration(
         labelText: label,

@@ -6,7 +6,9 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
 import 'package:lekhsmi_computers_flutter/core/constants/app_colors.dart';
 import 'package:lekhsmi_computers_flutter/core/constants/app_icons.dart';
+import 'package:lekhsmi_computers_flutter/core/utils/responsive_utils.dart';
 import '../controller/brand_supplier_category_controller.dart';
+import 'brand_supplier_category_mobile_view.dart';
 
 class BrandSupplierCategoryView extends StatefulWidget {
   final int initialTabIndex;
@@ -56,6 +58,9 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
 
   @override
   Widget build(BuildContext context) {
+    if (ResponsiveUtils.isPhone(context)) {
+      return BrandSupplierCategoryMobileView(initialTabIndex: _selectedTabIndex);
+    }
     return Column(
       children: [
         // Premium Enterprise Top Header Bar (matches dashboard_view.dart)
@@ -184,18 +189,20 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(28, 16, 28, 28),
-            child: Obx(() {
-              switch (_selectedTabIndex) {
-                case 0:
-                  return _buildBrandsSection();
-                case 1:
-                  return _buildSuppliersSection();
-                case 2:
-                  return _buildCategoriesSection();
-                default:
-                  return _buildBrandsSection();
-              }
-            }),
+            child: Builder(
+              builder: (context) {
+                switch (_selectedTabIndex) {
+                  case 0:
+                    return _buildBrandsSection();
+                  case 1:
+                    return _buildSuppliersSection();
+                  case 2:
+                    return _buildCategoriesSection();
+                  default:
+                    return _buildBrandsSection();
+                }
+              },
+            ),
           ),
         ),
       ],
@@ -284,6 +291,8 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
     );
   }
 
+
+
   // ---------------------------------------------------------------------------
   // BRANDS SECTION
   // ---------------------------------------------------------------------------
@@ -317,7 +326,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
                 const SizedBox(width: 16),
                 _buildAddButton(
                   title: 'Add New Brand',
-                  onTap: () => _showBrandDialog(context),
+                  onTap: () => BrandSupplierCategoryDialogs.showBrandDialog(context),
                 ),
               ],
             ),
@@ -385,7 +394,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
           const SizedBox(height: 8),
           // Table List
           Expanded(
-            child: controller.isLoadingBrands.value
+            child: Obx(() => controller.isLoadingBrands.value
                 ? const Center(child: CircularProgressIndicator())
                 : controller.filteredBrands.isEmpty
                     ? _buildEmptyState('No brands found. Click "Add New Brand" to create one.')
@@ -434,7 +443,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
                                   child: Align(
                                     alignment: Alignment.centerRight,
                                     child: _buildEditIconButton(
-                                      onTap: () => _showBrandDialog(context, brand: b),
+                                      onTap: () => BrandSupplierCategoryDialogs.showBrandDialog(context, brand: b),
                                     ),
                                   ),
                                 ),
@@ -443,6 +452,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
                           );
                         },
                       ),
+            ),
           ),
           const SizedBox(height: 20),
         ],
@@ -483,7 +493,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
                 const SizedBox(width: 16),
                 _buildAddButton(
                   title: 'Add New Supplier',
-                  onTap: () => _showSupplierDialog(context),
+                  onTap: () => BrandSupplierCategoryDialogs.showSupplierDialog(context),
                 ),
               ],
             ),
@@ -584,7 +594,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
           const SizedBox(height: 8),
           // Table List
           Expanded(
-            child: controller.isLoadingSuppliers.value
+            child: Obx(() => controller.isLoadingSuppliers.value
                 ? const Center(child: CircularProgressIndicator())
                 : controller.filteredSuppliers.isEmpty
                     ? _buildEmptyState('No suppliers found. Click "Add New Supplier" to create one.')
@@ -668,7 +678,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
                                   child: Align(
                                     alignment: Alignment.centerRight,
                                     child: _buildEditIconButton(
-                                      onTap: () => _showSupplierDialog(context, supplier: s),
+                                      onTap: () => BrandSupplierCategoryDialogs.showSupplierDialog(context, supplier: s),
                                     ),
                                   ),
                                 ),
@@ -677,6 +687,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
                           );
                         },
                       ),
+            ),
           ),
           const SizedBox(height: 20),
         ],
@@ -717,7 +728,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
                 const SizedBox(width: 16),
                 _buildAddButton(
                   title: 'Add New Category',
-                  onTap: () => _showCategoryDialog(context),
+                  onTap: () => BrandSupplierCategoryDialogs.showCategoryDialog(context),
                 ),
               ],
             ),
@@ -785,7 +796,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
           const SizedBox(height: 8),
           // Table List
           Expanded(
-            child: controller.isLoadingCategories.value
+            child: Obx(() => controller.isLoadingCategories.value
                 ? const Center(child: CircularProgressIndicator())
                 : controller.filteredCategories.isEmpty
                     ? _buildEmptyState('No categories found. Click "Add New Category" to create one.')
@@ -834,7 +845,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
                                   child: Align(
                                     alignment: Alignment.centerRight,
                                     child: _buildEditIconButton(
-                                      onTap: () => _showCategoryDialog(context, category: c),
+                                      onTap: () => BrandSupplierCategoryDialogs.showCategoryDialog(context, category: c),
                                     ),
                                   ),
                                 ),
@@ -843,6 +854,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
                           );
                         },
                       ),
+            ),
           ),
           const SizedBox(height: 20),
         ],
@@ -853,6 +865,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
   // ---------------------------------------------------------------------------
   // HELPER COMPONENTS
   // ---------------------------------------------------------------------------
+
   Widget _buildSearchBar({required String hintText, required Function(String) onChanged}) {
     return Container(
       height: 48,
@@ -982,54 +995,129 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
       ),
     );
   }
+}
 
+class BrandSupplierCategoryDialogs {
   // ---------------------------------------------------------------------------
-  // DIALOGS (BRAND, SUPPLIER, CATEGORY) - MODERN CUSTOM POPUP UI
+  // 1. BRAND DIALOG - "INDIGO HARDWARE BRAND CARD" DESIGN (ADD vs EDIT)
   // ---------------------------------------------------------------------------
-  void _showBrandDialog(BuildContext context, {Brand? brand}) {
+  static void showBrandDialog(BuildContext context, {Brand? brand}) {
+    final controller = Get.find<BrandSupplierCategoryController>();
     final nameCtrl = TextEditingController(text: brand?.name ?? '');
     bool status = brand?.status ?? true;
+    final isEdit = brand != null;
+    const accentColor = Color(0xFF4F46E5); // Deep Indigo
 
     Get.dialog(
       StatefulBuilder(
         builder: (context, setDlgState) {
-          return _buildModernDialogCard(
-            title: brand == null ? 'Add Brand' : 'Edit Brand',
-            subtitle: brand == null
-                ? 'Create a new brand to categorize your inventory products.'
-                : 'Update the brand details and availability status.',
-            icon: AppIcons.BRANDSCOUNTICON,
+          return _buildDialogShell(
+            context: context,
+            accentColor: accentColor,
+            header: _buildDialogHeader(
+              accentColor: accentColor,
+              icon: AppIcons.BRANDSCOUNTICON,
+              badgeText: isEdit ? 'EDITING BRAND' : 'NEW BRAND REGISTRATION',
+              title: isEdit ? 'Update Brand: ${brand.name}' : 'Register Brand',
+              subtitle: isEdit
+                  ? 'Modify brand title and catalog visibility status.'
+                  : 'Add a new hardware brand to categorize inventory products.',
+            ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Indigo Brand Preview Banner
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        accentColor.withValues(alpha: 0.12),
+                        accentColor.withValues(alpha: 0.04),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: accentColor.withValues(alpha: 0.25)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: accentColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.verified_rounded, color: Colors.white, size: 20),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              isEdit ? 'Catalog Brand Entry #id-${brand.id ?? "active"}' : 'Catalog Brand Identity',
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                                color: accentColor,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              isEdit
+                                  ? 'Changes apply instantly to product filters.'
+                                  : 'Will be selectable when adding stock items.',
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 11.5,
+                                color: const Color(AppColors.TEXTSECONDARY),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
                 _buildDialogTextField(
                   label: 'Brand Name',
-                  hintText: 'e.g. Asus, Logitech, Intel',
+                  hintText: 'e.g. Asus, Logitech, Intel, Samsung',
                   controller: nameCtrl,
+                  prefixIcon: Icons.branding_watermark_rounded,
+                  accentColor: accentColor,
                 ),
                 const SizedBox(height: 20),
                 _buildDialogStatusToggle(
                   value: status,
+                  accentColor: accentColor,
+                  activeTitle: 'Visible in Catalog',
+                  inactiveTitle: 'Hidden from Catalog',
                   onChanged: (val) => setDlgState(() => status = val),
                 ),
               ],
             ),
-            saveLabel: brand == null ? 'Create Brand' : 'Save Changes',
-            onSave: () {
-              final name = nameCtrl.text.trim();
-              if (name.isEmpty) {
-                AppNotification.warning('Warning', 'Brand name cannot be empty');
-                return;
-              }
-              if (brand == null) {
-                controller.addBrand(Brand(name: name, status: status));
-              } else {
-                brand.name = name;
-                brand.status = status;
-                controller.updateBrand(brand);
-              }
-            },
+            footer: _buildDialogFooter(
+              accentColor: accentColor,
+              saveLabel: isEdit ? 'Save Brand Changes' : 'Create Brand',
+              onSave: () {
+                final name = nameCtrl.text.trim();
+                if (name.isEmpty) {
+                  AppNotification.warning('Warning', 'Brand name cannot be empty');
+                  return;
+                }
+                if (brand == null) {
+                  controller.addBrand(Brand(name: name, status: status));
+                } else {
+                  brand.name = name;
+                  brand.status = status;
+                  controller.updateBrand(brand);
+                }
+              },
+            ),
           );
         },
       ),
@@ -1037,58 +1125,11 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
     );
   }
 
-  void _showCategoryDialog(BuildContext context, {Category? category}) {
-    final nameCtrl = TextEditingController(text: category?.name ?? '');
-    bool status = category?.status ?? true;
-
-    Get.dialog(
-      StatefulBuilder(
-        builder: (context, setDlgState) {
-          return _buildModernDialogCard(
-            title: category == null ? 'Add Category' : 'Edit Category',
-            subtitle: category == null
-                ? 'Add a new product category for easier inventory filtering.'
-                : 'Update existing product category details.',
-            icon: AppIcons.CATEGORYCOUNTICON,
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildDialogTextField(
-                  label: 'Category Name',
-                  hintText: 'e.g. Laptops, Processors, Keyboards',
-                  controller: nameCtrl,
-                ),
-                const SizedBox(height: 20),
-                _buildDialogStatusToggle(
-                  value: status,
-                  onChanged: (val) => setDlgState(() => status = val),
-                ),
-              ],
-            ),
-            saveLabel: category == null ? 'Create Category' : 'Save Changes',
-            onSave: () {
-              final name = nameCtrl.text.trim();
-              if (name.isEmpty) {
-                AppNotification.warning('Warning', 'Category name cannot be empty');
-                return;
-              }
-              if (category == null) {
-                controller.addCategory(Category(name: name, status: status));
-              } else {
-                category.name = name;
-                category.status = status;
-                controller.updateCategory(category);
-              }
-            },
-          );
-        },
-      ),
-      barrierDismissible: true,
-    );
-  }
-
-  void _showSupplierDialog(BuildContext context, {Supplier? supplier}) {
+  // ---------------------------------------------------------------------------
+  // 2. SUPPLIER DIALOG - "EMERALD CORPORATE VENDOR SHEET" (ADD vs EDIT)
+  // ---------------------------------------------------------------------------
+  static void showSupplierDialog(BuildContext context, {Supplier? supplier}) {
+    final controller = Get.find<BrandSupplierCategoryController>();
     final nameCtrl = TextEditingController(text: supplier?.name ?? '');
     final addressCtrl = TextEditingController(text: supplier?.address ?? '');
     final contact1Ctrl = TextEditingController(
@@ -1098,96 +1139,189 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
       text: (supplier != null && supplier.contact2 != 0) ? '${supplier.contact2}' : '',
     );
     bool status = supplier?.status ?? true;
+    final isEdit = supplier != null;
+    const accentColor = Color(0xFF059669); // Rich Emerald Green
 
     Get.dialog(
       StatefulBuilder(
         builder: (context, setDlgState) {
-          return _buildModernDialogCard(
-            title: supplier == null ? 'Add Supplier' : 'Edit Supplier',
-            subtitle: supplier == null
-                ? 'Register a new supplier/vendor with contact numbers and address.'
-                : 'Update existing supplier contact numbers and address details.',
-            icon: AppIcons.SUPPLIERCOUNTICON,
+          final isPhone = ResponsiveUtils.isPhone(context);
+
+          return _buildDialogShell(
+            context: context,
+            accentColor: accentColor,
+            header: _buildDialogHeader(
+              accentColor: accentColor,
+              icon: AppIcons.SUPPLIERCOUNTICON,
+              badgeText: isEdit ? 'VENDOR PROFILE UPDATE' : 'VENDOR ONBOARDING',
+              title: isEdit ? 'Edit Partner: ${supplier.name}' : 'Onboard Supplier',
+              subtitle: isEdit
+                  ? 'Update partner contacts and office billing location.'
+                  : 'Register a new supplier/vendor partner with contact numbers.',
+            ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Emerald Vendor Partner Banner
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: accentColor.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: accentColor.withValues(alpha: 0.25)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: accentColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.handshake_rounded, color: Colors.white, size: 20),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              isEdit ? 'Authorized Supply Partner' : 'New Supply Partner Registration',
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                                color: accentColor,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              isEdit
+                                  ? 'Purchase orders linked to this vendor.'
+                                  : 'Verify contact digits before onboarding.',
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 11.5,
+                                color: const Color(AppColors.TEXTSECONDARY),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
                 _buildDialogTextField(
-                  label: 'Supplier Name',
+                  label: 'Supplier / Company Name',
                   hintText: 'e.g. Tech Distribution Pvt Ltd',
                   controller: nameCtrl,
+                  prefixIcon: Icons.business_rounded,
+                  accentColor: accentColor,
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildDialogTextField(
-                        label: 'Primary Phone',
-                        hintText: 'e.g. 9876543210',
-                        controller: contact1Ctrl,
-                        keyboardType: TextInputType.phone,
+                // Responsive phone layout (stacked on phone to prevent overflow!)
+                if (isPhone) ...[
+                  _buildDialogTextField(
+                    label: 'Primary Phone (Required)',
+                    hintText: 'e.g. 9876543210',
+                    controller: contact1Ctrl,
+                    keyboardType: TextInputType.phone,
+                    prefixIcon: Icons.phone_rounded,
+                    accentColor: accentColor,
+                  ),
+                  const SizedBox(height: 14),
+                  _buildDialogTextField(
+                    label: 'Secondary Phone (Optional)',
+                    hintText: 'e.g. 0471234567',
+                    controller: contact2Ctrl,
+                    keyboardType: TextInputType.phone,
+                    prefixIcon: Icons.phone_android_rounded,
+                    accentColor: accentColor,
+                  ),
+                ] else
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildDialogTextField(
+                          label: 'Primary Phone (Required)',
+                          hintText: 'e.g. 9876543210',
+                          controller: contact1Ctrl,
+                          keyboardType: TextInputType.phone,
+                          prefixIcon: Icons.phone_rounded,
+                          accentColor: accentColor,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildDialogTextField(
-                        label: 'Secondary Phone',
-                        hintText: 'e.g. 0471234567',
-                        controller: contact2Ctrl,
-                        keyboardType: TextInputType.phone,
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildDialogTextField(
+                          label: 'Secondary Phone (Optional)',
+                          hintText: 'e.g. 0471234567',
+                          controller: contact2Ctrl,
+                          keyboardType: TextInputType.phone,
+                          prefixIcon: Icons.phone_android_rounded,
+                          accentColor: accentColor,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
                 const SizedBox(height: 16),
                 _buildDialogTextField(
                   label: 'Office / Billing Address',
                   hintText: 'Enter complete address including city and pin code',
                   controller: addressCtrl,
                   maxLines: 2,
+                  prefixIcon: Icons.location_on_rounded,
+                  accentColor: accentColor,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 _buildDialogStatusToggle(
                   value: status,
+                  accentColor: accentColor,
+                  activeTitle: 'Active Vendor Partner',
+                  inactiveTitle: 'Inactive / Suspended Vendor',
                   onChanged: (val) => setDlgState(() => status = val),
                 ),
               ],
             ),
-            saveLabel: supplier == null ? 'Register Supplier' : 'Save Changes',
-            onSave: () {
-              final name = nameCtrl.text.trim();
-              final c1 = int.tryParse(contact1Ctrl.text.trim()) ?? 0;
-              final c2 = int.tryParse(contact2Ctrl.text.trim()) ?? 0;
-              final address = addressCtrl.text.trim();
+            footer: _buildDialogFooter(
+              accentColor: accentColor,
+              saveLabel: isEdit ? 'Update Vendor Profile' : 'Register Vendor',
+              onSave: () {
+                final name = nameCtrl.text.trim();
+                final c1 = int.tryParse(contact1Ctrl.text.trim()) ?? 0;
+                final c2 = int.tryParse(contact2Ctrl.text.trim()) ?? 0;
+                final address = addressCtrl.text.trim();
 
-              if (name.isEmpty) {
-                AppNotification.warning('Warning', 'Supplier name cannot be empty');
-                return;
-              }
-              if (c1 == 0) {
-                AppNotification.warning('Warning', 'Please enter a valid primary contact number');
-                return;
-              }
+                if (name.isEmpty) {
+                  AppNotification.warning('Warning', 'Supplier name cannot be empty');
+                  return;
+                }
+                if (c1 == 0) {
+                  AppNotification.warning('Warning', 'Please enter a valid primary contact number');
+                  return;
+                }
 
-              if (supplier == null) {
-                controller.addSupplier(
-                  Supplier(
-                    name: name,
-                    address: address,
-                    contact1: c1,
-                    contact2: c2,
-                    status: status,
-                  ),
-                );
-              } else {
-                supplier.name = name;
-                supplier.address = address;
-                supplier.contact1 = c1;
-                supplier.contact2 = c2;
-                supplier.status = status;
-                controller.updateSupplier(supplier);
-              }
-            },
+                if (supplier == null) {
+                  controller.addSupplier(
+                    Supplier(
+                      name: name,
+                      address: address,
+                      contact1: c1,
+                      contact2: c2,
+                      status: status,
+                    ),
+                  );
+                } else {
+                  supplier.name = name;
+                  supplier.address = address;
+                  supplier.contact1 = c1;
+                  supplier.contact2 = c2;
+                  supplier.status = status;
+                  controller.updateSupplier(supplier);
+                }
+              },
+            ),
           );
         },
       ),
@@ -1196,187 +1330,327 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
   }
 
   // ---------------------------------------------------------------------------
-  // MODERN CUSTOM POPUP CARD & FORM HELPERS
+  // 3. CATEGORY DIALOG - "VIBRANT AMBER/CORAL TAG STUDIO" (ADD vs EDIT)
   // ---------------------------------------------------------------------------
-  Widget _buildModernDialogCard({
-    required String title,
-    required String subtitle,
-    required dynamic icon,
+  static void showCategoryDialog(BuildContext context, {Category? category}) {
+    final controller = Get.find<BrandSupplierCategoryController>();
+    final nameCtrl = TextEditingController(text: category?.name ?? '');
+    bool status = category?.status ?? true;
+    final isEdit = category != null;
+    const accentColor = Color(0xFFEA580C); // Vibrant Coral Orange
+
+    Get.dialog(
+      StatefulBuilder(
+        builder: (context, setDlgState) {
+          final liveName = nameCtrl.text.trim().isEmpty ? 'New Category Tag' : nameCtrl.text.trim();
+
+          return _buildDialogShell(
+            context: context,
+            accentColor: accentColor,
+            header: _buildDialogHeader(
+              accentColor: accentColor,
+              icon: AppIcons.CATEGORYCOUNTICON,
+              badgeText: isEdit ? 'CATEGORY MODIFICATION' : 'NEW CATEGORY SETUP',
+              title: isEdit ? 'Edit Category: ${category.name}' : 'Create Category',
+              subtitle: isEdit
+                  ? 'Rename classification tag or toggle filter status.'
+                  : 'Define a new product classification tag for your catalog.',
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Live Interactive Tag Preview Card
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF7ED),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: accentColor.withValues(alpha: 0.3)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'LIVE TAG PREVIEW',
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 10.5,
+                              letterSpacing: 0.8,
+                              color: accentColor,
+                            ),
+                          ),
+                          Icon(Icons.auto_awesome_rounded, color: accentColor, size: 16),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: accentColor,
+                              borderRadius: BorderRadius.circular(30),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: accentColor.withValues(alpha: 0.3),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.category_rounded, color: Colors.white, size: 15),
+                                const SizedBox(width: 8),
+                                Text(
+                                  liveName,
+                                  style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.25),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    status ? 'ACTIVE' : 'INACTIVE',
+                                    style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 9.5,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _buildDialogTextField(
+                  label: 'Category Title',
+                  hintText: 'e.g. Laptops, Processors, Keyboards, Displays',
+                  controller: nameCtrl,
+                  prefixIcon: Icons.label_important_rounded,
+                  accentColor: accentColor,
+                  onChanged: (_) => setDlgState(() {}),
+                ),
+                const SizedBox(height: 20),
+                _buildDialogStatusToggle(
+                  value: status,
+                  accentColor: accentColor,
+                  activeTitle: 'Active Filter Tag',
+                  inactiveTitle: 'Disabled Filter',
+                  onChanged: (val) => setDlgState(() => status = val),
+                ),
+              ],
+            ),
+            footer: _buildDialogFooter(
+              accentColor: accentColor,
+              saveLabel: isEdit ? 'Save Category' : 'Create Category',
+              onSave: () {
+                final name = nameCtrl.text.trim();
+                if (name.isEmpty) {
+                  AppNotification.warning('Warning', 'Category name cannot be empty');
+                  return;
+                }
+                if (category == null) {
+                  controller.addCategory(Category(name: name, status: status));
+                } else {
+                  category.name = name;
+                  category.status = status;
+                  controller.updateCategory(category);
+                }
+              },
+            ),
+          );
+        },
+      ),
+      barrierDismissible: true,
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // SHARED RESPONSIVE DIALOG CONTAINER (ZERO KEYBOARD & HORIZONTAL OVERFLOW)
+  // ---------------------------------------------------------------------------
+  static Widget _buildDialogShell({
+    required BuildContext context,
+    required Color accentColor,
+    required Widget header,
     required Widget content,
-    required VoidCallback onSave,
-    required String saveLabel,
+    required Widget footer,
   }) {
+    final isPhone = ResponsiveUtils.isPhone(context);
+    final maxH = MediaQuery.of(context).size.height * (isPhone ? 0.90 : 0.85);
+
     return Dialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
-      child: Center(
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: isPhone ? 12 : 32,
+        vertical: 16,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: 540,
+          maxHeight: maxH,
+        ),
         child: Container(
-          width: 520,
           decoration: BoxDecoration(
             color: const Color(AppColors.WHITE),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: const Color(0xFFF1F5F9)),
+            border: Border.all(color: accentColor.withValues(alpha: 0.25), width: 1.5),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.12),
+                color: Colors.black.withValues(alpha: 0.18),
                 blurRadius: 40,
                 offset: const Offset(0, 16),
               ),
             ],
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(28, 24, 24, 20),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: const Color(AppColors.PRIMARY).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Center(
-                          child: HugeIcon(
-                            icon: icon,
-                            color: const Color(AppColors.PRIMARY),
-                            size: 22,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              title,
-                              style: GoogleFonts.inter(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                                color: const Color(AppColors.TEXTPRIMARY),
-                                letterSpacing: -0.3,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              subtitle,
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
-                                color: const Color(AppColors.TEXTSECONDARY),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () => Get.back(),
-                        tooltip: 'Close',
-                        icon: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF1F5F9),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Icon(
-                            Icons.close_rounded,
-                            color: Color(AppColors.TEXTSECONDARY),
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(height: 1, color: Color(0xFFF1F5F9)),
-
-                // Form content
-                Padding(
-                  padding: const EdgeInsets.all(28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // 1. Fixed Header Area
+              header,
+              Divider(height: 1, color: accentColor.withValues(alpha: 0.15)),
+              // 2. Scrollable Body Content (Flexibly scrolls when keyboard opens!)
+              Flexible(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: EdgeInsets.all(isPhone ? 18 : 26),
                   child: content,
                 ),
-
-                const Divider(height: 1, color: Color(0xFFF1F5F9)),
-
-                // Footer actions
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(28, 18, 28, 24),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      OutlinedButton(
-                        onPressed: () => Get.back(),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(AppColors.TEXTPRIMARY),
-                          side: const BorderSide(color: Color(0xFFE2E8F0)),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 16,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: Text(
-                          'Cancel',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      ElevatedButton.icon(
-                        onPressed: onSave,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(AppColors.PRIMARY),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 28,
-                            vertical: 16,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        icon: const HugeIcon(
-                          icon: AppIcons.CHECKICON,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                        label: Text(
-                          saveLabel,
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+              const Divider(height: 1, color: Color(0xFFF1F5F9)),
+              // 3. Fixed Footer Actions Area
+              footer,
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildDialogTextField({
+  static Widget _buildDialogHeader({
+    required Color accentColor,
+    required dynamic icon,
+    required String badgeText,
+    required String title,
+    required String subtitle,
+  }) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 20, 20, 18),
+      decoration: BoxDecoration(
+        color: accentColor.withValues(alpha: 0.04),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: accentColor.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: accentColor.withValues(alpha: 0.3)),
+            ),
+            child: Center(
+              child: HugeIcon(
+                icon: icon,
+                color: accentColor,
+                size: 22,
+              ),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: accentColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    badgeText,
+                    style: GoogleFonts.inter(
+                      fontSize: 9.5,
+                      fontWeight: FontWeight.w800,
+                      color: accentColor,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  title,
+                  style: GoogleFonts.inter(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(AppColors.TEXTPRIMARY),
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    color: const Color(AppColors.TEXTSECONDARY),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () => Get.back(),
+            tooltip: 'Close',
+            icon: Container(
+              padding: const EdgeInsets.all(7),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(
+                Icons.close_rounded,
+                color: Color(AppColors.TEXTSECONDARY),
+                size: 18,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Widget _buildDialogTextField({
     required String label,
     required String hintText,
     required TextEditingController controller,
+    required IconData prefixIcon,
+    required Color accentColor,
     TextInputType? keyboardType,
     int maxLines = 1,
+    Function(String)? onChanged,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1394,6 +1668,7 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
           controller: controller,
           keyboardType: keyboardType,
           maxLines: maxLines,
+          onChanged: onChanged,
           style: GoogleFonts.inter(
             color: const Color(AppColors.TEXTPRIMARY),
             fontSize: 14,
@@ -1408,9 +1683,10 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
             ),
             filled: true,
             fillColor: const Color(0xFFF8FAFC),
+            prefixIcon: Icon(prefixIcon, color: accentColor, size: 20),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
-              vertical: 16,
+              vertical: 14,
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
@@ -1418,9 +1694,9 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(
-                color: Color(AppColors.PRIMARY),
-                width: 1.5,
+              borderSide: BorderSide(
+                color: accentColor,
+                width: 1.8,
               ),
             ),
           ),
@@ -1429,67 +1705,128 @@ class _BrandSupplierCategoryViewState extends State<BrandSupplierCategoryView> {
     );
   }
 
-  Widget _buildDialogStatusToggle({
+  static Widget _buildDialogStatusToggle({
     required bool value,
+    required Color accentColor,
+    required String activeTitle,
+    required String inactiveTitle,
     required Function(bool) onChanged,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        color: value ? accentColor.withValues(alpha: 0.05) : const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: value ? accentColor.withValues(alpha: 0.4) : const Color(0xFFE2E8F0),
+        ),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: (value
-                      ? const Color(AppColors.SUCCESS)
-                      : const Color(AppColors.TEXTSECONDARY))
-                  .withValues(alpha: 0.1),
+              color: (value ? accentColor : const Color(AppColors.TEXTSECONDARY)).withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
-              value
-                  ? Icons.check_circle_rounded
-                  : Icons.pause_circle_rounded,
-              color: value
-                  ? const Color(AppColors.SUCCESS)
-                  : const Color(AppColors.TEXTSECONDARY),
+              value ? Icons.check_circle_rounded : Icons.pause_circle_rounded,
+              color: value ? accentColor : const Color(AppColors.TEXTSECONDARY),
               size: 18,
             ),
           ),
           const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Status',
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 13,
-                  color: const Color(AppColors.TEXTPRIMARY),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value ? activeTitle : inactiveTitle,
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    color: value ? accentColor : const Color(AppColors.TEXTPRIMARY),
+                  ),
                 ),
-              ),
-              Text(
-                value
-                    ? 'Active & available for use'
-                    : 'Inactive / Hidden',
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 11,
-                  color: const Color(AppColors.TEXTSECONDARY),
+                Text(
+                  value ? 'Selectable across inventory workflows' : 'Temporarily suspended from selections',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 11,
+                    color: const Color(AppColors.TEXTSECONDARY),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const Spacer(),
           Switch(
             value: value,
-            activeThumbColor: const Color(AppColors.PRIMARY),
+            activeThumbColor: accentColor,
             onChanged: onChanged,
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Widget _buildDialogFooter({
+    required Color accentColor,
+    required String saveLabel,
+    required VoidCallback onSave,
+  }) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 18),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC).withValues(alpha: 0.8),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(22)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          OutlinedButton(
+            onPressed: () => Get.back(),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(AppColors.TEXTPRIMARY),
+              side: const BorderSide(color: Color(0xFFE2E8F0)),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 14,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          ElevatedButton.icon(
+            onPressed: onSave,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: accentColor,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 26,
+                vertical: 14,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            icon: const Icon(Icons.check_rounded, color: Colors.white, size: 18),
+            label: Text(
+              saveLabel,
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w800,
+                fontSize: 13,
+              ),
+            ),
           ),
         ],
       ),

@@ -14,11 +14,26 @@ import 'package:screen_retriever/screen_retriever.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Enforce horizontal screen only (Landscape orientation for Android tablets and phones) - No vertical screen or rotation
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
-  ]);
+  // Enforce Portrait orientation on mobile phone variant (shortestSide < 600), Landscape on tablets and desktop
+  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+    final view = WidgetsBinding.instance.platformDispatcher.views.first;
+    final size = view.physicalSize / view.devicePixelRatio;
+    if (size.shortestSide < 600) {
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+      ]);
+    } else {
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+    }
+  } else {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+  }
 
   // Desktop Window Configuration for Windows, Linux, and macOS
   if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {

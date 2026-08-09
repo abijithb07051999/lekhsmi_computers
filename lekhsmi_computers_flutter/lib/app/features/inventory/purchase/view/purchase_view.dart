@@ -6,7 +6,9 @@ import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
 import 'package:lekhsmi_computers_flutter/core/constants/app_colors.dart';
 import 'package:lekhsmi_computers_flutter/core/widgets/saas_date_picker.dart';
 import 'package:lekhsmi_computers_flutter/core/widgets/saas_dropdown.dart';
+import 'package:lekhsmi_computers_flutter/core/utils/responsive_utils.dart';
 import 'package:lekhsmi_computers_flutter/app/features/inventory/purchase/controller/purchase_controller.dart';
+import 'purchase_mobile_view.dart';
 
 class _PurchaseItemFormRow {
   final String id = UniqueKey().toString();
@@ -35,6 +37,9 @@ class _PurchaseViewState extends State<PurchaseView> {
 
   @override
   Widget build(BuildContext context) {
+    if (ResponsiveUtils.isPhone(context)) {
+      return const PurchaseMobileView();
+    }
     return Column(
       children: [
         // Top Header Section (White Card Bar)
@@ -117,7 +122,7 @@ class _PurchaseViewState extends State<PurchaseView> {
                           const Icon(Icons.calendar_today_rounded, size: 14, color: Color(AppColors.TEXTSECONDARY)),
                           const SizedBox(width: 8),
                           Text(
-                            _formatDate(DateTime.now()),
+                            PurchaseDialogs.formatDate(DateTime.now()),
                             style: GoogleFonts.inter(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -216,7 +221,7 @@ class _PurchaseViewState extends State<PurchaseView> {
                 SizedBox(
                   height: 48,
                   child: ElevatedButton.icon(
-                    onPressed: () => _showAddPurchaseDialog(context),
+                    onPressed: () => PurchaseDialogs.showAddPurchaseDialog(context),
                     icon: const Icon(Icons.add_rounded, color: Colors.white, size: 18),
                     label: Text(
                       'Add New Purchase',
@@ -381,7 +386,7 @@ class _PurchaseViewState extends State<PurchaseView> {
           Expanded(
             flex: 2,
             child: Text(
-              _formatDate(p.date),
+              PurchaseDialogs.formatDate(p.date),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: GoogleFonts.inter(fontSize: 11.5, color: const Color(AppColors.TEXTPRIMARY), fontWeight: FontWeight.w500),
@@ -415,7 +420,7 @@ class _PurchaseViewState extends State<PurchaseView> {
           Expanded(
             flex: 2,
             child: Text(
-              _formatCurrency(p.totalAmount),
+              PurchaseDialogs.formatCurrency(p.totalAmount),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: GoogleFonts.inter(fontSize: 12, color: const Color(AppColors.TEXTPRIMARY), fontWeight: FontWeight.w700),
@@ -425,13 +430,13 @@ class _PurchaseViewState extends State<PurchaseView> {
             flex: 2,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: _buildPaidAmountPill(p.paidAmount, onEdit: () => _showEditPaymentDialog(context, p)),
+              child: _buildPaidAmountPill(p.paidAmount, onEdit: () => PurchaseDialogs.showEditPaymentDialog(context, p)),
             ),
           ),
           Expanded(
             flex: 2,
             child: Text(
-              _formatCurrency(p.dueAmount),
+              PurchaseDialogs.formatCurrency(p.dueAmount),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: GoogleFonts.inter(fontSize: 12, color: dueColor, fontWeight: FontWeight.w700),
@@ -441,7 +446,7 @@ class _PurchaseViewState extends State<PurchaseView> {
             flex: 2,
             child: Align(
               alignment: Alignment.centerRight,
-              child: _buildViewButton(onTap: () => _showPurchaseDetailsModal(context, p)),
+              child: _buildViewButton(onTap: () => PurchaseDialogs.showPurchaseDetailsModal(context, p)),
             ),
           ),
         ],
@@ -449,7 +454,78 @@ class _PurchaseViewState extends State<PurchaseView> {
     );
   }
 
-  Widget _buildPaymentStatusBadge(String status) {
+  Widget _buildPaymentStatusBadge(String status) => PurchaseDialogs._buildPaymentStatusBadge(status);
+
+  Widget _buildPaidAmountPill(int paid, {required VoidCallback onEdit}) {
+    return InkWell(
+      onTap: onEdit,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                PurchaseDialogs.formatCurrency(paid),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Color(AppColors.TEXTPRIMARY),
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+            const Icon(Icons.edit_outlined, size: 13, color: Color(AppColors.TEXTSECONDARY)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildViewButton({required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.remove_red_eye_outlined, color: Color(AppColors.PRIMARY), size: 14),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                'View',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Color(AppColors.PRIMARY),
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PurchaseDialogs {
+  static String formatDate(DateTime date) => _formatDate(date);
+  static String formatCurrency(int amount) => _formatCurrency(amount);
+  static Widget buildPaymentStatusBadge(String status) => _buildPaymentStatusBadge(status);
+
+  static Widget _buildPaymentStatusBadge(String status) {
     Color textColor;
     Color bgColor;
     Color borderColor;
@@ -501,70 +577,7 @@ class _PurchaseViewState extends State<PurchaseView> {
     );
   }
 
-  Widget _buildPaidAmountPill(int paid, {required VoidCallback onEdit}) {
-    return InkWell(
-      onTap: onEdit,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF8FAFC),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: Text(
-                _formatCurrency(paid),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Color(AppColors.TEXTPRIMARY),
-                ),
-              ),
-            ),
-            const SizedBox(width: 4),
-            const Icon(Icons.edit_outlined, size: 13, color: Color(AppColors.TEXTSECONDARY)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildViewButton({required VoidCallback onTap}) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.remove_red_eye_outlined, color: Color(AppColors.PRIMARY), size: 14),
-            const SizedBox(width: 4),
-            Flexible(
-              child: Text(
-                'View',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Color(AppColors.PRIMARY),
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _formatDate(DateTime date) {
+  static String _formatDate(DateTime date) {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     final day = date.day.toString().padLeft(2, '0');
     final month = months[date.month - 1];
@@ -572,7 +585,7 @@ class _PurchaseViewState extends State<PurchaseView> {
     return '$day/$month/$year';
   }
 
-  String _formatCurrency(int amount) {
+  static String _formatCurrency(int amount) {
     final isNegative = amount < 0;
     final absVal = amount.abs();
     final s = absVal.toString();
@@ -590,14 +603,18 @@ class _PurchaseViewState extends State<PurchaseView> {
     return isNegative ? '-₹$result' : '₹$result';
   }
 
-  // --- ADD PURCHASE MODAL ---
-  void _showAddPurchaseDialog(BuildContext context) {
+  // ---------------------------------------------------------------------------
+  // 1. ADD PURCHASE MODAL - "INDIGO / VIOLET PURCHASE STUDIO" DESIGN
+  // ---------------------------------------------------------------------------
+  static void showAddPurchaseDialog(BuildContext context) {
+    final controller = Get.find<PurchaseController>();
     controller.fetchPurchases();
     final invoiceNo = controller.generateInvoiceNumber();
     int? selectedSupplierId;
     DateTime selectedDate = DateTime.now();
     final itemRows = <_PurchaseItemFormRow>[_PurchaseItemFormRow()];
     final paidCtrl = TextEditingController();
+    const accentColor = Color(0xFF4F46E5); // Deep Violet / Indigo
 
     showDialog(
       context: context,
@@ -605,6 +622,8 @@ class _PurchaseViewState extends State<PurchaseView> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setStateModal) {
+            final isPhone = ResponsiveUtils.isPhone(context);
+
             int totalAmount = 0;
             for (final r in itemRows) {
               if (r.productId != null) {
@@ -622,84 +641,31 @@ class _PurchaseViewState extends State<PurchaseView> {
               derivedStatus = 'Partially Paid';
             }
 
-            return MediaQuery.removeViewInsets(
-              removeBottom: true,
+            return _buildResponsivePurchaseDialogShell(
               context: context,
-              child: Dialog(
-              backgroundColor: Colors.transparent,
-              child: Container(
-                width: 900,
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.95,
-                  maxHeight: MediaQuery.of(context).size.height * 0.9,
-                ),
-                padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
-                  color: const Color(AppColors.WHITE),
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 30,
-                      offset: const Offset(0, 15),
+              accentColor: accentColor,
+              maxWidth: 900,
+              header: _buildPurchaseDialogHeader(
+                accentColor: accentColor,
+                badgeText: 'NEW INVOICE RECEIPT • STOCK ENTRY',
+                title: 'New Supplier Purchase',
+                subtitle: 'Select vendor partner, invoice date, and purchased items to restock inventory.',
+                trailingBadge: invoiceNo,
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Top Form Card: Supplier & Date
+                  Container(
+                    padding: EdgeInsets.all(isPhone ? 14 : 20),
+                    decoration: BoxDecoration(
+                      color: accentColor.withValues(alpha: 0.04),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: accentColor.withValues(alpha: 0.18)),
                     ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Modal Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const Text(
-                              'Add New Purchase',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w800,
-                                color: Color(AppColors.TEXTPRIMARY),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: const Color(AppColors.PRIMARY).withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                invoiceNo,
-                                style: const TextStyle(
-                                  color: Color(AppColors.PRIMARY),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        IconButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.close_rounded, color: Color(AppColors.TEXTSECONDARY)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Record supplier purchase invoice. Adding items will automatically update product stock upon submission.',
-                      style: TextStyle(fontSize: 13, color: Color(AppColors.TEXTSECONDARY)),
-                    ),
-                    const SizedBox(height: 20),
-                    const Divider(color: Color(0xFFE2E8F0), height: 1),
-                    const SizedBox(height: 20),
-
-                    // Top Form: Supplier & Date
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
+                    child: isPhone
+                        ? Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('Select Supplier', style: _labelStyle),
@@ -710,165 +676,132 @@ class _PurchaseViewState extends State<PurchaseView> {
                                 items: controller.suppliers.map((s) {
                                   return DropdownMenuItem<int>(
                                     value: s.id,
-                                    child: Text(s.name, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTPRIMARY))),
+                                    child: Text(
+                                      s.name,
+                                      style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTPRIMARY)),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   );
                                 }).toList(),
                                 onChanged: (val) {
                                   setStateModal(() => selectedSupplierId = val);
                                 },
                               ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                              const SizedBox(height: 16),
                               Text('Invoice Date', style: _labelStyle),
                               const SizedBox(height: 8),
-                              InkWell(
-                                onTap: () async {
-                                  final picked = await SaaSDatePicker.show(
-                                    context,
-                                    initialDate: selectedDate,
-                                    firstDate: DateTime(2020),
-                                    lastDate: DateTime(2030),
-                                  );
-                                  if (picked != null) {
-                                    setStateModal(() => selectedDate = picked);
-                                  }
-                                },
-                                borderRadius: BorderRadius.circular(12),
-                                child: Container(
-                                  height: 48,
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                                  decoration: BoxDecoration(
-                                    color: const Color(AppColors.WHITE),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                                  ),
-                                  alignment: Alignment.centerLeft,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        _formatDate(selectedDate),
-                                        style: const TextStyle(fontSize: 14, color: Color(AppColors.TEXTPRIMARY)),
-                                      ),
-                                      const Icon(Icons.calendar_today_rounded, size: 18, color: Color(AppColors.TEXTSECONDARY)),
-                                    ],
-                                  ),
+                              _buildDatePickerField(
+                                context: context,
+                                selectedDate: selectedDate,
+                                onPicked: (picked) => setStateModal(() => selectedDate = picked),
+                              ),
+                            ],
+                          )
+                        : Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Select Supplier', style: _labelStyle),
+                                    const SizedBox(height: 8),
+                                    SaaSDropdownFormField.build<int>(
+                                      value: selectedSupplierId,
+                                      decoration: _inputDecoration('Choose registered supplier'),
+                                      items: controller.suppliers.map((s) {
+                                        return DropdownMenuItem<int>(
+                                          value: s.id,
+                                          child: Text(
+                                            s.name,
+                                            style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTPRIMARY)),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        );
+                                      }).toList(),
+                                      onChanged: (val) {
+                                        setStateModal(() => selectedSupplierId = val);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Invoice Date', style: _labelStyle),
+                                    const SizedBox(height: 8),
+                                    _buildDatePickerField(
+                                      context: context,
+                                      selectedDate: selectedDate,
+                                      onPicked: (picked) => setStateModal(() => selectedDate = picked),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
+                  ),
+                  const SizedBox(height: 24),
 
-                    // Products List Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Purchased Products (No Brand/Category restriction)',
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY)),
+                  // Products List Section Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Purchased Products (${itemRows.length} item${itemRows.length == 1 ? "" : "s"})',
+                          style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w800, color: const Color(AppColors.TEXTPRIMARY)),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        TextButton.icon(
-                          onPressed: () {
-                            setStateModal(() {
-                              itemRows.add(_PurchaseItemFormRow());
-                            });
-                          },
-                          icon: const Icon(Icons.add_circle_outline, size: 18),
-                          label: const Text('Add Product Item', style: TextStyle(fontWeight: FontWeight.w600)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          setStateModal(() {
+                            itemRows.add(_PurchaseItemFormRow());
+                          });
+                        },
+                        style: TextButton.styleFrom(foregroundColor: accentColor),
+                        icon: const Icon(Icons.add_circle_outline_rounded, size: 18),
+                        label: Text('Add Product Row', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
 
-                    // Products List View
-                    Expanded(
-                      child: Container(
+                  // Products List (Responsive Cards)
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: itemRows.length,
+                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final row = itemRows[index];
+                      return Container(
+                        key: ValueKey(row.id),
+                        padding: EdgeInsets.all(isPhone ? 12 : 16),
                         decoration: BoxDecoration(
                           color: const Color(0xFFF8FAFC),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: const Color(0xFFE2E8F0)),
                         ),
-                        child: ListView.separated(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: itemRows.length,
-                          separatorBuilder: (context, index) => const SizedBox(height: 12),
-                          itemBuilder: (context, index) {
-                            final row = itemRows[index];
-                            return Row(
-                              key: ValueKey(row.id),
-                              children: [
-                                // Product dropdown (Input #1)
-                                Expanded(
-                                  flex: 6,
-                                  child: SaaSDropdownFormField.build<int>(
+                        child: isPhone
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Product Dropdown
+                                  SaaSDropdownFormField.build<int>(
                                     value: row.productId,
                                     decoration: _inputDecoration('Select available product'),
                                     items: controller.products.map((prod) {
                                       final brand = controller.getBrandName(prod);
-                                      final category = controller.getCategoryName(prod);
                                       return DropdownMenuItem<int>(
                                         value: prod.id,
-                                        child: Row(
-                                          children: [
-                                            Flexible(
-                                              child: Text(
-                                                prod.name,
-                                                style: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.w700, color: const Color(AppColors.TEXTPRIMARY)),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: const Color(AppColors.PRIMARY).withValues(alpha: 0.1),
-                                                borderRadius: BorderRadius.circular(6),
-                                              ),
-                                              child: Text(
-                                                brand,
-                                                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: const Color(AppColors.PRIMARY)),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 6),
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: const Color(0xFF64748B).withValues(alpha: 0.12),
-                                                borderRadius: BorderRadius.circular(6),
-                                              ),
-                                              child: Text(
-                                                category,
-                                                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(0xFF334155)),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: prod.quantity > 0
-                                                    ? const Color(0xFF16A34A).withValues(alpha: 0.12)
-                                                    : const Color(0xFFDC2626).withValues(alpha: 0.12),
-                                                borderRadius: BorderRadius.circular(6),
-                                              ),
-                                              child: Text(
-                                                '${prod.quantity}',
-                                                style: GoogleFonts.inter(
-                                                  fontSize: 11,
-                                                  fontWeight: FontWeight.w800,
-                                                  color: prod.quantity > 0 ? const Color(0xFF16A34A) : const Color(0xFFDC2626),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                        child: Text(
+                                          '${prod.name} ($brand)',
+                                          style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: const Color(AppColors.TEXTPRIMARY)),
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       );
                                     }).toList(),
@@ -882,207 +815,352 @@ class _PurchaseViewState extends State<PurchaseView> {
                                       });
                                     },
                                   ),
-                                ),
-                                const SizedBox(width: 16),
-                                // Quantity input (Input #2)
-                                Expanded(
-                                  flex: 2,
-                                  child: TextFormField(
-                                    controller: row.qtyCtrl,
-                                    keyboardType: TextInputType.number,
-                                    scrollPadding: const EdgeInsets.only(bottom: 260),
-                                    decoration: _inputDecoration('Qty'),
-                                    onChanged: (val) {
-                                      setStateModal(() {
-                                        row.quantity = int.tryParse(val) ?? 1;
-                                      });
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                // Subtotal & Unit price display (Buy Price input removed)
-                                Expanded(
-                                  flex: 3,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                  const SizedBox(height: 12),
+                                  Row(
                                     children: [
-                                      Text(
-                                        _formatCurrency(row.subtotal),
-                                        style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w800, color: const Color(AppColors.TEXTPRIMARY)),
-                                      ),
-                                      if (row.unitPrice > 0)
-                                        Text(
-                                          '@ ₹${row.unitPrice} each',
-                                          style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTSECONDARY)),
+                                      Expanded(
+                                        flex: 4,
+                                        child: TextFormField(
+                                          controller: row.qtyCtrl,
+                                          keyboardType: TextInputType.number,
+                                          decoration: _inputDecoration('Qty'),
+                                          onChanged: (val) {
+                                            setStateModal(() {
+                                              row.quantity = int.tryParse(val) ?? 1;
+                                            });
+                                          },
                                         ),
+                                      ),
+                                      const SizedBox(width: 14),
+                                      Expanded(
+                                        flex: 5,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              _formatCurrency(row.subtotal),
+                                              style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(AppColors.TEXTPRIMARY)),
+                                            ),
+                                            if (row.unitPrice > 0)
+                                              Text(
+                                                '@ ₹${row.unitPrice} each',
+                                                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTSECONDARY)),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: itemRows.length > 1
+                                            ? () {
+                                                setStateModal(() {
+                                                  final removed = itemRows.removeAt(index);
+                                                  removed.dispose();
+                                                });
+                                              }
+                                            : null,
+                                        icon: const Icon(Icons.delete_outline_rounded, color: Color(0xFFDC2626), size: 20),
+                                      ),
                                     ],
                                   ),
-                                ),
-                                // Delete row button
-                                IconButton(
-                                  onPressed: itemRows.length > 1
-                                      ? () {
-                                          setStateModal(() {
-                                            final removed = itemRows.removeAt(index);
-                                            removed.dispose();
-                                          });
-                                        }
-                                      : null,
-                                  icon: const Icon(Icons.delete_outline, color: Color(0xFFDC2626), size: 20),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Financial & Payment Summary Bar
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color(AppColors.WHITE),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Total Amount', style: TextStyle(fontSize: 12, color: Color(AppColors.TEXTSECONDARY))),
-                                const SizedBox(height: 4),
-                                Text(
-                                  _formatCurrency(totalAmount),
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(AppColors.TEXTPRIMARY)),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            flex: 3,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Paid Amount (₹)', style: TextStyle(fontSize: 12, color: Color(AppColors.TEXTSECONDARY))),
-                                const SizedBox(height: 4),
-                                TextField(
-                                  controller: paidCtrl,
-                                  keyboardType: TextInputType.number,
-                                  scrollPadding: const EdgeInsets.only(bottom: 260),
-                                  decoration: _inputDecoration('Paid'),
-                                  onChanged: (_) => setStateModal(() {}),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            flex: 3,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Remaining Due', style: TextStyle(fontSize: 12, color: Color(AppColors.TEXTSECONDARY))),
-                                const SizedBox(height: 4),
-                                Text(
-                                  _formatCurrency(dueAmount),
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w800,
-                                    color: dueAmount > 0 ? const Color(0xFFDC2626) : const Color(0xFF16A34A),
+                                ],
+                              )
+                            : Row(
+                                children: [
+                                  Expanded(
+                                    flex: 6,
+                                    child: SaaSDropdownFormField.build<int>(
+                                      value: row.productId,
+                                      decoration: _inputDecoration('Select available product'),
+                                      items: controller.products.map((prod) {
+                                        final brand = controller.getBrandName(prod);
+                                        final category = controller.getCategoryName(prod);
+                                        return DropdownMenuItem<int>(
+                                          value: prod.id,
+                                          child: Row(
+                                            children: [
+                                              Flexible(
+                                                child: Text(
+                                                  prod.name,
+                                                  style: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.w700, color: const Color(AppColors.TEXTPRIMARY)),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(AppColors.PRIMARY).withValues(alpha: 0.1),
+                                                  borderRadius: BorderRadius.circular(6),
+                                                ),
+                                                child: Text(
+                                                  brand,
+                                                  style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: const Color(AppColors.PRIMARY)),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0xFF64748B).withValues(alpha: 0.12),
+                                                  borderRadius: BorderRadius.circular(6),
+                                                ),
+                                                child: Text(
+                                                  category,
+                                                  style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(0xFF334155)),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: prod.quantity > 0
+                                                      ? const Color(0xFF16A34A).withValues(alpha: 0.12)
+                                                      : const Color(0xFFDC2626).withValues(alpha: 0.12),
+                                                  borderRadius: BorderRadius.circular(6),
+                                                ),
+                                                child: Text(
+                                                  '${prod.quantity}',
+                                                  style: GoogleFonts.inter(
+                                                    fontSize: 11,
+                                                    fontWeight: FontWeight.w800,
+                                                    color: prod.quantity > 0 ? const Color(0xFF16A34A) : const Color(0xFFDC2626),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      }).toList(),
+                                      onChanged: (val) {
+                                        setStateModal(() {
+                                          row.productId = val;
+                                          if (val != null) {
+                                            final p = controller.products.firstWhere((p) => p.id == val);
+                                            row.unitPrice = p.buyPrice;
+                                          }
+                                        });
+                                      },
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            flex: 3,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                const Text('Payment Status', style: TextStyle(fontSize: 12, color: Color(AppColors.TEXTSECONDARY))),
-                                const SizedBox(height: 4),
-                                _buildPaymentStatusBadge(derivedStatus),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    flex: 2,
+                                    child: TextFormField(
+                                      controller: row.qtyCtrl,
+                                      keyboardType: TextInputType.number,
+                                      decoration: _inputDecoration('Qty'),
+                                      onChanged: (val) {
+                                        setStateModal(() {
+                                          row.quantity = int.tryParse(val) ?? 1;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          _formatCurrency(row.subtotal),
+                                          style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w800, color: const Color(AppColors.TEXTPRIMARY)),
+                                        ),
+                                        if (row.unitPrice > 0)
+                                          Text(
+                                            '@ ₹${row.unitPrice} each',
+                                            style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTSECONDARY)),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: itemRows.length > 1
+                                        ? () {
+                                            setStateModal(() {
+                                              final removed = itemRows.removeAt(index);
+                                              removed.dispose();
+                                            });
+                                          }
+                                        : null,
+                                    icon: const Icon(Icons.delete_outline_rounded, color: Color(0xFFDC2626), size: 20),
+                                  ),
+                                ],
+                              ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 24),
 
-                    // Action buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Cancel', style: TextStyle(color: Color(AppColors.TEXTSECONDARY))),
-                        ),
-                        const SizedBox(width: 12),
-                        ElevatedButton.icon(
-                          onPressed: () async {
-                            if (selectedSupplierId == null) {
-                              AppNotification.error('Error', 'Please select a supplier');
-                              return;
-                            }
-                            final validRows = itemRows.where((r) => r.productId != null).toList();
-                            if (validRows.isEmpty) {
-                              AppNotification.error('Error', 'Please add at least 1 valid product item');
-                              return;
-                            }
-
-                            final purchase = Purchase(
-                              invoiceNo: invoiceNo,
-                              date: selectedDate,
-                              supplierId: selectedSupplierId!,
-                              totalAmount: totalAmount,
-                              paidAmount: paidAmount,
-                              dueAmount: dueAmount,
-                              paymentStatus: derivedStatus,
-                            );
-
-                            final pItems = validRows.map((r) {
-                              return PurchaseItem(
-                                purchaseId: 0,
-                                productId: r.productId!,
-                                quantity: r.quantity,
-                                unitPrice: r.unitPrice,
-                              );
-                            }).toList();
-
-                            final success = await controller.createNewPurchase(
-                              purchase: purchase,
-                              items: pItems,
-                            );
-
-                            if (success && context.mounted) {
-                              Navigator.pop(context);
-                            }
-                          },
-                          icon: const Icon(Icons.check_rounded, color: Colors.white, size: 18),
-                          label: const Text(
-                            'Record Purchase & Update Stock',
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(AppColors.PRIMARY),
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
+                  // Financial Payment Summary Card (Responsive Grid on Phone)
+                  Container(
+                    padding: EdgeInsets.all(isPhone ? 14 : 18),
+                    decoration: BoxDecoration(
+                      color: const Color(AppColors.WHITE),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: accentColor.withValues(alpha: 0.25)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: accentColor.withValues(alpha: 0.05),
+                          blurRadius: 15,
+                          offset: const Offset(0, 6),
                         ),
                       ],
                     ),
-                  ],
-                ),
+                    child: isPhone
+                        ? Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _buildSummaryMetric(
+                                      title: 'Total Amount',
+                                      value: _formatCurrency(totalAmount),
+                                      valueColor: const Color(AppColors.TEXTPRIMARY),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: _buildSummaryMetric(
+                                      title: 'Remaining Due',
+                                      value: _formatCurrency(dueAmount),
+                                      valueColor: dueAmount > 0 ? const Color(0xFFDC2626) : const Color(0xFF16A34A),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 14),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Paid Amount (₹)', style: GoogleFonts.inter(fontSize: 11.5, color: const Color(AppColors.TEXTSECONDARY), fontWeight: FontWeight.w600)),
+                                        const SizedBox(height: 6),
+                                        TextField(
+                                          controller: paidCtrl,
+                                          keyboardType: TextInputType.number,
+                                          decoration: _inputDecoration('Paid'),
+                                          onChanged: (_) => setStateModal(() {}),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Payment Status', style: GoogleFonts.inter(fontSize: 11.5, color: const Color(AppColors.TEXTSECONDARY), fontWeight: FontWeight.w600)),
+                                        const SizedBox(height: 8),
+                                        _buildPaymentStatusBadge(derivedStatus),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+                        : Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: _buildSummaryMetric(
+                                  title: 'Total Amount',
+                                  value: _formatCurrency(totalAmount),
+                                  valueColor: const Color(AppColors.TEXTPRIMARY),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                flex: 3,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Paid Amount (₹)', style: GoogleFonts.inter(fontSize: 12, color: const Color(AppColors.TEXTSECONDARY), fontWeight: FontWeight.w600)),
+                                    const SizedBox(height: 4),
+                                    TextField(
+                                      controller: paidCtrl,
+                                      keyboardType: TextInputType.number,
+                                      decoration: _inputDecoration('Paid'),
+                                      onChanged: (_) => setStateModal(() {}),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                flex: 3,
+                                child: _buildSummaryMetric(
+                                  title: 'Remaining Due',
+                                  value: _formatCurrency(dueAmount),
+                                  valueColor: dueAmount > 0 ? const Color(0xFFDC2626) : const Color(0xFF16A34A),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                flex: 3,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text('Payment Status', style: GoogleFonts.inter(fontSize: 12, color: const Color(AppColors.TEXTSECONDARY), fontWeight: FontWeight.w600)),
+                                    const SizedBox(height: 6),
+                                    _buildPaymentStatusBadge(derivedStatus),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                ],
               ),
-            ),
+              footer: _buildPurchaseDialogFooter(
+                accentColor: accentColor,
+                saveLabel: 'Create Purchase Invoice',
+                onSave: () {
+                  if (selectedSupplierId == null) {
+                    AppNotification.warning('Missing Supplier', 'Please select a supplier from the list.');
+                    return;
+                  }
+
+                  final validItems = <PurchaseItem>[];
+                  for (final r in itemRows) {
+                    if (r.productId != null && r.quantity > 0) {
+                      validItems.add(
+                        PurchaseItem(
+                          purchaseId: 0,
+                          productId: r.productId!,
+                          quantity: r.quantity,
+                          unitPrice: r.unitPrice,
+                        ),
+                      );
+                    }
+                  }
+
+                  if (validItems.isEmpty) {
+                    AppNotification.warning('No Items', 'Please select at least one product with a valid quantity.');
+                    return;
+                  }
+
+                  final newPurchase = Purchase(
+                    invoiceNo: invoiceNo,
+                    supplierId: selectedSupplierId!,
+                    date: selectedDate,
+                    totalAmount: totalAmount,
+                    paidAmount: paidAmount,
+                    dueAmount: dueAmount,
+                    paymentStatus: derivedStatus,
+                  );
+
+                  controller.createNewPurchase(
+                    purchase: newPurchase,
+                    items: validItems,
+                  );
+                  Navigator.pop(context);
+                },
+              ),
             );
           },
         );
@@ -1090,15 +1168,21 @@ class _PurchaseViewState extends State<PurchaseView> {
     );
   }
 
-  // --- EDIT PAYMENT MODAL ---
-  void _showEditPaymentDialog(BuildContext context, Purchase purchase) {
+  // ---------------------------------------------------------------------------
+  // 2. EDIT PAYMENT MODAL - "EMERALD / TEAL FINANCIAL SETTLEMENT SHEET" DESIGN
+  // ---------------------------------------------------------------------------
+  static void showEditPaymentDialog(BuildContext context, Purchase purchase) {
+    final controller = Get.find<PurchaseController>();
     final paidCtrl = TextEditingController(text: '');
+    const accentColor = Color(0xFF059669); // Professional Emerald Green
 
     showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setStateModal) {
+            final isPhone = ResponsiveUtils.isPhone(context);
+
             int addedAmount = int.tryParse(paidCtrl.text.trim()) ?? 0;
             if (addedAmount < 0) addedAmount = 0;
             int newPaid = purchase.paidAmount + addedAmount;
@@ -1112,82 +1196,189 @@ class _PurchaseViewState extends State<PurchaseView> {
               status = 'Partially Paid';
             }
 
-            return Dialog(
-              backgroundColor: Colors.transparent,
-              child: Container(
-                width: 440,
-                padding: const EdgeInsets.all(28),
-                decoration: BoxDecoration(
-                  color: const Color(AppColors.WHITE),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Update Payment - ${purchase.invoiceNo}',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(AppColors.TEXTPRIMARY)),
+            return _buildResponsivePurchaseDialogShell(
+              context: context,
+              accentColor: accentColor,
+              maxWidth: 540,
+              header: _buildPurchaseDialogHeader(
+                accentColor: accentColor,
+                badgeText: 'FINANCIAL LEDGER • PAYMENT UPDATE',
+                title: 'Settlement: Invoice #${purchase.invoiceNo}',
+                subtitle: 'Record additional vendor payment and update invoice settlement status.',
+                trailingBadge: purchase.paymentStatus,
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Emerald Ledger Hero Card
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          accentColor.withValues(alpha: 0.12),
+                          accentColor.withValues(alpha: 0.04),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: accentColor.withValues(alpha: 0.3)),
                     ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
                       children: [
-                        Text('Total Amount: ${_formatCurrency(purchase.totalAmount)}', style: _labelStyle),
-                        Text('Previously Paid: ${_formatCurrency(purchase.paidAmount)}', style: _labelStyle),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Text('Add New Payment Amount (₹)', style: _labelStyle),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: paidCtrl,
-                      keyboardType: TextInputType.number,
-                      decoration: _inputDecoration('Enter amount to add'),
-                      onChanged: (_) => setStateModal(() {}),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('New Total Paid: ${_formatCurrency(newPaid)}', style: const TextStyle(fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY))),
-                        Text('Remaining Due: ${_formatCurrency(dueAmount)}', style: const TextStyle(fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY))),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        _buildPaymentStatusBadge(status),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Cancel'),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildSummaryMetric(
+                                title: 'Total Invoice Value',
+                                value: _formatCurrency(purchase.totalAmount),
+                                valueColor: accentColor,
+                              ),
+                            ),
+                            Container(width: 1, height: 40, color: accentColor.withValues(alpha: 0.2)),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildSummaryMetric(
+                                title: 'Previously Settled',
+                                value: _formatCurrency(purchase.paidAmount),
+                                valueColor: const Color(AppColors.TEXTPRIMARY),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 12),
-                        ElevatedButton(
-                          onPressed: () async {
-                            purchase.paidAmount = newPaid;
-                            purchase.dueAmount = dueAmount;
-                            purchase.paymentStatus = status;
-                            await controller.updatePurchasePayment(purchase);
-                            if (context.mounted) Navigator.pop(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(AppColors.PRIMARY),
-                            foregroundColor: Colors.white,
+                        const SizedBox(height: 14),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: accentColor.withValues(alpha: 0.25)),
                           ),
-                          child: const Text('Save Changes'),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Current Unpaid Balance',
+                                style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13, color: const Color(AppColors.TEXTPRIMARY)),
+                              ),
+                              Text(
+                                _formatCurrency(purchase.totalAmount - purchase.paidAmount),
+                                style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 15, color: const Color(0xFFDC2626)),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 22),
+
+                  // Add Payment Amount Field
+                  Text(
+                    'Add Payment Amount (₹)',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13, color: const Color(AppColors.TEXTPRIMARY)),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: paidCtrl,
+                    keyboardType: TextInputType.number,
+                    autofocus: true,
+                    decoration: _inputDecoration('Enter amount paid (e.g. 15000)').copyWith(
+                      prefixIcon: Icon(Icons.payments_rounded, color: accentColor, size: 20),
+                    ),
+                    onChanged: (_) => setStateModal(() {}),
+                  ),
+                  const SizedBox(height: 22),
+
+                  // Live Post-Payment Preview Pill
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'NEW SETTLEMENT PREVIEW',
+                          style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 10, letterSpacing: 0.8, color: const Color(AppColors.TEXTSECONDARY)),
+                        ),
+                        const SizedBox(height: 10),
+                        isPhone
+                            ? Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('New Paid Total:', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600)),
+                                      Text(_formatCurrency(newPaid), style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w800, color: accentColor)),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('Remaining Due:', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600)),
+                                      Text(_formatCurrency(dueAmount), style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w800, color: dueAmount > 0 ? const Color(0xFFDC2626) : const Color(0xFF16A34A))),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: _buildPaymentStatusBadge(status),
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('New Paid Total', style: GoogleFonts.inter(fontSize: 11, color: const Color(AppColors.TEXTSECONDARY))),
+                                      Text(_formatCurrency(newPaid), style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, color: accentColor)),
+                                    ],
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Remaining Due', style: GoogleFonts.inter(fontSize: 11, color: const Color(AppColors.TEXTSECONDARY))),
+                                      Text(_formatCurrency(dueAmount), style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, color: dueAmount > 0 ? const Color(0xFFDC2626) : const Color(0xFF16A34A))),
+                                    ],
+                                  ),
+                                  _buildPaymentStatusBadge(status),
+                                ],
+                              ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              footer: _buildPurchaseDialogFooter(
+                accentColor: accentColor,
+                saveLabel: 'Save Payment Entry',
+                onSave: () {
+                  if (addedAmount <= 0) {
+                    AppNotification.warning('Invalid Amount', 'Please enter a payment amount greater than 0');
+                    return;
+                  }
+                  final updatedPurchase = Purchase(
+                    id: purchase.id,
+                    invoiceNo: purchase.invoiceNo,
+                    date: purchase.date,
+                    supplierId: purchase.supplierId,
+                    totalAmount: purchase.totalAmount,
+                    paidAmount: newPaid,
+                    dueAmount: dueAmount,
+                    paymentStatus: status,
+                  );
+                  controller.updatePurchasePayment(updatedPurchase);
+                  Navigator.pop(context);
+                },
               ),
             );
           },
@@ -1196,8 +1387,13 @@ class _PurchaseViewState extends State<PurchaseView> {
     );
   }
 
-  // --- VIEW DETAILS MODAL ---
-  void _showPurchaseDetailsModal(BuildContext context, Purchase purchase) {
+  // ---------------------------------------------------------------------------
+  // 3. VIEW DETAILS MODAL - RESPONSIVE LEDGER CARD DESIGN
+  // ---------------------------------------------------------------------------
+  static void showPurchaseDetailsModal(BuildContext context, Purchase purchase) {
+    final controller = Get.find<PurchaseController>();
+    const accentColor = Color(0xFF2563EB); // Royal Blue Ledger
+
     showDialog(
       context: context,
       builder: (context) {
@@ -1206,194 +1402,215 @@ class _PurchaseViewState extends State<PurchaseView> {
           builder: (context, snapshot) {
             final items = snapshot.data ?? [];
             final isLoading = snapshot.connectionState == ConnectionState.waiting;
+            final isPhone = ResponsiveUtils.isPhone(context);
 
-            return Dialog(
-              backgroundColor: Colors.transparent,
-              child: Container(
-                width: 700,
-                constraints: const BoxConstraints(maxHeight: 680),
-                padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
-                  color: const Color(AppColors.WHITE),
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 30,
-                      offset: const Offset(0, 15),
+            return _buildResponsivePurchaseDialogShell(
+              context: context,
+              accentColor: accentColor,
+              maxWidth: 720,
+              header: _buildPurchaseDialogHeader(
+                accentColor: accentColor,
+                badgeText: 'INVOICE BREAKDOWN • FULL DETAILS',
+                title: 'Purchase Details: ${purchase.invoiceNo}',
+                subtitle: 'Complete product list and financial settlement breakdown.',
+                trailingBadge: purchase.paymentStatus,
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Invoice Metadata Banner
+                  Container(
+                    padding: EdgeInsets.all(isPhone ? 14 : 18),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
                     ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  purchase.invoiceNo,
-                                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(AppColors.TEXTPRIMARY)),
-                                ),
-                                const SizedBox(width: 12),
-                                _buildPaymentStatusBadge(purchase.paymentStatus),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Supplier: ${controller.getSupplierName(purchase)}  |  Date: ${_formatDate(purchase.date)}',
-                              style: const TextStyle(fontSize: 14, color: Color(AppColors.TEXTSECONDARY), fontWeight: FontWeight.w500),
-                            ),
-                          ],
-                        ),
-                        IconButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.close_rounded, color: Color(AppColors.TEXTSECONDARY)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    const Divider(color: Color(0xFFE2E8F0), height: 1),
-                    const SizedBox(height: 20),
+                    child: isPhone
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildSummaryMetric(
+                                title: 'Supplier Partner',
+                                value: controller.getSupplierName(purchase),
+                                valueColor: const Color(AppColors.TEXTPRIMARY),
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _buildSummaryMetric(
+                                      title: 'Invoice Date',
+                                      value: _formatDate(purchase.date),
+                                      valueColor: const Color(AppColors.TEXTPRIMARY),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: _buildSummaryMetric(
+                                      title: 'Total Amount',
+                                      value: _formatCurrency(purchase.totalAmount),
+                                      valueColor: accentColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _buildSummaryMetric(
+                                title: 'Supplier Partner',
+                                value: controller.getSupplierName(purchase),
+                                valueColor: const Color(AppColors.TEXTPRIMARY),
+                              ),
+                              _buildSummaryMetric(
+                                title: 'Invoice Date',
+                                value: _formatDate(purchase.date),
+                                valueColor: const Color(AppColors.TEXTPRIMARY),
+                              ),
+                              _buildSummaryMetric(
+                                title: 'Total Amount',
+                                value: _formatCurrency(purchase.totalAmount),
+                                valueColor: accentColor,
+                              ),
+                              _buildSummaryMetric(
+                                title: 'Amount Paid',
+                                value: _formatCurrency(purchase.paidAmount),
+                                valueColor: const Color(0xFF16A34A),
+                              ),
+                            ],
+                          ),
+                  ),
+                  const SizedBox(height: 20),
 
-                    // Cards Summary
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildSummaryCard('Total Invoice', _formatCurrency(purchase.totalAmount), const Color(AppColors.PRIMARY)),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildSummaryCard('Paid Amount', _formatCurrency(purchase.paidAmount), const Color(0xFF16A34A)),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildSummaryCard('Remaining Due', _formatCurrency(purchase.dueAmount), const Color(0xFFDC2626)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
+                  Text(
+                    'Purchased Line Items',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 14, color: const Color(AppColors.TEXTPRIMARY)),
+                  ),
+                  const SizedBox(height: 10),
 
-                    const Text(
-                      'Products Purchased in this Invoice',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY)),
-                    ),
-                    const SizedBox(height: 12),
+                  if (isLoading)
+                    const Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()))
+                  else if (items.isEmpty)
+                    const Center(child: Padding(padding: EdgeInsets.all(24), child: Text('No items found for this purchase invoice.')))
+                  else
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: items.length,
+                      separatorBuilder: (context, index) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        final item = items[index];
+                        final product = controller.products.cast<Product?>().firstWhere(
+                              (p) => p?.id == item.productId,
+                              orElse: () => null,
+                            );
+                        final productName = product?.name ?? 'Unknown Product (ID: ${item.productId})';
+                        final brandName = product != null ? controller.getBrandName(product) : '';
+                        final categoryName = product != null ? controller.getCategoryName(product) : '';
 
-                    // Table of Items
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF8FAFC),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
-                        ),
-                        child: isLoading
-                            ? const Center(child: CircularProgressIndicator(color: Color(AppColors.PRIMARY)))
-                            : items.isEmpty
-                                ? const Center(child: Text('No item rows found for this purchase.'))
-                                : ListView.separated(
-                                    padding: const EdgeInsets.all(16),
-                                    itemCount: items.length,
-                                    separatorBuilder: (context, index) => const Divider(height: 20, color: Color(0xFFE2E8F0)),
-                                    itemBuilder: (context, index) {
-                                      final item = items[index];
-                                      final found = controller.products.firstWhere(
-                                        (p) => p.id == item.productId,
-                                        orElse: () => Product(name: item.product?.name ?? 'Product #${item.productId}', categoryId: 0, brandId: 0, quality: '', quantity: 0, buyPrice: 0, sellPrice: 0, status: true),
-                                      );
-                                      final brandName = controller.getBrandName(found);
-                                      final categoryName = controller.getCategoryName(found);
-                                      return Row(
+                        return Container(
+                          padding: EdgeInsets.all(isPhone ? 12 : 14),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: const Color(0xFFE2E8F0)),
+                          ),
+                          child: isPhone
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(productName, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13, color: const Color(AppColors.TEXTPRIMARY))),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('${item.quantity} units @ ₹${item.unitPrice}', style: GoogleFonts.inter(fontSize: 12, color: const Color(AppColors.TEXTSECONDARY))),
+                                        Text(_formatCurrency(item.quantity * item.unitPrice), style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 14, color: const Color(AppColors.TEXTPRIMARY))),
+                                      ],
+                                    ),
+                                  ],
+                                )
+                              : Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 4,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Expanded(
-                                            flex: 1,
-                                            child: Text('${index + 1}', style: const TextStyle(color: Color(AppColors.TEXTSECONDARY))),
-                                          ),
-                                          Expanded(
-                                            flex: 5,
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                          Text(productName, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13.5, color: const Color(AppColors.TEXTPRIMARY))),
+                                          if (brandName.isNotEmpty) ...[
+                                            const SizedBox(height: 4),
+                                            Row(
                                               children: [
-                                                Text(
-                                                  found.name,
-                                                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(AppColors.TEXTPRIMARY)),
-                                                  overflow: TextOverflow.ellipsis,
+                                                Container(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                  decoration: BoxDecoration(
+                                                    color: accentColor.withValues(alpha: 0.1),
+                                                    borderRadius: BorderRadius.circular(6),
+                                                  ),
+                                                  child: Text(brandName, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: accentColor)),
                                                 ),
-                                                const SizedBox(height: 5),
-                                                Row(
-                                                  children: [
-                                                    Container(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                                                      decoration: BoxDecoration(
-                                                        color: const Color(AppColors.PRIMARY).withValues(alpha: 0.1),
-                                                        borderRadius: BorderRadius.circular(6),
-                                                      ),
-                                                      child: Text(
-                                                        brandName,
-                                                        style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: const Color(AppColors.PRIMARY)),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 6),
-                                                    Container(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                                                      decoration: BoxDecoration(
-                                                        color: const Color(0xFF64748B).withValues(alpha: 0.12),
-                                                        borderRadius: BorderRadius.circular(6),
-                                                      ),
-                                                      child: Text(
-                                                        categoryName,
-                                                        style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(0xFF334155)),
-                                                      ),
-                                                    ),
-                                                  ],
+                                                const SizedBox(width: 6),
+                                                Container(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                  decoration: BoxDecoration(
+                                                    color: const Color(0xFF64748B).withValues(alpha: 0.1),
+                                                    borderRadius: BorderRadius.circular(6),
+                                                  ),
+                                                  child: Text(categoryName, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: const Color(0xFF334155))),
                                                 ),
                                               ],
                                             ),
-                                          ),
-                                          Expanded(
-                                            flex: 2,
-                                            child: Text('Qty: ${item.quantity}', style: const TextStyle(fontWeight: FontWeight.w600)),
-                                          ),
-                                          Expanded(
-                                            flex: 2,
-                                            child: Text('₹${item.unitPrice} / unit', style: const TextStyle(color: Color(AppColors.TEXTSECONDARY))),
-                                          ),
-                                          Expanded(
-                                            flex: 2,
-                                            child: Align(
-                                              alignment: Alignment.centerRight,
-                                              child: Text(
-                                                _formatCurrency(item.quantity * item.unitPrice),
-                                                style: const TextStyle(fontWeight: FontWeight.w800, color: Color(AppColors.TEXTPRIMARY)),
-                                              ),
-                                            ),
-                                          ),
+                                          ],
                                         ],
-                                      );
-                                    },
-                                  ),
-                      ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Text('${item.quantity} units', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13)),
+                                    ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Text('₹${item.unitPrice} / unit', style: GoogleFonts.inter(color: const Color(AppColors.TEXTSECONDARY), fontSize: 13)),
+                                    ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Text(
+                                          _formatCurrency(item.quantity * item.unitPrice),
+                                          style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 14, color: const Color(AppColors.TEXTPRIMARY)),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                        );
+                      },
                     ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () => Navigator.pop(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(AppColors.PRIMARY),
-                            foregroundColor: Colors.white,
-                          ),
-                          child: const Text('Close Details'),
-                        ),
-                      ],
+                ],
+              ),
+              footer: Container(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 18),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC).withValues(alpha: 0.8),
+                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(22)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: accentColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: Text('Close Breakdown', style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 13)),
                     ),
                   ],
                 ),
@@ -1405,25 +1622,312 @@ class _PurchaseViewState extends State<PurchaseView> {
     );
   }
 
-  Widget _buildSummaryCard(String title, String amount, Color accentColor) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(AppColors.WHITE),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+  // ---------------------------------------------------------------------------
+  // SHARED RESPONSIVE DIALOG SHELL & FORM HELPERS (ZERO OVERFLOW & KEYBOARD SAFE)
+  // ---------------------------------------------------------------------------
+  static Widget _buildResponsivePurchaseDialogShell({
+    required BuildContext context,
+    required Color accentColor,
+    required Widget header,
+    required Widget content,
+    required Widget footer,
+    double maxWidth = 880,
+  }) {
+    final isPhone = ResponsiveUtils.isPhone(context);
+    final maxH = MediaQuery.of(context).size.height * (isPhone ? 0.92 : 0.88);
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: isPhone ? 12 : 32,
+        vertical: 16,
       ),
-      child: Column(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: maxWidth,
+          maxHeight: maxH,
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(AppColors.WHITE),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: accentColor.withValues(alpha: 0.25), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.18),
+                blurRadius: 40,
+                offset: const Offset(0, 16),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              header,
+              Divider(height: 1, color: accentColor.withValues(alpha: 0.15)),
+              Flexible(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: EdgeInsets.all(isPhone ? 18 : 26),
+                  child: content,
+                ),
+              ),
+              const Divider(height: 1, color: Color(0xFFF1F5F9)),
+              footer,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  static Widget _buildPurchaseDialogHeader({
+    required Color accentColor,
+    required String badgeText,
+    required String title,
+    required String subtitle,
+    required String trailingBadge,
+  }) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 20, 20, 18),
+      decoration: BoxDecoration(
+        color: accentColor.withValues(alpha: 0.04),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 12, color: Color(AppColors.TEXTSECONDARY), fontWeight: FontWeight.w500)),
-          const SizedBox(height: 6),
-          Text(amount, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: accentColor)),
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: accentColor.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: accentColor.withValues(alpha: 0.3)),
+            ),
+            child: Center(
+              child: Icon(
+                Icons.shopping_bag_rounded,
+                color: accentColor,
+                size: 22,
+              ),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 6,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: accentColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        badgeText,
+                        style: GoogleFonts.inter(
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w800,
+                          color: accentColor,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0F172A).withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        trailingBadge,
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF0F172A),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  title,
+                  style: GoogleFonts.inter(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(AppColors.TEXTPRIMARY),
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    color: const Color(AppColors.TEXTSECONDARY),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () => Get.back(),
+            tooltip: 'Close',
+            icon: Container(
+              padding: const EdgeInsets.all(7),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(
+                Icons.close_rounded,
+                color: Color(AppColors.TEXTSECONDARY),
+                size: 18,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
+
+  static Widget _buildPurchaseDialogFooter({
+    required Color accentColor,
+    required String saveLabel,
+    required VoidCallback onSave,
+  }) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 18),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC).withValues(alpha: 0.8),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(22)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          OutlinedButton(
+            onPressed: () => Get.back(),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(AppColors.TEXTPRIMARY),
+              side: const BorderSide(color: Color(0xFFE2E8F0)),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 14,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          ElevatedButton.icon(
+            onPressed: onSave,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: accentColor,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 26,
+                vertical: 14,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            icon: const Icon(Icons.check_rounded, color: Colors.white, size: 18),
+            label: Text(
+              saveLabel,
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w800,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Widget _buildDatePickerField({
+    required BuildContext context,
+    required DateTime selectedDate,
+    required Function(DateTime) onPicked,
+  }) {
+    return InkWell(
+      onTap: () async {
+        final picked = await SaaSDatePicker.show(
+          context,
+          initialDate: selectedDate,
+          firstDate: DateTime(2020),
+          lastDate: DateTime(2030),
+        );
+        if (picked != null) {
+          onPicked(picked);
+        }
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        height: 48,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: const Color(AppColors.WHITE),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+        ),
+        alignment: Alignment.centerLeft,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              _formatDate(selectedDate),
+              style: const TextStyle(fontSize: 14, color: Color(AppColors.TEXTPRIMARY)),
+            ),
+            const Icon(Icons.calendar_today_rounded, size: 18, color: Color(AppColors.TEXTSECONDARY)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static Widget _buildSummaryMetric({
+    required String title,
+    required String value,
+    required Color valueColor,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.inter(fontSize: 11.5, color: const Color(AppColors.TEXTSECONDARY), fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: GoogleFonts.inter(fontSize: 17, fontWeight: FontWeight.w800, color: valueColor),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
 }
+
 
 final TextStyle _headerStyle = GoogleFonts.inter(
   fontSize: 11,

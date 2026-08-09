@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lekhsmi_computers_flutter/app/features/settings/controller/settings_controller.dart';
 import 'package:lekhsmi_computers_flutter/core/constants/app_colors.dart';
 import '../controller/quotation_controller.dart';
+import 'package:lekhsmi_computers_flutter/core/utils/responsive_utils.dart';
+import 'quotation_mobile_view.dart';
 
 class QuotationView extends StatelessWidget {
   const QuotationView({super.key});
@@ -11,9 +13,18 @@ class QuotationView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(QuotationController());
+    final bool isPhone = ResponsiveUtils.isPhone(context);
+
+    if (isPhone) {
+      return QuotationMobileView(
+        controller: controller,
+        buildTitleSection: _buildTitleSection,
+        buildFormSection: _buildFormSection,
+      );
+    }
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.transparent,
       body: Column(
         children: [
@@ -50,15 +61,20 @@ class QuotationView extends StatelessWidget {
   Widget _buildTitleSection(QuotationController controller) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: const BoxDecoration(
         color: Color(AppColors.WHITE),
         border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0), width: 1)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        runSpacing: 10,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
                 'Quotation / Estimate Builder',
@@ -68,7 +84,6 @@ class QuotationView extends StatelessWidget {
                   color: const Color(AppColors.TEXTPRIMARY),
                 ),
               ),
-              const SizedBox(width: 10),
               Container(
                 width: 8,
                 height: 8,
@@ -77,7 +92,6 @@ class QuotationView extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
               ),
-              const SizedBox(width: 14),
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
@@ -114,7 +128,10 @@ class QuotationView extends StatelessWidget {
         children: [
           // Form Header
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveUtils.isPhone(context) ? 14 : 24,
+              vertical: ResponsiveUtils.isPhone(context) ? 12 : 16,
+            ),
             decoration: const BoxDecoration(
               color: Colors.white,
               border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
@@ -182,17 +199,22 @@ class QuotationView extends StatelessWidget {
           // Scrollable Form Body
           Expanded(
             child: SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(24, 24, 24, 24 + keyboardHeight),
+              padding: EdgeInsets.fromLTRB(
+                ResponsiveUtils.isPhone(context) ? 14 : 24,
+                ResponsiveUtils.isPhone(context) ? 14 : 24,
+                ResponsiveUtils.isPhone(context) ? 14 : 24,
+                (ResponsiveUtils.isPhone(context) ? 14 : 24) + keyboardHeight,
+              ),
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 1. Customer Details Section
                   _buildSectionTitle('Customer Details', Icons.person_outline),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   _buildCustomerFormCard(context, controller),
 
-                  const SizedBox(height: 28),
+                  SizedBox(height: ResponsiveUtils.isPhone(context) ? 18 : 28),
 
                   // 2. Items / Products Section
                   _buildSectionTitle(
@@ -241,118 +263,163 @@ class QuotationView extends StatelessWidget {
     BuildContext context,
     QuotationController controller,
   ) {
+    final isPhone = ResponsiveUtils.isPhone(context);
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(isPhone ? 16 : 20),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: _buildTextField(
+      child: isPhone
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildTextField(
                   controller: controller.customerNameController,
                   label: 'Customer Name',
                   hint: 'e.g. Anusha s',
                   icon: Icons.person_rounded,
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _buildTextField(
+                const SizedBox(height: 14),
+                _buildTextField(
                   controller: controller.phoneController,
                   label: 'Phone Number',
                   hint: 'e.g. +91 9876543210',
                   icon: Icons.phone_rounded,
+                  isPhone: true,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _buildTextField(
+                const SizedBox(height: 14),
+                _buildTextField(
                   controller: controller.emailController,
                   label: 'Email (Optional)',
                   hint: 'e.g. lekhsmicomputers@gmail.com',
                   icon: Icons.email_rounded,
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(height: 14),
+                _buildValidUptoDatePicker(context, controller),
+                const SizedBox(height: 14),
+                _buildTextField(
+                  controller: controller.addressController,
+                  label: 'Address',
+                  hint: 'e.g. 35/111-A, Court Road, Thuckalay',
+                  icon: Icons.location_on_rounded,
+                ),
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    const Text(
-                      'Valid Upto Date',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Color(AppColors.TEXTSECONDARY),
+                    Expanded(
+                      child: _buildTextField(
+                        controller: controller.customerNameController,
+                        label: 'Customer Name',
+                        hint: 'e.g. Anusha s',
+                        icon: Icons.person_rounded,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    InkWell(
-                      onTap: () => controller.selectValidUptoDate(context),
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        height: 44,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(0xFFCBD5E1)),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.calendar_today_rounded,
-                              size: 16,
-                              color: Color(AppColors.PRIMARY),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Obx(() {
-                                return Text(
-                                  controller.formatDate(
-                                    controller.validUptoDate.value,
-                                  ),
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(AppColors.TEXTPRIMARY),
-                                  ),
-                                );
-                              }),
-                            ),
-                            const Icon(
-                              Icons.edit_calendar_rounded,
-                              size: 16,
-                              color: Color(AppColors.TEXTSECONDARY),
-                            ),
-                          ],
-                        ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _buildTextField(
+                        controller: controller.phoneController,
+                        label: 'Phone Number',
+                        hint: '+91...',
+                        icon: Icons.phone_rounded,
+                        isPhone: true,
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildTextField(
+                        controller: controller.emailController,
+                        label: 'Email (Optional)',
+                        hint: 'e.g. lekhsmicomputers@gmail.com',
+                        icon: Icons.email_rounded,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _buildValidUptoDatePicker(context, controller),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  controller: controller.addressController,
+                  label: 'Address',
+                  hint: 'e.g. 35/111-A, Court Road, Thuckalay',
+                  icon: Icons.location_on_rounded,
+                ),
+              ],
+            ),
+    );
+  }
+
+  Widget _buildValidUptoDatePicker(
+    BuildContext context,
+    QuotationController controller,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Valid Upto Date',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: Color(AppColors.TEXTSECONDARY),
           ),
-          const SizedBox(height: 16),
-          _buildTextField(
-            controller: controller.addressController,
-            label: 'Address',
-            hint: 'e.g. 35/111-A, Court Road, Thuckalay',
-            icon: Icons.location_on_rounded,
+        ),
+        const SizedBox(height: 6),
+        InkWell(
+          onTap: () => controller.selectValidUptoDate(context),
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            height: 44,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFCBD5E1)),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.calendar_today_rounded,
+                  size: 16,
+                  color: Color(AppColors.PRIMARY),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Obx(() {
+                    return Text(
+                      controller.formatDate(
+                        controller.validUptoDate.value,
+                      ),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(AppColors.TEXTPRIMARY),
+                      ),
+                    );
+                  }),
+                ),
+                const Icon(
+                  Icons.edit_calendar_rounded,
+                  size: 16,
+                  color: Color(AppColors.TEXTSECONDARY),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -422,63 +489,123 @@ class QuotationView extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           // Input row for adding a new item
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                flex: 5,
-                child: _buildTextField(
+          if (ResponsiveUtils.isPhone(context))
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildTextField(
                   controller: controller.itemProductController,
                   label: 'Product / Service Name',
                   hint: 'e.g. Laptop keyboard repair',
                   icon: Icons.build_rounded,
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                flex: 2,
-                child: _buildTextField(
-                  controller: controller.itemQuantityController,
-                  label: 'Qty',
-                  hint: '1',
-                  icon: Icons.numbers_rounded,
-                  isNumber: true,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                flex: 3,
-                child: _buildTextField(
-                  controller: controller.itemPriceController,
-                  label: 'Price (₹)',
-                  hint: 'e.g. 3500',
-                  icon: Icons.currency_rupee_rounded,
-                  isNumber: true,
-                ),
-              ),
-              const SizedBox(width: 8),
-              SizedBox(
-                height: 44,
-                child: ElevatedButton.icon(
-                  onPressed: () => controller.addItem(),
-                  icon: const Icon(Icons.add_rounded, size: 18),
-                  label: const Text(
-                    'Add Item',
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(AppColors.PRIMARY),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: _buildTextField(
+                        controller: controller.itemQuantityController,
+                        label: 'Qty',
+                        hint: '1',
+                        icon: Icons.numbers_rounded,
+                        isNumber: true,
+                      ),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      flex: 2,
+                      child: _buildTextField(
+                        controller: controller.itemPriceController,
+                        label: 'Price (₹)',
+                        hint: 'e.g. 3500',
+                        icon: Icons.currency_rupee_rounded,
+                        isNumber: true,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: ElevatedButton.icon(
+                    onPressed: () => controller.addItem(),
+                    icon: const Icon(Icons.add_rounded, size: 18),
+                    label: const Text(
+                      'Add Item',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(AppColors.PRIMARY),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            )
+          else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  flex: 5,
+                  child: _buildTextField(
+                    controller: controller.itemProductController,
+                    label: 'Product / Service Name',
+                    hint: 'e.g. Laptop keyboard repair',
+                    icon: Icons.build_rounded,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 2,
+                  child: _buildTextField(
+                    controller: controller.itemQuantityController,
+                    label: 'Qty',
+                    hint: '1',
+                    icon: Icons.numbers_rounded,
+                    isNumber: true,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 3,
+                  child: _buildTextField(
+                    controller: controller.itemPriceController,
+                    label: 'Price (₹)',
+                    hint: 'e.g. 3500',
+                    icon: Icons.currency_rupee_rounded,
+                    isNumber: true,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  height: 44,
+                  child: ElevatedButton.icon(
+                    onPressed: () => controller.addItem(),
+                    icon: const Icon(Icons.add_rounded, size: 18),
+                    label: const Text(
+                      'Add Item',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(AppColors.PRIMARY),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
 
           const SizedBox(height: 20),
 
@@ -668,8 +795,8 @@ class QuotationView extends StatelessWidget {
                   padding: EdgeInsets.symmetric(vertical: 16),
                   child: Divider(height: 1, color: Color(0xFFE2E8F0)),
                 ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
                       width: 160,
@@ -681,39 +808,36 @@ class QuotationView extends StatelessWidget {
                         isNumber: true,
                       ),
                     ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFEFF6FF),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: const Color(
-                              AppColors.PRIMARY,
-                            ).withValues(alpha: 0.2),
-                          ),
+                    const SizedBox(height: 12),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEFF6FF),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: const Color(AppColors.PRIMARY).withValues(alpha: 0.2),
                         ),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.info_outline_rounded,
-                              size: 18,
-                              color: Color(AppColors.PRIMARY),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'An extra ${controller.gstPercentage.value.toStringAsFixed(0)}% GST (${_formatCurrency(controller.gstAmount)}) will be added to the subtotal.',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(AppColors.PRIMARY),
-                                ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.info_outline_rounded,
+                            size: 18,
+                            color: Color(AppColors.PRIMARY),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'An extra ${controller.gstPercentage.value.toStringAsFixed(0)}% GST (${_formatCurrency(controller.gstAmount)}) will be added to the subtotal.',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Color(AppColors.PRIMARY),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -732,6 +856,7 @@ class QuotationView extends StatelessWidget {
     required String hint,
     required IconData icon,
     bool isNumber = false,
+    bool isPhone = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -747,9 +872,11 @@ class QuotationView extends StatelessWidget {
         const SizedBox(height: 6),
         TextField(
           controller: controller,
-          keyboardType: isNumber
-              ? const TextInputType.numberWithOptions(decimal: true)
-              : TextInputType.text,
+          keyboardType: isPhone
+              ? TextInputType.phone
+              : (isNumber
+                  ? const TextInputType.numberWithOptions(decimal: true)
+                  : TextInputType.text),
           scrollPadding: const EdgeInsets.only(bottom: 220),
           style: const TextStyle(
             fontSize: 14,
@@ -868,12 +995,12 @@ class QuotationView extends StatelessWidget {
                       );
                     }),
                     const SizedBox(width: 8),
-                    if (GetPlatform.isMobile) ...[
+                    if (!ResponsiveUtils.isPhone(context)) ...[
                       ElevatedButton.icon(
-                        onPressed: () => controller.shareQuotationPdf(),
-                        icon: const Icon(Icons.share_rounded, size: 16),
+                        onPressed: () => controller.savePdfDesktop(),
+                        icon: const Icon(Icons.download_rounded, size: 16),
                         label: Text(
-                          'Share',
+                          'Save as PDF',
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
@@ -881,7 +1008,7 @@ class QuotationView extends StatelessWidget {
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFF1F5F9),
-                          foregroundColor: const Color(0xFF0F172A),
+                          foregroundColor: const Color(AppColors.TEXTPRIMARY),
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 14,
@@ -893,30 +1020,30 @@ class QuotationView extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
+                      ElevatedButton.icon(
+                        onPressed: () => controller.printQuotationPdf(),
+                        icon: const Icon(Icons.print_rounded, size: 16),
+                        label: Text(
+                          'Print Quotation',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1E293B),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
                     ],
-                    ElevatedButton.icon(
-                      onPressed: () => controller.printQuotationPdf(),
-                      icon: const Icon(Icons.print_rounded, size: 16),
-                      label: Text(
-                        GetPlatform.isMobile ? 'Save / Print' : 'Print',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1E293B),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 10,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ],
@@ -1168,8 +1295,9 @@ class QuotationView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Obx(() {
-                    if (controller.quotationNumber.value.isEmpty)
+                    if (controller.quotationNumber.value.isEmpty) {
                       return const SizedBox.shrink();
+                    }
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 6),
                       child: Text(

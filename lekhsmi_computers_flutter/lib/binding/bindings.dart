@@ -7,7 +7,7 @@ class LekhsmiBindings implements Bindings {
   @override
   void dependencies() {
     Get.put<Client>(
-      Client("http://192.168.1.39:8080")
+      Client("http://localhost:8080")
         ..connectivityMonitor = FlutterConnectivityMonitor(),
       permanent: true,
     );

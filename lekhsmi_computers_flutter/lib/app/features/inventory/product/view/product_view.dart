@@ -7,7 +7,9 @@ import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
 import 'package:lekhsmi_computers_flutter/core/constants/app_colors.dart';
 import 'package:lekhsmi_computers_flutter/core/constants/app_icons.dart';
 import 'package:lekhsmi_computers_flutter/core/widgets/saas_dropdown.dart';
+import 'package:lekhsmi_computers_flutter/core/utils/responsive_utils.dart';
 import 'package:lekhsmi_computers_flutter/app/features/inventory/product/controller/product_controller.dart';
+import 'product_mobile_view.dart';
 
 class ProductView extends StatefulWidget {
   const ProductView({super.key});
@@ -21,6 +23,9 @@ class _ProductViewState extends State<ProductView> {
 
   @override
   Widget build(BuildContext context) {
+    if (ResponsiveUtils.isPhone(context)) {
+      return const ProductMobileView();
+    }
     return Column(
       children: [
         // Top Header Section (White Card Bar)
@@ -159,7 +164,7 @@ class _ProductViewState extends State<ProductView> {
                 const SizedBox(width: 16),
                 _buildAddButton(
                   title: 'Add New Product',
-                  onTap: () => _showProductDialog(context),
+                  onTap: () => ProductDialogs.showProductDialog(context),
                 ),
               ],
             ),
@@ -330,7 +335,7 @@ class _ProductViewState extends State<ProductView> {
                                                 child: Align(
                                                   alignment: Alignment.centerRight,
                                                   child: _buildEditIconButton(
-                                                    onTap: () => _showProductDialog(context, product: p),
+                                                    onTap: () => ProductDialogs.showProductDialog(context, product: p),
                                                   ),
                                                 ),
                                               ),
@@ -537,11 +542,14 @@ class _ProductViewState extends State<ProductView> {
       ),
     );
   }
+}
 
+class ProductDialogs {
   // ---------------------------------------------------------------------------
   // ADD / EDIT PRODUCT DIALOG
   // ---------------------------------------------------------------------------
-  void _showProductDialog(BuildContext context, {Product? product}) {
+  static void showProductDialog(BuildContext context, {Product? product}) {
+    final controller = Get.find<ProductController>();
     final nameCtrl = TextEditingController(text: product?.name ?? '');
     final quantityCtrl = TextEditingController(
       text: product != null ? '${product.quantity}' : '',
@@ -567,7 +575,9 @@ class _ProductViewState extends State<ProductView> {
     Get.dialog(
       StatefulBuilder(
         builder: (context, setDlgState) {
+          final isPhone = ResponsiveUtils.isPhone(context);
           return _buildModernDialogCard(
+            context: context,
             title: product == null ? 'Add Product' : 'Edit Product',
             subtitle: product == null
                 ? 'Register a new product with category, brand, pricing, and stock details.'
@@ -583,94 +593,76 @@ class _ProductViewState extends State<ProductView> {
                   controller: nameCtrl,
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildDialogDropdown<int>(
-                        label: 'Category',
-                        hintText: 'Select Category',
-                        value: selectedCategoryId,
-                        items: controller.categories.map((c) {
-                          return DropdownMenuItem<int>(
-                            value: c.id,
-                            child: Text(c.name, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTPRIMARY))),
-                          );
-                        }).toList(),
-                        onChanged: (val) => setDlgState(() => selectedCategoryId = val),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildDialogDropdown<int>(
-                        label: 'Brand',
-                        hintText: 'Select Brand',
-                        value: selectedBrandId,
-                        items: controller.brands.map((b) {
-                          return DropdownMenuItem<int>(
-                            value: b.id,
-                            child: Text(b.name, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTPRIMARY))),
-                          );
-                        }).toList(),
-                        onChanged: (val) => setDlgState(() => selectedBrandId = val),
-                      ),
-                    ),
-                  ],
+                _buildResponsiveFormRow(
+                  isPhone: isPhone,
+                  child1: _buildDialogDropdown<int>(
+                    label: 'Category',
+                    hintText: 'Select Category',
+                    value: selectedCategoryId,
+                    items: controller.categories.map((c) {
+                      return DropdownMenuItem<int>(
+                        value: c.id,
+                        child: Text(c.name, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTPRIMARY))),
+                      );
+                    }).toList(),
+                    onChanged: (val) => setDlgState(() => selectedCategoryId = val),
+                  ),
+                  child2: _buildDialogDropdown<int>(
+                    label: 'Brand',
+                    hintText: 'Select Brand',
+                    value: selectedBrandId,
+                    items: controller.brands.map((b) {
+                      return DropdownMenuItem<int>(
+                        value: b.id,
+                        child: Text(b.name, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTPRIMARY))),
+                      );
+                    }).toList(),
+                    onChanged: (val) => setDlgState(() => selectedBrandId = val),
+                  ),
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: _buildDialogDropdown<String>(
-                        label: 'Quality',
-                        hintText: 'Select Quality',
-                        value: selectedQuality,
-                        items: qualities.map((q) {
-                          return DropdownMenuItem<String>(
-                            value: q,
-                            child: Text(q, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTPRIMARY))),
-                          );
-                        }).toList(),
-                        onChanged: (val) {
-                          if (val != null) {
-                            setDlgState(() => selectedQuality = val);
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      flex: 1,
-                      child: _buildDialogTextField(
-                        label: 'Quantity',
-                        hintText: 'e.g. 5',
-                        controller: quantityCtrl,
-                        keyboardType: TextInputType.number,
-                      ),
-                    ),
-                  ],
+                _buildResponsiveFormRow(
+                  isPhone: isPhone,
+                  flex1: 2,
+                  flex2: 1,
+                  child1: _buildDialogDropdown<String>(
+                    label: 'Quality',
+                    hintText: 'Select Quality',
+                    value: selectedQuality,
+                    items: qualities.map((q) {
+                      return DropdownMenuItem<String>(
+                        value: q,
+                        child: Text(q, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(AppColors.TEXTPRIMARY))),
+                      );
+                    }).toList(),
+                    onChanged: (val) {
+                      if (val != null) {
+                        setDlgState(() => selectedQuality = val);
+                      }
+                    },
+                  ),
+                  child2: _buildDialogTextField(
+                    label: 'Quantity',
+                    hintText: 'e.g. 5',
+                    controller: quantityCtrl,
+                    keyboardType: TextInputType.number,
+                  ),
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildDialogTextField(
-                        label: 'Buy Price [1 Unit]',
-                        hintText: 'e.g. 60000',
-                        controller: buyPriceCtrl,
-                        keyboardType: TextInputType.number,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildDialogTextField(
-                        label: 'Sell Price [1 Unit]',
-                        hintText: 'e.g. 63500',
-                        controller: sellPriceCtrl,
-                        keyboardType: TextInputType.number,
-                      ),
-                    ),
-                  ],
+                _buildResponsiveFormRow(
+                  isPhone: isPhone,
+                  child1: _buildDialogTextField(
+                    label: 'Buy Price [1 Unit]',
+                    hintText: 'e.g. 60000',
+                    controller: buyPriceCtrl,
+                    keyboardType: TextInputType.number,
+                  ),
+                  child2: _buildDialogTextField(
+                    label: 'Sell Price [1 Unit]',
+                    hintText: 'e.g. 63500',
+                    controller: sellPriceCtrl,
+                    keyboardType: TextInputType.number,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 _buildDialogStatusToggle(
@@ -731,7 +723,7 @@ class _ProductViewState extends State<ProductView> {
     );
   }
 
-  Widget _buildDialogDropdown<T>({
+  static Widget _buildDialogDropdown<T>({
     required String label,
     required T? value,
     required List<DropdownMenuItem<T>> items,
@@ -774,7 +766,7 @@ class _ProductViewState extends State<ProductView> {
     );
   }
 
-  Widget _buildDialogTextField({
+  static Widget _buildDialogTextField({
     required String label,
     required String hintText,
     required TextEditingController controller,
@@ -824,7 +816,7 @@ class _ProductViewState extends State<ProductView> {
     );
   }
 
-  Widget _buildDialogStatusToggle({
+  static Widget _buildDialogStatusToggle({
     required bool value,
     required ValueChanged<bool> onChanged,
   }) {
@@ -877,7 +869,33 @@ class _ProductViewState extends State<ProductView> {
     );
   }
 
-  Widget _buildModernDialogCard({
+  static Widget _buildResponsiveFormRow({
+    required bool isPhone,
+    required Widget child1,
+    required Widget child2,
+    int flex1 = 1,
+    int flex2 = 1,
+  }) {
+    if (isPhone) {
+      return Column(
+        children: [
+          child1,
+          const SizedBox(height: 16),
+          child2,
+        ],
+      );
+    }
+    return Row(
+      children: [
+        Expanded(flex: flex1, child: child1),
+        const SizedBox(width: 16),
+        Expanded(flex: flex2, child: child2),
+      ],
+    );
+  }
+
+  static Widget _buildModernDialogCard({
+    required BuildContext context,
     required String title,
     required String subtitle,
     required dynamic icon,
@@ -885,30 +903,41 @@ class _ProductViewState extends State<ProductView> {
     required String saveLabel,
     required VoidCallback onSave,
   }) {
+    final isPhone = ResponsiveUtils.isPhone(context);
+    final maxH = MediaQuery.of(context).size.height * (isPhone ? 0.90 : 0.85);
+
     return Dialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      child: Container(
-        width: 600,
-        decoration: BoxDecoration(
-          color: const Color(AppColors.WHITE),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: const Color(0xFFF1F5F9)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.12),
-              blurRadius: 40,
-              offset: const Offset(0, 16),
-            ),
-          ],
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: isPhone ? 14 : 32,
+        vertical: 16,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: 600,
+          maxHeight: maxH,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Row(
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(AppColors.WHITE),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: const Color(0xFFF1F5F9)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.12),
+                blurRadius: 40,
+                offset: const Offset(0, 16),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header
+              Padding(
+                padding: EdgeInsets.all(isPhone ? 18 : 24),
+                child: Row(
                 children: [
                   Container(
                     width: 44,
@@ -1029,6 +1058,7 @@ class _ProductViewState extends State<ProductView> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

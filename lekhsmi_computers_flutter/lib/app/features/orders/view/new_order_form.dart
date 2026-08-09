@@ -3,10 +3,12 @@ import 'package:lekhsmi_computers_flutter/core/widgets/app_notification.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lekhsmi_computers_flutter/core/constants/app_colors.dart';
+import 'package:lekhsmi_computers_flutter/core/utils/responsive_utils.dart';
 import 'package:lekhsmi_computers_flutter/core/widgets/saas_date_picker.dart';
 import 'package:lekhsmi_computers_flutter/app/features/orders/controller/orders_controller.dart';
+import 'new_order_form_mobile_view.dart';
 
-class _ComplaintRow {
+class ComplaintRow {
   final String id = UniqueKey().toString();
   final TextEditingController controller = TextEditingController();
 
@@ -36,7 +38,7 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
   final _amountCtrl = TextEditingController();
 
   DateTime _selectedDate = DateTime.now();
-  final List<_ComplaintRow> _complaintRows = [_ComplaintRow()];
+  final List<ComplaintRow> _complaintRows = [ComplaintRow()];
 
   @override
   void dispose() {
@@ -54,7 +56,7 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
 
   void _addComplaintRow() {
     setState(() {
-      _complaintRows.insert(0, _ComplaintRow());
+      _complaintRows.insert(0, ComplaintRow());
     });
   }
 
@@ -79,7 +81,7 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
         r.dispose();
       }
       _complaintRows.clear();
-      _complaintRows.add(_ComplaintRow());
+      _complaintRows.add(ComplaintRow());
     });
   }
 
@@ -97,12 +99,7 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
     }
   }
 
-  String _formatDate(DateTime d) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    final day = d.day.toString().padLeft(2, '0');
-    final mon = months[d.month - 1];
-    return '$day $mon, ${d.year}';
-  }
+  String _formatDate(DateTime d) => NewOrderFormDialogs.formatDate(d);
 
   void _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
@@ -141,6 +138,25 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
 
   @override
   Widget build(BuildContext context) {
+    if (ResponsiveUtils.isPhone(context)) {
+      return NewOrderFormMobileView(
+        formKey: _formKey,
+        nameCtrl: _nameCtrl,
+        phone1Ctrl: _phone1Ctrl,
+        phone2Ctrl: _phone2Ctrl,
+        emailCtrl: _emailCtrl,
+        addressCtrl: _addressCtrl,
+        amountCtrl: _amountCtrl,
+        selectedDate: _selectedDate,
+        complaintRows: _complaintRows,
+        onPickDate: _pickDate,
+        onAddComplaintRow: _addComplaintRow,
+        onRemoveComplaintRow: _removeComplaintRow,
+        onSubmitForm: _submitForm,
+        onResetForm: _resetForm,
+        controller: controller,
+      );
+    }
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
@@ -215,7 +231,7 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
                                               controller: _phone1Ctrl,
                                               label: 'Primary Phone',
                                               icon: Icons.phone_outlined,
-                                              keyboardType: TextInputType.number,
+                                              keyboardType: TextInputType.phone,
                                               validator: (val) {
                                                 if (val == null || val.trim().isEmpty) return 'Required';
                                                 if (int.tryParse(val.trim()) == null) return 'Numbers only';
@@ -229,7 +245,7 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
                                               controller: _phone2Ctrl,
                                               label: 'Secondary Phone (Optional)',
                                               icon: Icons.phone_android_outlined,
-                                              keyboardType: TextInputType.number,
+                                              keyboardType: TextInputType.phone,
                                             ),
                                           ),
                                         ],
@@ -498,17 +514,59 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
   }
 
   Widget _buildTitleSection() {
+    return NewOrderFormDialogs.buildTitleSection(
+      controller: controller,
+      onResetForm: _resetForm,
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    int maxLines = 1,
+    String? Function(String?)? validator,
+  }) {
+    return NewOrderFormDialogs.buildTextField(
+      controller: controller,
+      label: label,
+      icon: icon,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      validator: validator,
+    );
+  }
+}
+
+class NewOrderFormDialogs {
+  static String formatDate(DateTime d) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    final day = d.day.toString().padLeft(2, '0');
+    final mon = months[d.month - 1];
+    return '$day $mon, ${d.year}';
+  }
+
+  static Widget buildTitleSection({
+    required OrdersController controller,
+    required VoidCallback onResetForm,
+  }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: const BoxDecoration(
         color: Color(AppColors.WHITE),
         border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0), width: 1)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        runSpacing: 10,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
                 'New Service / Repair Order',
@@ -518,7 +576,6 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
                   color: const Color(AppColors.TEXTPRIMARY),
                 ),
               ),
-              const SizedBox(width: 12),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
@@ -537,7 +594,10 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
               ),
             ],
           ),
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -547,6 +607,7 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
                   border: Border.all(color: const Color(0xFFE2E8F0)),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.tag,
@@ -565,11 +626,10 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
               Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: _resetForm,
+                  onTap: onResetForm,
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
                     padding: const EdgeInsets.all(10),
@@ -589,7 +649,7 @@ class _NewOrderFormViewState extends State<NewOrderFormView> {
     );
   }
 
-  Widget _buildTextField({
+  static Widget buildTextField({
     required TextEditingController controller,
     required String label,
     required IconData icon,

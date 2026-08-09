@@ -5,6 +5,8 @@ import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
 import 'package:lekhsmi_computers_flutter/app/features/settings/controller/settings_controller.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../controller/invoice_bill_controller.dart';
+import 'package:lekhsmi_computers_flutter/core/utils/responsive_utils.dart';
+import 'invoice_bill_mobile_view.dart';
 
 class InvoiceBillView extends StatelessWidget {
   const InvoiceBillView({super.key});
@@ -12,9 +14,14 @@ class InvoiceBillView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(InvoiceBillController());
+    final bool isPhone = ResponsiveUtils.isPhone(context);
+
+    if (isPhone) {
+      return const InvoiceBillMobileView();
+    }
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.transparent,
       body: Column(
         children: [
@@ -50,18 +57,24 @@ class InvoiceBillView extends StatelessWidget {
     );
   }
 
+
   Widget _buildTitleSection(InvoiceBillController controller) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: const BoxDecoration(
         color: Color(AppColors.WHITE),
         border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0), width: 1)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        runSpacing: 10,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
                 'Invoice / Bill Creator & POS',
@@ -71,7 +84,6 @@ class InvoiceBillView extends StatelessWidget {
                   color: const Color(AppColors.TEXTPRIMARY),
                 ),
               ),
-              const SizedBox(width: 10),
               Container(
                 width: 8,
                 height: 8,
@@ -80,7 +92,6 @@ class InvoiceBillView extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
               ),
-              const SizedBox(width: 14),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
@@ -112,7 +123,10 @@ class InvoiceBillView extends StatelessWidget {
       children: [
         // Top Bar
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: EdgeInsets.symmetric(
+            horizontal: ResponsiveUtils.isPhone(context) ? 14 : 24,
+            vertical: ResponsiveUtils.isPhone(context) ? 12 : 16,
+          ),
           decoration: const BoxDecoration(
             border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
           ),
@@ -162,7 +176,12 @@ class InvoiceBillView extends StatelessWidget {
         // Form Body
         Expanded(
           child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(24, 24, 24, 24 + MediaQuery.of(context).viewInsets.bottom),
+            padding: EdgeInsets.fromLTRB(
+              ResponsiveUtils.isPhone(context) ? 14 : 24,
+              ResponsiveUtils.isPhone(context) ? 14 : 24,
+              ResponsiveUtils.isPhone(context) ? 14 : 24,
+              (ResponsiveUtils.isPhone(context) ? 14 : 24) + MediaQuery.of(context).viewInsets.bottom,
+            ),
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,8 +200,9 @@ class InvoiceBillView extends StatelessWidget {
   }
 
   Widget _buildCustomerFormCard(BuildContext context, InvoiceBillController controller) {
+    final isPhone = ResponsiveUtils.isPhone(context);
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(isPhone ? 16 : 20),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(12),
@@ -196,80 +216,134 @@ class InvoiceBillView extends StatelessWidget {
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY)),
           ),
           const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: _buildTextField(
-                  controller: controller.nameController,
-                  label: 'Customer Name',
-                  hint: 'Enter customer name',
-                  icon: Icons.person_outline_rounded,
+          if (isPhone) ...[
+            _buildTextField(
+              controller: controller.nameController,
+              label: 'Customer Name',
+              hint: 'Enter customer name',
+              icon: Icons.person_outline_rounded,
+            ),
+            const SizedBox(height: 12),
+            _buildTextField(
+              controller: controller.phoneController,
+              label: 'Phone Number',
+              hint: 'Enter phone number',
+              icon: Icons.phone_outlined,
+              isPhone: true,
+            ),
+            const SizedBox(height: 12),
+            _buildTextField(
+              controller: controller.emailController,
+              label: 'Email Address (Optional)',
+              hint: 'customer@email.com',
+              icon: Icons.email_outlined,
+            ),
+            const SizedBox(height: 12),
+            _buildTextField(
+              controller: controller.addressController,
+              label: 'Address',
+              hint: 'Street, City, PIN',
+              icon: Icons.location_on_outlined,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: Obx(() => _buildDatePickerBox(
+                        context: context,
+                        label: 'Invoice Date',
+                        date: controller.currentDate.value,
+                        onTap: () => controller.pickDate(context, true),
+                      )),
                 ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: _buildTextField(
-                  controller: controller.phoneController,
-                  label: 'Phone Number',
-                  hint: 'Enter phone number',
-                  icon: Icons.phone_outlined,
-                  isNumber: true,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Obx(() => _buildDatePickerBox(
+                        context: context,
+                        label: 'Due Date',
+                        date: controller.validUptoDate.value,
+                        onTap: () => controller.pickDate(context, false),
+                      )),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: _buildTextField(
-                  controller: controller.emailController,
-                  label: 'Email Address (Optional)',
-                  hint: 'customer@email.com',
-                  icon: Icons.email_outlined,
+              ],
+            ),
+          ] else ...[
+            Row(
+              children: [
+                Expanded(
+                  child: _buildTextField(
+                    controller: controller.nameController,
+                    label: 'Customer Name',
+                    hint: 'Enter customer name',
+                    icon: Icons.person_outline_rounded,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: _buildTextField(
-                  controller: controller.addressController,
-                  label: 'Address',
-                  hint: 'Street, City, PIN',
-                  icon: Icons.location_on_outlined,
+                const SizedBox(width: 14),
+                Expanded(
+                  child: _buildTextField(
+                    controller: controller.phoneController,
+                    label: 'Phone Number',
+                    hint: 'Enter phone number',
+                    icon: Icons.phone_outlined,
+                    isPhone: true,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: Obx(() => _buildDatePickerBox(
-                      context: context,
-                      label: 'Invoice Date',
-                      date: controller.currentDate.value,
-                      onTap: () => controller.pickDate(context, true),
-                    )),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Obx(() => _buildDatePickerBox(
-                      context: context,
-                      label: 'Due Date',
-                      date: controller.validUptoDate.value,
-                      onTap: () => controller.pickDate(context, false),
-                    )),
-              ),
-            ],
-          ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildTextField(
+                    controller: controller.emailController,
+                    label: 'Email Address (Optional)',
+                    hint: 'customer@email.com',
+                    icon: Icons.email_outlined,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: _buildTextField(
+                    controller: controller.addressController,
+                    label: 'Address',
+                    hint: 'Street, City, PIN',
+                    icon: Icons.location_on_outlined,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: Obx(() => _buildDatePickerBox(
+                        context: context,
+                        label: 'Invoice Date',
+                        date: controller.currentDate.value,
+                        onTap: () => controller.pickDate(context, true),
+                      )),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Obx(() => _buildDatePickerBox(
+                        context: context,
+                        label: 'Due Date',
+                        date: controller.validUptoDate.value,
+                        onTap: () => controller.pickDate(context, false),
+                      )),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );
   }
 
+
   Widget _buildItemsFormCard(BuildContext context, InvoiceBillController controller) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(ResponsiveUtils.isPhone(context) ? 16 : 20),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(12),
@@ -317,69 +391,134 @@ class InvoiceBillView extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
-          // Inventory Product Selection Row
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                flex: 6,
-                child: _buildProductSelector(context, controller),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                flex: 2,
-                child: Obx(() {
-                  final product = controller.selectedProduct.value;
-                  final isOutOfStock = product != null && product.quantity <= 0;
-                  final maxQty = product?.quantity;
-                  String label = 'Qty';
-                  if (product != null) {
-                    if (isOutOfStock) {
-                      label = 'Qty (0 Stock)';
-                    } else {
-                      label = 'Qty (Max: $maxQty)';
+          // Inventory Product Selection
+          if (ResponsiveUtils.isPhone(context)) ...[
+            _buildProductSelector(context, controller),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Obx(() {
+                    final isCustom = controller.isCustomItem.value;
+                    final product = controller.selectedProduct.value;
+                    final isOutOfStock = !isCustom && product != null && product.quantity <= 0;
+                    final maxQty = product?.quantity;
+                    
+                    String label = 'Qty';
+                    if (!isCustom && product != null) {
+                      if (isOutOfStock) {
+                        label = 'Qty (0 Stock)';
+                      } else {
+                        label = 'Qty (Max: $maxQty)';
+                      }
                     }
-                  }
-                  return _buildTextField(
-                    controller: controller.itemQuantityController,
-                    label: label,
-                    hint: isOutOfStock ? '0' : '1',
-                    icon: Icons.numbers_rounded,
-                    isNumber: true,
-                    enabled: !isOutOfStock,
-                    onChanged: (val) => controller.validateQuantityInput(val),
-                  );
-                }),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                flex: 2,
-                child: _buildTextField(
-                  controller: controller.itemPriceController,
-                  label: 'Price (₹)',
-                  hint: 'Price',
-                  icon: Icons.currency_rupee_rounded,
-                  isNumber: true,
+                    return _buildTextField(
+                      controller: controller.itemQuantityController,
+                      label: label,
+                      hint: isOutOfStock ? '0' : '1',
+                      icon: Icons.numbers_rounded,
+                      isNumber: true,
+                      enabled: !isOutOfStock,
+                      onChanged: (val) => controller.validateQuantityInput(val),
+                    );
+                  }),
                 ),
-              ),
-              const SizedBox(width: 8),
-              SizedBox(
-                height: 44,
-                child: ElevatedButton.icon(
-                  onPressed: () => controller.addItem(),
-                  icon: const Icon(Icons.add_rounded, size: 18),
-                  label: const Text('Add Item', style: TextStyle(fontWeight: FontWeight.w700)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(AppColors.PRIMARY),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                const SizedBox(width: 10),
+                Expanded(
+                  flex: 1,
+                  child: _buildTextField(
+                    controller: controller.itemPriceController,
+                    label: 'Price (₹)',
+                    hint: 'Price',
+                    icon: Icons.currency_rupee_rounded,
+                    isNumber: true,
                   ),
                 ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              height: 44,
+              child: ElevatedButton.icon(
+                onPressed: () => controller.addItem(),
+                icon: const Icon(Icons.add_rounded, size: 18),
+                label: const Text('Add Item', style: TextStyle(fontWeight: FontWeight.w700)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(AppColors.PRIMARY),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
               ),
-            ],
-          ),
+            ),
+          ] else ...[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  flex: 6,
+                  child: _buildProductSelector(context, controller),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 2,
+                  child: Obx(() {
+                    final isCustom = controller.isCustomItem.value;
+                    final product = controller.selectedProduct.value;
+                    final isOutOfStock = !isCustom && product != null && product.quantity <= 0;
+                    final maxQty = product?.quantity;
+                    
+                    String label = 'Qty';
+                    if (!isCustom && product != null) {
+                      if (isOutOfStock) {
+                        label = 'Qty (0 Stock)';
+                      } else {
+                        label = 'Qty (Max: $maxQty)';
+                      }
+                    }
+                    return _buildTextField(
+                      controller: controller.itemQuantityController,
+                      label: label,
+                      hint: isOutOfStock ? '0' : '1',
+                      icon: Icons.numbers_rounded,
+                      isNumber: true,
+                      enabled: !isOutOfStock,
+                      onChanged: (val) => controller.validateQuantityInput(val),
+                    );
+                  }),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 2,
+                  child: _buildTextField(
+                    controller: controller.itemPriceController,
+                    label: 'Price (₹)',
+                    hint: 'Price',
+                    icon: Icons.currency_rupee_rounded,
+                    isNumber: true,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  height: 44,
+                  child: ElevatedButton.icon(
+                    onPressed: () => controller.addItem(),
+                    icon: const Icon(Icons.add_rounded, size: 18),
+                    label: const Text('Add Item', style: TextStyle(fontWeight: FontWeight.w700)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(AppColors.PRIMARY),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
 
           const SizedBox(height: 16),
 
@@ -399,7 +538,74 @@ class InvoiceBillView extends StatelessWidget {
                   child: Text(
                     'No items added yet. Select a product from inventory above.',
                     style: TextStyle(fontSize: 13, color: Color(AppColors.TEXTSECONDARY)),
+                    textAlign: TextAlign.center,
                   ),
+                ),
+              );
+            }
+
+            if (ResponsiveUtils.isPhone(context)) {
+              // Mobile: Card view for items
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Column(
+                  children: [
+                    for (int idx = 0; idx < items.length; idx++) ...[
+                      if (idx > 0) const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 26,
+                              height: 26,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFEFF6FF),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '${idx + 1}',
+                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(AppColors.PRIMARY)),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    items[idx].productName,
+                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(AppColors.TEXTPRIMARY)),
+                                  ),
+                                  Text(
+                                    '${items[idx].quantity} × ₹${items[idx].price.toStringAsFixed(0)}',
+                                    style: const TextStyle(fontSize: 12, color: Color(AppColors.TEXTSECONDARY)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              '₹${items[idx].amount.toStringAsFixed(2)}',
+                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF10B981)),
+                            ),
+                            const SizedBox(width: 4),
+                            IconButton(
+                              onPressed: () => controller.removeItem(items[idx].id),
+                              icon: const Icon(Icons.close_rounded, size: 18, color: Color(0xFFEF4444)),
+                              tooltip: 'Remove item',
+                              padding: EdgeInsets.zero,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               );
             }
@@ -501,6 +707,7 @@ class InvoiceBillView extends StatelessWidget {
     );
   }
 
+
   Widget _buildProductSelector(BuildContext context, InvoiceBillController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -508,29 +715,68 @@ class InvoiceBillView extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Expanded(
-              child: Text(
-                'Select Product',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(AppColors.TEXTPRIMARY)),
-              ),
+            Expanded(
+              child: Obx(() {
+                return Text(
+                  controller.isCustomItem.value ? 'Custom Item Details' : 'Select Product from Stock',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(AppColors.TEXTPRIMARY)),
+                );
+              }),
             ),
             const SizedBox(width: 8),
-            Tooltip(
-              message: 'Reload Stock',
-              child: InkWell(
-                onTap: () => controller.refreshProducts(),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                  child: Icon(Icons.refresh_rounded, size: 16, color: Color(AppColors.PRIMARY)),
+            Obx(() {
+              return SegmentedButton<bool>(
+                segments: const [
+                  ButtonSegment<bool>(
+                    value: false,
+                    label: Text('Stock', style: TextStyle(fontSize: 11)),
+                  ),
+                  ButtonSegment<bool>(
+                    value: true,
+                    label: Text('Custom', style: TextStyle(fontSize: 11)),
+                  ),
+                ],
+                selected: {controller.isCustomItem.value},
+                onSelectionChanged: (Set<bool> newSelection) {
+                  controller.isCustomItem.value = newSelection.first;
+                },
+                style: ButtonStyle(
+                  visualDensity: VisualDensity.compact,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-              ),
-            ),
+              );
+            }),
+            Obx(() {
+              if (controller.isCustomItem.value) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Tooltip(
+                  message: 'Reload Stock',
+                  child: InkWell(
+                    onTap: () => controller.refreshProducts(),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      child: Icon(Icons.refresh_rounded, size: 16, color: Color(AppColors.PRIMARY)),
+                    ),
+                  ),
+                ),
+              );
+            }),
           ],
         ),
         const SizedBox(height: 6),
         Obx(() {
+          if (controller.isCustomItem.value) {
+            return _buildTextField(
+              controller: controller.customItemNameController,
+              label: 'Item Name / Description',
+              hint: 'E.g., Custom Repair Service',
+              icon: Icons.edit_note_rounded,
+            );
+          }
+
           final products = controller.products;
           final selected = controller.selectedProduct.value;
           final isLoading = controller.isLoadingProducts.value;
@@ -711,8 +957,8 @@ class InvoiceBillView extends StatelessWidget {
                   padding: EdgeInsets.symmetric(vertical: 16),
                   child: Divider(height: 1, color: Color(0xFFE2E8F0)),
                 ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
                       width: 160,
@@ -725,31 +971,30 @@ class InvoiceBillView extends StatelessWidget {
                         onChanged: (val) => controller.updateGstPercentage(val),
                       ),
                     ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFEFF6FF),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(AppColors.PRIMARY).withValues(alpha: 0.2)),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.info_outline_rounded, size: 18, color: Color(AppColors.PRIMARY)),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'An extra ${controller.gstPercentage.value.toStringAsFixed(0)}% GST (${_formatCurrency(controller.gstAmount)}) will be added to the subtotal.',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(AppColors.PRIMARY),
-                                ),
+                    const SizedBox(height: 12),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEFF6FF),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(AppColors.PRIMARY).withValues(alpha: 0.2)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.info_outline_rounded, size: 18, color: Color(AppColors.PRIMARY)),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'An extra ${controller.gstPercentage.value.toStringAsFixed(0)}% GST (${_formatCurrency(controller.gstAmount)}) will be added to the subtotal.',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Color(AppColors.PRIMARY),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -821,36 +1066,39 @@ class InvoiceBillView extends StatelessWidget {
                     );
                   }),
                   const SizedBox(width: 8),
-                  if (GetPlatform.isMobile) ...[
+                  if (!ResponsiveUtils.isPhone(context)) ...[
                     ElevatedButton.icon(
-                      onPressed: () => controller.shareInvoiceBillPdf(),
-                      icon: const Icon(Icons.share_rounded, size: 16),
-                      label: Text('Share', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700)),
+                      onPressed: () => controller.savePdfDesktop(),
+                      icon: const Icon(Icons.download_rounded, size: 16),
+                      label: Text(
+                        'Save as PDF',
+                        style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFF1F5F9),
-                        foregroundColor: const Color(0xFF0F172A),
+                        foregroundColor: const Color(AppColors.TEXTPRIMARY),
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                     ),
                     const SizedBox(width: 8),
+                    ElevatedButton.icon(
+                      onPressed: () => controller.printInvoiceBillPdf(),
+                      icon: const Icon(Icons.print_rounded, size: 16),
+                      label: Text(
+                        'Print Invoice',
+                        style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF1E293B),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ),
                   ],
-                  ElevatedButton.icon(
-                    onPressed: () => controller.printInvoiceBillPdf(),
-                    icon: const Icon(Icons.print_rounded, size: 16),
-                    label: Text(
-                      GetPlatform.isMobile ? 'Save / Print' : 'Print',
-                      style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1E293B),
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                  ),
                 ],
               ),
             ],
@@ -1278,6 +1526,7 @@ class InvoiceBillView extends StatelessWidget {
     required String hint,
     required IconData icon,
     bool isNumber = false,
+    bool isPhone = false,
     bool enabled = true,
     Function(String)? onChanged,
   }) {
@@ -1292,7 +1541,7 @@ class InvoiceBillView extends StatelessWidget {
         TextField(
           controller: controller,
           enabled: enabled,
-          keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+          keyboardType: isPhone ? TextInputType.phone : (isNumber ? TextInputType.number : TextInputType.text),
           onChanged: onChanged,
           scrollPadding: const EdgeInsets.only(bottom: 220),
           style: TextStyle(
@@ -1404,3 +1653,41 @@ class InvoiceBillView extends StatelessWidget {
     return formatted;
   }
 }
+
+class InvoiceBillDialogs {
+  static Widget buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    bool isNumber = false,
+    bool isPhone = false,
+    bool enabled = true,
+    Function(String)? onChanged,
+  }) => const InvoiceBillView()._buildTextField(
+        controller: controller,
+        label: label,
+        hint: hint,
+        icon: icon,
+        isNumber: isNumber,
+        isPhone: isPhone,
+        enabled: enabled,
+        onChanged: onChanged,
+      );
+
+  static Widget buildDatePickerBox({
+    required BuildContext context,
+    required String label,
+    required DateTime date,
+    required VoidCallback onTap,
+  }) => const InvoiceBillView()._buildDatePickerBox(
+        context: context,
+        label: label,
+        date: date,
+        onTap: onTap,
+      );
+
+  static String formatDate(DateTime dt) => const InvoiceBillView()._formatDate(dt);
+  static String formatCurrency(double amount) => const InvoiceBillView()._formatCurrency(amount);
+}
+
