@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:lekhsmi_computers_client/lekhsmi_computers_client.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_icons.dart';
-import '../controller/dashboard_controller.dart';
 import 'package:lekhsmi_computers_flutter/app/features/settings/controller/settings_controller.dart';
 
 class DashboardMobileView extends StatelessWidget {
