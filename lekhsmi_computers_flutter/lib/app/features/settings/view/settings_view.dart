@@ -43,10 +43,8 @@ class SettingsView extends StatelessWidget {
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           physics: const BouncingScrollPhysics(),
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              minWidth: math.max(constraints.maxWidth, 1100.0),
-                            ),
+                          child: SizedBox(
+                            width: math.max(constraints.maxWidth, 1100.0),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: padH,
